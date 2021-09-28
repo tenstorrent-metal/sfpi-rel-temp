@@ -23,3 +23,4 @@ riscv64-unknown-elf/lib/libgloss.a filter=lfs diff=lfs merge=lfs -text
 riscv64-unknown-elf/lib/libgloss_nano.a filter=lfs diff=lfs merge=lfs -text
 riscv64-unknown-elf/lib/libg_nano.a filter=lfs diff=lfs merge=lfs -text
 riscv64-unknown-elf/lib/libstdc++.a filter=lfs diff=lfs merge=lfs -text
+riscv64-unknown-elf/bin/ filter=lfs diff=lfs merge=lfs -text
