@@ -48,6 +48,10 @@ extern int fp_native_comparison (rtx, machine_mode);
 extern int fp_scc_comparison (rtx, machine_mode);
 extern int fp_branch_comparison (rtx, machine_mode);
 extern int gpr_save_operation (rtx, machine_mode);
+extern int const_setcc_z_or_nez (rtx, machine_mode);
+extern int const_iadd_i_nosetcc (rtx, machine_mode);
+extern int const_iadd_i_setcc (rtx, machine_mode);
+extern int const_iadd_v_nosetcc (rtx, machine_mode);
 #endif /* HAVE_MACHINE_MODES */
 
 #define CONSTRAINT_NUM_DEFINED_P 1

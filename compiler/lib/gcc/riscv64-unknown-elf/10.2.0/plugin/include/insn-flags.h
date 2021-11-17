@@ -171,63 +171,40 @@
 #define HAVE_atomic_exchangedi ((TARGET_ATOMIC) && (TARGET_64BIT))
 #define HAVE_atomic_cas_value_strongsi (TARGET_ATOMIC)
 #define HAVE_atomic_cas_value_strongdi ((TARGET_ATOMIC) && (TARGET_64BIT))
-#define HAVE_riscv_sfpload_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpload_int_reg (TARGET_SFPU)
-#define HAVE_riscv_sfpload_int_imm_lv (TARGET_SFPU)
-#define HAVE_riscv_sfpload_int_reg_lv (TARGET_SFPU)
-#define HAVE_riscv_sfploadl0 (TARGET_SFPU)
-#define HAVE_riscv_sfploadl1 (TARGET_SFPU)
-#define HAVE_riscv_sfploadl2 (TARGET_SFPU)
-#define HAVE_riscv_sfploadl3 (TARGET_SFPU)
-#define HAVE_riscv_sfploadi_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfploadi_int_reg (TARGET_SFPU)
-#define HAVE_riscv_sfploadi_int_imm_lv (TARGET_SFPU)
-#define HAVE_riscv_sfploadi_int_reg_lv (TARGET_SFPU)
-#define HAVE_riscv_sfpstore_v_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpstore_v_int_reg (TARGET_SFPU)
-#define HAVE_riscv_sfpstore_r_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpstore_r_int_reg (TARGET_SFPU)
-#define HAVE_riscv_sfpmuli (TARGET_SFPU)
-#define HAVE_riscv_sfpaddi_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpaddi_int_reg (TARGET_SFPU)
-#define HAVE_riscv_sfpdivp2_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpdivp2_int_reg (TARGET_SFPU)
-#define HAVE_riscv_sfpexexp (TARGET_SFPU)
-#define HAVE_riscv_sfpexman (TARGET_SFPU)
-#define HAVE_riscv_sfpmov (TARGET_SFPU)
+#define HAVE_riscv_sfpassignlr_int (TARGET_SFPU)
+#define HAVE_riscv_sfpkeepalive0_int (TARGET_SFPU)
+#define HAVE_riscv_sfpkeepalive1_int (TARGET_SFPU)
+#define HAVE_riscv_sfpkeepalive2_int (TARGET_SFPU)
+#define HAVE_riscv_sfpkeepalive3_int (TARGET_SFPU)
+#define HAVE_riscv_sfpload_int (TARGET_SFPU)
+#define HAVE_riscv_sfploadi_int (TARGET_SFPU)
+#define HAVE_riscv_sfpstore_int (TARGET_SFPU)
+#define HAVE_riscv_sfpmuli_int (TARGET_SFPU)
+#define HAVE_riscv_sfpaddi_int (TARGET_SFPU)
+#define HAVE_riscv_sfpdivp2_int (TARGET_SFPU)
+#define HAVE_riscv_sfpexexp_int (TARGET_SFPU)
+#define HAVE_riscv_sfpexman_int (TARGET_SFPU)
+#define HAVE_riscv_sfpabs_int (TARGET_SFPU)
+#define HAVE_riscv_sfpmov_int (TARGET_SFPU)
+#define HAVE_riscv_sfplz_int (TARGET_SFPU)
 #define HAVE_riscv_sfpmul (TARGET_SFPU)
 #define HAVE_riscv_sfpadd (TARGET_SFPU)
+#define HAVE_riscv_sfpmul_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpadd_lv (TARGET_SFPU)
 #define HAVE_riscv_sfpiadd_v (TARGET_SFPU)
-#define HAVE_riscv_sfpiadd_i_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpiadd_i_int_reg (TARGET_SFPU)
-#define HAVE_riscv_sfpiadd_i_int_imm_lv (TARGET_SFPU)
-#define HAVE_riscv_sfpiadd_i_int_reg_lv (TARGET_SFPU)
-#define HAVE_riscv_sfpiadd_r (TARGET_SFPU)
+#define HAVE_riscv_sfpiadd_i_int (TARGET_SFPU)
 #define HAVE_riscv_sfpshft_v (TARGET_SFPU)
-#define HAVE_riscv_sfpshft_i_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpshft_i_int_reg (TARGET_SFPU)
-#define HAVE_riscv_sfpabs (TARGET_SFPU)
+#define HAVE_riscv_sfpshft_i_int (TARGET_SFPU)
 #define HAVE_riscv_sfpand (TARGET_SFPU)
 #define HAVE_riscv_sfpor (TARGET_SFPU)
-#define HAVE_riscv_sfpnot (TARGET_SFPU)
-#define HAVE_riscv_sfplz (TARGET_SFPU)
-#define HAVE_riscv_sfpsetman_v (TARGET_SFPU)
-#define HAVE_riscv_sfpsetman_i_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpsetman_i_int_reg (TARGET_SFPU)
+#define HAVE_riscv_sfpnot_int (TARGET_SFPU)
 #define HAVE_riscv_sfpsetexp_v (TARGET_SFPU)
-#define HAVE_riscv_sfpsetexp_i_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpsetexp_i_int_reg (TARGET_SFPU)
+#define HAVE_riscv_sfpsetman_v (TARGET_SFPU)
 #define HAVE_riscv_sfpsetsgn_v (TARGET_SFPU)
-#define HAVE_riscv_sfpsetsgn_i_int_imm (TARGET_SFPU)
-#define HAVE_riscv_sfpsetsgn_i_int_reg (TARGET_SFPU)
-#define HAVE_riscv_sfpmad_vvv (TARGET_SFPU)
-#define HAVE_riscv_sfpmad_rvv (TARGET_SFPU)
-#define HAVE_riscv_sfpmad_vrv (TARGET_SFPU)
-#define HAVE_riscv_sfpmad_vvr (TARGET_SFPU)
-#define HAVE_riscv_sfpmad_rrv (TARGET_SFPU)
-#define HAVE_riscv_sfpmad_vrr (TARGET_SFPU)
-#define HAVE_riscv_sfpmad_rvr (TARGET_SFPU)
-#define HAVE_riscv_sfpmad_rrr (TARGET_SFPU)
+#define HAVE_riscv_sfpsetexp_i_int (TARGET_SFPU)
+#define HAVE_riscv_sfpsetman_i_int (TARGET_SFPU)
+#define HAVE_riscv_sfpsetsgn_i_int (TARGET_SFPU)
+#define HAVE_riscv_sfpmad_int (TARGET_SFPU)
 #define HAVE_riscv_sfpsetcc_i (TARGET_SFPU)
 #define HAVE_riscv_sfpsetcc_v (TARGET_SFPU)
 #define HAVE_riscv_sfpencc (TARGET_SFPU)
@@ -236,6 +213,11 @@
 #define HAVE_riscv_sfppopc (TARGET_SFPU)
 #define HAVE_riscv_sfplut (TARGET_SFPU)
 #define HAVE_riscv_sfpnop (TARGET_SFPU)
+#define HAVE_riscv_sfpillegal (TARGET_SFPU)
+#define HAVE_riscv_sfpnonimm_dst (TARGET_SFPU)
+#define HAVE_riscv_sfpnonimm_dst_src (TARGET_SFPU)
+#define HAVE_riscv_sfpnonimm_src (TARGET_SFPU)
+#define HAVE_riscv_sfpnonimm_store (TARGET_SFPU)
 #define HAVE_mulditi3 (TARGET_MUL && TARGET_64BIT)
 #define HAVE_umulditi3 (TARGET_MUL && TARGET_64BIT)
 #define HAVE_usmulditi3 (TARGET_MUL && TARGET_64BIT)
@@ -288,316 +270,338 @@
 #define HAVE_atomic_compare_and_swapdi ((TARGET_ATOMIC) && (TARGET_64BIT))
 #define HAVE_atomic_test_and_set (TARGET_ATOMIC)
 #define HAVE_movv64sf 1
+#define HAVE_riscv_sfpassignlr (TARGET_SFPU)
+#define HAVE_riscv_sfpkeepalive (TARGET_SFPU)
 #define HAVE_riscv_sfpload (TARGET_SFPU)
 #define HAVE_riscv_sfpload_lv (TARGET_SFPU)
 #define HAVE_riscv_sfploadi (TARGET_SFPU)
 #define HAVE_riscv_sfploadi_lv (TARGET_SFPU)
-#define HAVE_riscv_sfpstore_v (TARGET_SFPU)
-#define HAVE_riscv_sfpstore_r (TARGET_SFPU)
+#define HAVE_riscv_sfpstore (TARGET_SFPU)
+#define HAVE_riscv_sfpmuli (TARGET_SFPU)
 #define HAVE_riscv_sfpaddi (TARGET_SFPU)
 #define HAVE_riscv_sfpdivp2 (TARGET_SFPU)
+#define HAVE_riscv_sfpdivp2_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpexexp (TARGET_SFPU)
+#define HAVE_riscv_sfpexman (TARGET_SFPU)
+#define HAVE_riscv_sfpabs (TARGET_SFPU)
+#define HAVE_riscv_sfpmov (TARGET_SFPU)
+#define HAVE_riscv_sfplz (TARGET_SFPU)
+#define HAVE_riscv_sfpexexp_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpexman_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpabs_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpmov_lv (TARGET_SFPU)
+#define HAVE_riscv_sfplz_lv (TARGET_SFPU)
 #define HAVE_riscv_sfpiadd_i (TARGET_SFPU)
 #define HAVE_riscv_sfpiadd_i_lv (TARGET_SFPU)
 #define HAVE_riscv_sfpshft_i (TARGET_SFPU)
-#define HAVE_riscv_sfpsetman_i (TARGET_SFPU)
+#define HAVE_riscv_sfpnot (TARGET_SFPU)
+#define HAVE_riscv_sfpnot_lv (TARGET_SFPU)
 #define HAVE_riscv_sfpsetexp_i (TARGET_SFPU)
+#define HAVE_riscv_sfpsetman_i (TARGET_SFPU)
 #define HAVE_riscv_sfpsetsgn_i (TARGET_SFPU)
-extern rtx        gen_addsf3                     (rtx, rtx, rtx);
-extern rtx        gen_adddf3                     (rtx, rtx, rtx);
-extern rtx        gen_addsi3                     (rtx, rtx, rtx);
-extern rtx        gen_adddi3                     (rtx, rtx, rtx);
-extern rtx        gen_subsf3                     (rtx, rtx, rtx);
-extern rtx        gen_subdf3                     (rtx, rtx, rtx);
-extern rtx        gen_subdi3                     (rtx, rtx, rtx);
-extern rtx        gen_subsi3                     (rtx, rtx, rtx);
-extern rtx        gen_negdi2                     (rtx, rtx);
-extern rtx        gen_negsi2                     (rtx, rtx);
-extern rtx        gen_mulsf3                     (rtx, rtx, rtx);
-extern rtx        gen_muldf3                     (rtx, rtx, rtx);
-extern rtx        gen_mulsi3                     (rtx, rtx, rtx);
-extern rtx        gen_muldi3                     (rtx, rtx, rtx);
-extern rtx        gen_muldi3_highpart            (rtx, rtx, rtx);
-extern rtx        gen_umuldi3_highpart           (rtx, rtx, rtx);
-extern rtx        gen_usmuldi3_highpart          (rtx, rtx, rtx);
-extern rtx        gen_mulsi3_highpart            (rtx, rtx, rtx);
-extern rtx        gen_umulsi3_highpart           (rtx, rtx, rtx);
-extern rtx        gen_usmulsi3_highpart          (rtx, rtx, rtx);
-extern rtx        gen_divsi3                     (rtx, rtx, rtx);
-extern rtx        gen_udivsi3                    (rtx, rtx, rtx);
-extern rtx        gen_modsi3                     (rtx, rtx, rtx);
-extern rtx        gen_umodsi3                    (rtx, rtx, rtx);
-extern rtx        gen_divdi3                     (rtx, rtx, rtx);
-extern rtx        gen_udivdi3                    (rtx, rtx, rtx);
-extern rtx        gen_moddi3                     (rtx, rtx, rtx);
-extern rtx        gen_umoddi3                    (rtx, rtx, rtx);
-extern rtx        gen_divsf3                     (rtx, rtx, rtx);
-extern rtx        gen_divdf3                     (rtx, rtx, rtx);
-extern rtx        gen_sqrtsf2                    (rtx, rtx);
-extern rtx        gen_sqrtdf2                    (rtx, rtx);
-extern rtx        gen_fmasf4                     (rtx, rtx, rtx, rtx);
-extern rtx        gen_fmadf4                     (rtx, rtx, rtx, rtx);
-extern rtx        gen_fmssf4                     (rtx, rtx, rtx, rtx);
-extern rtx        gen_fmsdf4                     (rtx, rtx, rtx, rtx);
-extern rtx        gen_fnmssf4                    (rtx, rtx, rtx, rtx);
-extern rtx        gen_fnmsdf4                    (rtx, rtx, rtx, rtx);
-extern rtx        gen_fnmasf4                    (rtx, rtx, rtx, rtx);
-extern rtx        gen_fnmadf4                    (rtx, rtx, rtx, rtx);
-extern rtx        gen_abssf2                     (rtx, rtx);
-extern rtx        gen_absdf2                     (rtx, rtx);
-extern rtx        gen_copysignsf3                (rtx, rtx, rtx);
-extern rtx        gen_copysigndf3                (rtx, rtx, rtx);
-extern rtx        gen_negsf2                     (rtx, rtx);
-extern rtx        gen_negdf2                     (rtx, rtx);
-extern rtx        gen_sminsf3                    (rtx, rtx, rtx);
-extern rtx        gen_smindf3                    (rtx, rtx, rtx);
-extern rtx        gen_smaxsf3                    (rtx, rtx, rtx);
-extern rtx        gen_smaxdf3                    (rtx, rtx, rtx);
-extern rtx        gen_andsi3                     (rtx, rtx, rtx);
-extern rtx        gen_iorsi3                     (rtx, rtx, rtx);
-extern rtx        gen_xorsi3                     (rtx, rtx, rtx);
-extern rtx        gen_anddi3                     (rtx, rtx, rtx);
-extern rtx        gen_iordi3                     (rtx, rtx, rtx);
-extern rtx        gen_xordi3                     (rtx, rtx, rtx);
-extern rtx        gen_one_cmplsi2                (rtx, rtx);
-extern rtx        gen_one_cmpldi2                (rtx, rtx);
-extern rtx        gen_truncdfsf2                 (rtx, rtx);
-extern rtx        gen_zero_extendsidi2           (rtx, rtx);
-extern rtx        gen_zero_extendhisi2           (rtx, rtx);
-extern rtx        gen_zero_extendhidi2           (rtx, rtx);
-extern rtx        gen_zero_extendqihi2           (rtx, rtx);
-extern rtx        gen_zero_extendqisi2           (rtx, rtx);
-extern rtx        gen_zero_extendqidi2           (rtx, rtx);
-extern rtx        gen_extendsidi2                (rtx, rtx);
-extern rtx        gen_extendqihi2                (rtx, rtx);
-extern rtx        gen_extendqisi2                (rtx, rtx);
-extern rtx        gen_extendqidi2                (rtx, rtx);
-extern rtx        gen_extendhihi2                (rtx, rtx);
-extern rtx        gen_extendhisi2                (rtx, rtx);
-extern rtx        gen_extendhidi2                (rtx, rtx);
-extern rtx        gen_extendsfdf2                (rtx, rtx);
-extern rtx        gen_fix_truncsfsi2             (rtx, rtx);
-extern rtx        gen_fix_truncsfdi2             (rtx, rtx);
-extern rtx        gen_fix_truncdfsi2             (rtx, rtx);
-extern rtx        gen_fix_truncdfdi2             (rtx, rtx);
-extern rtx        gen_fixuns_truncsfsi2          (rtx, rtx);
-extern rtx        gen_fixuns_truncsfdi2          (rtx, rtx);
-extern rtx        gen_fixuns_truncdfsi2          (rtx, rtx);
-extern rtx        gen_fixuns_truncdfdi2          (rtx, rtx);
-extern rtx        gen_floatsisf2                 (rtx, rtx);
-extern rtx        gen_floatdisf2                 (rtx, rtx);
-extern rtx        gen_floatsidf2                 (rtx, rtx);
-extern rtx        gen_floatdidf2                 (rtx, rtx);
-extern rtx        gen_floatunssisf2              (rtx, rtx);
-extern rtx        gen_floatunsdisf2              (rtx, rtx);
-extern rtx        gen_floatunssidf2              (rtx, rtx);
-extern rtx        gen_floatunsdidf2              (rtx, rtx);
-extern rtx        gen_lrintsfsi2                 (rtx, rtx);
-extern rtx        gen_lroundsfsi2                (rtx, rtx);
-extern rtx        gen_lrintsfdi2                 (rtx, rtx);
-extern rtx        gen_lroundsfdi2                (rtx, rtx);
-extern rtx        gen_lrintdfsi2                 (rtx, rtx);
-extern rtx        gen_lrounddfsi2                (rtx, rtx);
-extern rtx        gen_lrintdfdi2                 (rtx, rtx);
-extern rtx        gen_lrounddfdi2                (rtx, rtx);
-extern rtx        gen_got_loadsi                 (rtx, rtx);
-extern rtx        gen_got_loaddi                 (rtx, rtx);
-extern rtx        gen_tls_add_tp_lesi            (rtx, rtx, rtx, rtx);
-extern rtx        gen_tls_add_tp_ledi            (rtx, rtx, rtx, rtx);
-extern rtx        gen_got_load_tls_gdsi          (rtx, rtx);
-extern rtx        gen_got_load_tls_gddi          (rtx, rtx);
-extern rtx        gen_got_load_tls_iesi          (rtx, rtx);
-extern rtx        gen_got_load_tls_iedi          (rtx, rtx);
-extern rtx        gen_auipcsi                    (rtx, rtx, rtx);
-extern rtx        gen_auipcdi                    (rtx, rtx, rtx);
-extern rtx        gen_fence                      (void);
-extern rtx        gen_fence_i                    (void);
-extern rtx        gen_ashlsi3                    (rtx, rtx, rtx);
-extern rtx        gen_ashrsi3                    (rtx, rtx, rtx);
-extern rtx        gen_lshrsi3                    (rtx, rtx, rtx);
-extern rtx        gen_ashldi3                    (rtx, rtx, rtx);
-extern rtx        gen_ashrdi3                    (rtx, rtx, rtx);
-extern rtx        gen_lshrdi3                    (rtx, rtx, rtx);
-extern rtx        gen_zero_extendsidi2_shifted   (rtx, rtx, rtx, rtx);
-extern rtx        gen_jump                       (rtx);
-extern rtx        gen_indirect_jumpsi            (rtx);
-extern rtx        gen_indirect_jumpdi            (rtx);
-extern rtx        gen_tablejumpsi                (rtx, rtx);
-extern rtx        gen_tablejumpdi                (rtx, rtx);
-extern rtx        gen_blockage                   (void);
-extern rtx        gen_simple_return              (void);
-extern rtx        gen_simple_return_internal     (rtx);
-extern rtx        gen_eh_set_lr_si               (rtx);
-extern rtx        gen_eh_set_lr_di               (rtx);
-extern rtx        gen_eh_return_internal         (void);
-extern rtx        gen_sibcall_internal           (rtx, rtx);
-extern rtx        gen_sibcall_value_internal     (rtx, rtx, rtx);
-extern rtx        gen_call_internal              (rtx, rtx);
-extern rtx        gen_call_value_internal        (rtx, rtx, rtx);
-extern rtx        gen_nop                        (void);
-extern rtx        gen_trap                       (void);
-extern rtx        gen_gpr_save                   (rtx, rtx);
-extern rtx        gen_gpr_restore                (rtx);
-extern rtx        gen_gpr_restore_return         (rtx);
-extern rtx        gen_riscv_frflags              (rtx);
-extern rtx        gen_riscv_fsflags              (rtx);
-extern rtx        gen_riscv_mret                 (void);
-extern rtx        gen_riscv_sret                 (void);
-extern rtx        gen_riscv_uret                 (void);
-extern rtx        gen_stack_tiesi                (rtx, rtx);
-extern rtx        gen_stack_tiedi                (rtx, rtx);
-extern rtx        gen_mem_thread_fence_1         (rtx, rtx);
-extern rtx        gen_atomic_storesi             (rtx, rtx, rtx);
-extern rtx        gen_atomic_storedi             (rtx, rtx, rtx);
-extern rtx        gen_atomic_addsi               (rtx, rtx, rtx);
-extern rtx        gen_atomic_orsi                (rtx, rtx, rtx);
-extern rtx        gen_atomic_xorsi               (rtx, rtx, rtx);
-extern rtx        gen_atomic_andsi               (rtx, rtx, rtx);
-extern rtx        gen_atomic_adddi               (rtx, rtx, rtx);
-extern rtx        gen_atomic_ordi                (rtx, rtx, rtx);
-extern rtx        gen_atomic_xordi               (rtx, rtx, rtx);
-extern rtx        gen_atomic_anddi               (rtx, rtx, rtx);
-extern rtx        gen_atomic_fetch_addsi         (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_fetch_orsi          (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_fetch_xorsi         (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_fetch_andsi         (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_fetch_adddi         (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_fetch_ordi          (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_fetch_xordi         (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_fetch_anddi         (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_exchangesi          (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_exchangedi          (rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_cas_value_strongsi  (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_cas_value_strongdi  (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpload_int_imm      (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpload_int_reg      (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpload_int_imm_lv   (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpload_int_reg_lv   (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfploadl0            (rtx, rtx);
-extern rtx        gen_riscv_sfploadl1            (rtx, rtx);
-extern rtx        gen_riscv_sfploadl2            (rtx, rtx);
-extern rtx        gen_riscv_sfploadl3            (rtx, rtx);
-extern rtx        gen_riscv_sfploadi_int_imm     (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfploadi_int_reg     (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfploadi_int_imm_lv  (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfploadi_int_reg_lv  (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpstore_v_int_imm   (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpstore_v_int_reg   (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpstore_r_int_imm   (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpstore_r_int_reg   (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmuli              (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpaddi_int_imm      (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpaddi_int_reg      (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpdivp2_int_imm     (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpdivp2_int_reg     (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpexexp             (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpexman             (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmov               (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmul               (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpadd               (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpiadd_v            (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpiadd_i_int_imm    (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpiadd_i_int_reg    (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpiadd_i_int_imm_lv (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpiadd_i_int_reg_lv (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpiadd_r            (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpshft_v            (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpshft_i_int_imm    (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpshft_i_int_reg    (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpabs               (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpand               (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpor                (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpnot               (rtx, rtx);
-extern rtx        gen_riscv_sfplz                (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetman_v          (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetman_i_int_imm  (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetman_i_int_reg  (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetexp_v          (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetexp_i_int_imm  (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetexp_i_int_reg  (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetsgn_v          (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetsgn_i_int_imm  (rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetsgn_i_int_reg  (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmad_vvv           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmad_rvv           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmad_vrv           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmad_vvr           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmad_rrv           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmad_vrr           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmad_rvr           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmad_rrr           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetcc_i           (rtx, rtx);
-extern rtx        gen_riscv_sfpsetcc_v           (rtx, rtx);
-extern rtx        gen_riscv_sfpencc              (rtx, rtx);
-extern rtx        gen_riscv_sfpcompc             (void);
-extern rtx        gen_riscv_sfppushc             (void);
-extern rtx        gen_riscv_sfppopc              (void);
-extern rtx        gen_riscv_sfplut               (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpnop               (void);
-extern rtx        gen_mulditi3                   (rtx, rtx, rtx);
-extern rtx        gen_umulditi3                  (rtx, rtx, rtx);
-extern rtx        gen_usmulditi3                 (rtx, rtx, rtx);
-extern rtx        gen_mulsidi3                   (rtx, rtx, rtx);
-extern rtx        gen_umulsidi3                  (rtx, rtx, rtx);
-extern rtx        gen_usmulsidi3                 (rtx, rtx, rtx);
-extern rtx        gen_movdi                      (rtx, rtx);
-extern rtx        gen_movsi                      (rtx, rtx);
-extern rtx        gen_movhi                      (rtx, rtx);
-extern rtx        gen_movqi                      (rtx, rtx);
-extern rtx        gen_movsf                      (rtx, rtx);
-extern rtx        gen_movdf                      (rtx, rtx);
-extern rtx        gen_cpymemsi                   (rtx, rtx, rtx, rtx);
-extern rtx        gen_clear_cache                (rtx, rtx);
-extern rtx        gen_movsicc                    (rtx, rtx, rtx, rtx);
-extern rtx        gen_movdicc                    (rtx, rtx, rtx, rtx);
-extern rtx        gen_condjump                   (rtx, rtx);
-extern rtx        gen_cbranchqi4                 (rtx, rtx, rtx, rtx);
-extern rtx        gen_cbranchsi4                 (rtx, rtx, rtx, rtx);
-extern rtx        gen_cbranchdi4                 (rtx, rtx, rtx, rtx);
-extern rtx        gen_cbranchsf4                 (rtx, rtx, rtx, rtx);
-extern rtx        gen_cbranchdf4                 (rtx, rtx, rtx, rtx);
-extern rtx        gen_cstoresi4                  (rtx, rtx, rtx, rtx);
-extern rtx        gen_cstoredi4                  (rtx, rtx, rtx, rtx);
-extern rtx        gen_cstoresf4                  (rtx, rtx, rtx, rtx);
-extern rtx        gen_cstoredf4                  (rtx, rtx, rtx, rtx);
-extern rtx        gen_flt_quietsfsi4             (rtx, rtx, rtx);
-extern rtx        gen_fle_quietsfsi4             (rtx, rtx, rtx);
-extern rtx        gen_flt_quietsfdi4             (rtx, rtx, rtx);
-extern rtx        gen_fle_quietsfdi4             (rtx, rtx, rtx);
-extern rtx        gen_flt_quietdfsi4             (rtx, rtx, rtx);
-extern rtx        gen_fle_quietdfsi4             (rtx, rtx, rtx);
-extern rtx        gen_flt_quietdfdi4             (rtx, rtx, rtx);
-extern rtx        gen_fle_quietdfdi4             (rtx, rtx, rtx);
-extern rtx        gen_indirect_jump              (rtx);
-extern rtx        gen_tablejump                  (rtx, rtx);
-extern rtx        gen_prologue                   (void);
-extern rtx        gen_epilogue                   (void);
-extern rtx        gen_sibcall_epilogue           (void);
-extern rtx        gen_return                     (void);
-extern rtx        gen_eh_return                  (rtx);
-extern rtx        gen_sibcall                    (rtx, rtx, rtx, rtx);
-extern rtx        gen_sibcall_value              (rtx, rtx, rtx, rtx);
-extern rtx        gen_call                       (rtx, rtx, rtx, rtx);
-extern rtx        gen_call_value                 (rtx, rtx, rtx, rtx);
-extern rtx        gen_untyped_call               (rtx, rtx, rtx);
-extern rtx        gen_restore_stack_nonlocal     (rtx, rtx);
-extern rtx        gen_mem_thread_fence           (rtx);
-extern rtx        gen_atomic_compare_and_swapsi  (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_compare_and_swapdi  (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_atomic_test_and_set        (rtx, rtx, rtx);
-extern rtx        gen_movv64sf                   (rtx, rtx);
-extern rtx        gen_riscv_sfpload              (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpload_lv           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfploadi             (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfploadi_lv          (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpstore_v           (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpstore_r           (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpaddi              (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpdivp2             (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpiadd_i            (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpiadd_i_lv         (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpshft_i            (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetman_i          (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetexp_i          (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpsetsgn_i          (rtx, rtx, rtx, rtx);
+#define HAVE_riscv_sfpsetexp_i_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpsetman_i_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpsetsgn_i_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpmad (TARGET_SFPU)
+#define HAVE_riscv_sfpmad_lv (TARGET_SFPU)
+extern rtx        gen_addsf3                    (rtx, rtx, rtx);
+extern rtx        gen_adddf3                    (rtx, rtx, rtx);
+extern rtx        gen_addsi3                    (rtx, rtx, rtx);
+extern rtx        gen_adddi3                    (rtx, rtx, rtx);
+extern rtx        gen_subsf3                    (rtx, rtx, rtx);
+extern rtx        gen_subdf3                    (rtx, rtx, rtx);
+extern rtx        gen_subdi3                    (rtx, rtx, rtx);
+extern rtx        gen_subsi3                    (rtx, rtx, rtx);
+extern rtx        gen_negdi2                    (rtx, rtx);
+extern rtx        gen_negsi2                    (rtx, rtx);
+extern rtx        gen_mulsf3                    (rtx, rtx, rtx);
+extern rtx        gen_muldf3                    (rtx, rtx, rtx);
+extern rtx        gen_mulsi3                    (rtx, rtx, rtx);
+extern rtx        gen_muldi3                    (rtx, rtx, rtx);
+extern rtx        gen_muldi3_highpart           (rtx, rtx, rtx);
+extern rtx        gen_umuldi3_highpart          (rtx, rtx, rtx);
+extern rtx        gen_usmuldi3_highpart         (rtx, rtx, rtx);
+extern rtx        gen_mulsi3_highpart           (rtx, rtx, rtx);
+extern rtx        gen_umulsi3_highpart          (rtx, rtx, rtx);
+extern rtx        gen_usmulsi3_highpart         (rtx, rtx, rtx);
+extern rtx        gen_divsi3                    (rtx, rtx, rtx);
+extern rtx        gen_udivsi3                   (rtx, rtx, rtx);
+extern rtx        gen_modsi3                    (rtx, rtx, rtx);
+extern rtx        gen_umodsi3                   (rtx, rtx, rtx);
+extern rtx        gen_divdi3                    (rtx, rtx, rtx);
+extern rtx        gen_udivdi3                   (rtx, rtx, rtx);
+extern rtx        gen_moddi3                    (rtx, rtx, rtx);
+extern rtx        gen_umoddi3                   (rtx, rtx, rtx);
+extern rtx        gen_divsf3                    (rtx, rtx, rtx);
+extern rtx        gen_divdf3                    (rtx, rtx, rtx);
+extern rtx        gen_sqrtsf2                   (rtx, rtx);
+extern rtx        gen_sqrtdf2                   (rtx, rtx);
+extern rtx        gen_fmasf4                    (rtx, rtx, rtx, rtx);
+extern rtx        gen_fmadf4                    (rtx, rtx, rtx, rtx);
+extern rtx        gen_fmssf4                    (rtx, rtx, rtx, rtx);
+extern rtx        gen_fmsdf4                    (rtx, rtx, rtx, rtx);
+extern rtx        gen_fnmssf4                   (rtx, rtx, rtx, rtx);
+extern rtx        gen_fnmsdf4                   (rtx, rtx, rtx, rtx);
+extern rtx        gen_fnmasf4                   (rtx, rtx, rtx, rtx);
+extern rtx        gen_fnmadf4                   (rtx, rtx, rtx, rtx);
+extern rtx        gen_abssf2                    (rtx, rtx);
+extern rtx        gen_absdf2                    (rtx, rtx);
+extern rtx        gen_copysignsf3               (rtx, rtx, rtx);
+extern rtx        gen_copysigndf3               (rtx, rtx, rtx);
+extern rtx        gen_negsf2                    (rtx, rtx);
+extern rtx        gen_negdf2                    (rtx, rtx);
+extern rtx        gen_sminsf3                   (rtx, rtx, rtx);
+extern rtx        gen_smindf3                   (rtx, rtx, rtx);
+extern rtx        gen_smaxsf3                   (rtx, rtx, rtx);
+extern rtx        gen_smaxdf3                   (rtx, rtx, rtx);
+extern rtx        gen_andsi3                    (rtx, rtx, rtx);
+extern rtx        gen_iorsi3                    (rtx, rtx, rtx);
+extern rtx        gen_xorsi3                    (rtx, rtx, rtx);
+extern rtx        gen_anddi3                    (rtx, rtx, rtx);
+extern rtx        gen_iordi3                    (rtx, rtx, rtx);
+extern rtx        gen_xordi3                    (rtx, rtx, rtx);
+extern rtx        gen_one_cmplsi2               (rtx, rtx);
+extern rtx        gen_one_cmpldi2               (rtx, rtx);
+extern rtx        gen_truncdfsf2                (rtx, rtx);
+extern rtx        gen_zero_extendsidi2          (rtx, rtx);
+extern rtx        gen_zero_extendhisi2          (rtx, rtx);
+extern rtx        gen_zero_extendhidi2          (rtx, rtx);
+extern rtx        gen_zero_extendqihi2          (rtx, rtx);
+extern rtx        gen_zero_extendqisi2          (rtx, rtx);
+extern rtx        gen_zero_extendqidi2          (rtx, rtx);
+extern rtx        gen_extendsidi2               (rtx, rtx);
+extern rtx        gen_extendqihi2               (rtx, rtx);
+extern rtx        gen_extendqisi2               (rtx, rtx);
+extern rtx        gen_extendqidi2               (rtx, rtx);
+extern rtx        gen_extendhihi2               (rtx, rtx);
+extern rtx        gen_extendhisi2               (rtx, rtx);
+extern rtx        gen_extendhidi2               (rtx, rtx);
+extern rtx        gen_extendsfdf2               (rtx, rtx);
+extern rtx        gen_fix_truncsfsi2            (rtx, rtx);
+extern rtx        gen_fix_truncsfdi2            (rtx, rtx);
+extern rtx        gen_fix_truncdfsi2            (rtx, rtx);
+extern rtx        gen_fix_truncdfdi2            (rtx, rtx);
+extern rtx        gen_fixuns_truncsfsi2         (rtx, rtx);
+extern rtx        gen_fixuns_truncsfdi2         (rtx, rtx);
+extern rtx        gen_fixuns_truncdfsi2         (rtx, rtx);
+extern rtx        gen_fixuns_truncdfdi2         (rtx, rtx);
+extern rtx        gen_floatsisf2                (rtx, rtx);
+extern rtx        gen_floatdisf2                (rtx, rtx);
+extern rtx        gen_floatsidf2                (rtx, rtx);
+extern rtx        gen_floatdidf2                (rtx, rtx);
+extern rtx        gen_floatunssisf2             (rtx, rtx);
+extern rtx        gen_floatunsdisf2             (rtx, rtx);
+extern rtx        gen_floatunssidf2             (rtx, rtx);
+extern rtx        gen_floatunsdidf2             (rtx, rtx);
+extern rtx        gen_lrintsfsi2                (rtx, rtx);
+extern rtx        gen_lroundsfsi2               (rtx, rtx);
+extern rtx        gen_lrintsfdi2                (rtx, rtx);
+extern rtx        gen_lroundsfdi2               (rtx, rtx);
+extern rtx        gen_lrintdfsi2                (rtx, rtx);
+extern rtx        gen_lrounddfsi2               (rtx, rtx);
+extern rtx        gen_lrintdfdi2                (rtx, rtx);
+extern rtx        gen_lrounddfdi2               (rtx, rtx);
+extern rtx        gen_got_loadsi                (rtx, rtx);
+extern rtx        gen_got_loaddi                (rtx, rtx);
+extern rtx        gen_tls_add_tp_lesi           (rtx, rtx, rtx, rtx);
+extern rtx        gen_tls_add_tp_ledi           (rtx, rtx, rtx, rtx);
+extern rtx        gen_got_load_tls_gdsi         (rtx, rtx);
+extern rtx        gen_got_load_tls_gddi         (rtx, rtx);
+extern rtx        gen_got_load_tls_iesi         (rtx, rtx);
+extern rtx        gen_got_load_tls_iedi         (rtx, rtx);
+extern rtx        gen_auipcsi                   (rtx, rtx, rtx);
+extern rtx        gen_auipcdi                   (rtx, rtx, rtx);
+extern rtx        gen_fence                     (void);
+extern rtx        gen_fence_i                   (void);
+extern rtx        gen_ashlsi3                   (rtx, rtx, rtx);
+extern rtx        gen_ashrsi3                   (rtx, rtx, rtx);
+extern rtx        gen_lshrsi3                   (rtx, rtx, rtx);
+extern rtx        gen_ashldi3                   (rtx, rtx, rtx);
+extern rtx        gen_ashrdi3                   (rtx, rtx, rtx);
+extern rtx        gen_lshrdi3                   (rtx, rtx, rtx);
+extern rtx        gen_zero_extendsidi2_shifted  (rtx, rtx, rtx, rtx);
+extern rtx        gen_jump                      (rtx);
+extern rtx        gen_indirect_jumpsi           (rtx);
+extern rtx        gen_indirect_jumpdi           (rtx);
+extern rtx        gen_tablejumpsi               (rtx, rtx);
+extern rtx        gen_tablejumpdi               (rtx, rtx);
+extern rtx        gen_blockage                  (void);
+extern rtx        gen_simple_return             (void);
+extern rtx        gen_simple_return_internal    (rtx);
+extern rtx        gen_eh_set_lr_si              (rtx);
+extern rtx        gen_eh_set_lr_di              (rtx);
+extern rtx        gen_eh_return_internal        (void);
+extern rtx        gen_sibcall_internal          (rtx, rtx);
+extern rtx        gen_sibcall_value_internal    (rtx, rtx, rtx);
+extern rtx        gen_call_internal             (rtx, rtx);
+extern rtx        gen_call_value_internal       (rtx, rtx, rtx);
+extern rtx        gen_nop                       (void);
+extern rtx        gen_trap                      (void);
+extern rtx        gen_gpr_save                  (rtx, rtx);
+extern rtx        gen_gpr_restore               (rtx);
+extern rtx        gen_gpr_restore_return        (rtx);
+extern rtx        gen_riscv_frflags             (rtx);
+extern rtx        gen_riscv_fsflags             (rtx);
+extern rtx        gen_riscv_mret                (void);
+extern rtx        gen_riscv_sret                (void);
+extern rtx        gen_riscv_uret                (void);
+extern rtx        gen_stack_tiesi               (rtx, rtx);
+extern rtx        gen_stack_tiedi               (rtx, rtx);
+extern rtx        gen_mem_thread_fence_1        (rtx, rtx);
+extern rtx        gen_atomic_storesi            (rtx, rtx, rtx);
+extern rtx        gen_atomic_storedi            (rtx, rtx, rtx);
+extern rtx        gen_atomic_addsi              (rtx, rtx, rtx);
+extern rtx        gen_atomic_orsi               (rtx, rtx, rtx);
+extern rtx        gen_atomic_xorsi              (rtx, rtx, rtx);
+extern rtx        gen_atomic_andsi              (rtx, rtx, rtx);
+extern rtx        gen_atomic_adddi              (rtx, rtx, rtx);
+extern rtx        gen_atomic_ordi               (rtx, rtx, rtx);
+extern rtx        gen_atomic_xordi              (rtx, rtx, rtx);
+extern rtx        gen_atomic_anddi              (rtx, rtx, rtx);
+extern rtx        gen_atomic_fetch_addsi        (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_fetch_orsi         (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_fetch_xorsi        (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_fetch_andsi        (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_fetch_adddi        (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_fetch_ordi         (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_fetch_xordi        (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_fetch_anddi        (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_exchangesi         (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_exchangedi         (rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_cas_value_strongsi (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_cas_value_strongdi (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpassignlr_int     (rtx);
+extern rtx        gen_riscv_sfpkeepalive0_int   (rtx);
+extern rtx        gen_riscv_sfpkeepalive1_int   (rtx);
+extern rtx        gen_riscv_sfpkeepalive2_int   (rtx);
+extern rtx        gen_riscv_sfpkeepalive3_int   (rtx);
+extern rtx        gen_riscv_sfpload_int         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfploadi_int        (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpstore_int        (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmuli_int         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpaddi_int         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpdivp2_int        (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpexexp_int        (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpexman_int        (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpabs_int          (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmov_int          (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfplz_int           (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmul              (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpadd              (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmul_lv           (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpadd_lv           (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpiadd_v           (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpiadd_i_int       (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpshft_v           (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpshft_i_int       (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpand              (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpor               (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpnot_int          (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetexp_v         (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetman_v         (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetsgn_v         (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetexp_i_int     (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetman_i_int     (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetsgn_i_int     (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmad_int          (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetcc_i          (rtx, rtx);
+extern rtx        gen_riscv_sfpsetcc_v          (rtx, rtx);
+extern rtx        gen_riscv_sfpencc             (rtx, rtx);
+extern rtx        gen_riscv_sfpcompc            (void);
+extern rtx        gen_riscv_sfppushc            (void);
+extern rtx        gen_riscv_sfppopc             (void);
+extern rtx        gen_riscv_sfplut              (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpnop              (void);
+extern rtx        gen_riscv_sfpillegal          (void);
+extern rtx        gen_riscv_sfpnonimm_dst       (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpnonimm_dst_src   (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpnonimm_src       (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpnonimm_store     (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_mulditi3                  (rtx, rtx, rtx);
+extern rtx        gen_umulditi3                 (rtx, rtx, rtx);
+extern rtx        gen_usmulditi3                (rtx, rtx, rtx);
+extern rtx        gen_mulsidi3                  (rtx, rtx, rtx);
+extern rtx        gen_umulsidi3                 (rtx, rtx, rtx);
+extern rtx        gen_usmulsidi3                (rtx, rtx, rtx);
+extern rtx        gen_movdi                     (rtx, rtx);
+extern rtx        gen_movsi                     (rtx, rtx);
+extern rtx        gen_movhi                     (rtx, rtx);
+extern rtx        gen_movqi                     (rtx, rtx);
+extern rtx        gen_movsf                     (rtx, rtx);
+extern rtx        gen_movdf                     (rtx, rtx);
+extern rtx        gen_cpymemsi                  (rtx, rtx, rtx, rtx);
+extern rtx        gen_clear_cache               (rtx, rtx);
+extern rtx        gen_movsicc                   (rtx, rtx, rtx, rtx);
+extern rtx        gen_movdicc                   (rtx, rtx, rtx, rtx);
+extern rtx        gen_condjump                  (rtx, rtx);
+extern rtx        gen_cbranchqi4                (rtx, rtx, rtx, rtx);
+extern rtx        gen_cbranchsi4                (rtx, rtx, rtx, rtx);
+extern rtx        gen_cbranchdi4                (rtx, rtx, rtx, rtx);
+extern rtx        gen_cbranchsf4                (rtx, rtx, rtx, rtx);
+extern rtx        gen_cbranchdf4                (rtx, rtx, rtx, rtx);
+extern rtx        gen_cstoresi4                 (rtx, rtx, rtx, rtx);
+extern rtx        gen_cstoredi4                 (rtx, rtx, rtx, rtx);
+extern rtx        gen_cstoresf4                 (rtx, rtx, rtx, rtx);
+extern rtx        gen_cstoredf4                 (rtx, rtx, rtx, rtx);
+extern rtx        gen_flt_quietsfsi4            (rtx, rtx, rtx);
+extern rtx        gen_fle_quietsfsi4            (rtx, rtx, rtx);
+extern rtx        gen_flt_quietsfdi4            (rtx, rtx, rtx);
+extern rtx        gen_fle_quietsfdi4            (rtx, rtx, rtx);
+extern rtx        gen_flt_quietdfsi4            (rtx, rtx, rtx);
+extern rtx        gen_fle_quietdfsi4            (rtx, rtx, rtx);
+extern rtx        gen_flt_quietdfdi4            (rtx, rtx, rtx);
+extern rtx        gen_fle_quietdfdi4            (rtx, rtx, rtx);
+extern rtx        gen_indirect_jump             (rtx);
+extern rtx        gen_tablejump                 (rtx, rtx);
+extern rtx        gen_prologue                  (void);
+extern rtx        gen_epilogue                  (void);
+extern rtx        gen_sibcall_epilogue          (void);
+extern rtx        gen_return                    (void);
+extern rtx        gen_eh_return                 (rtx);
+extern rtx        gen_sibcall                   (rtx, rtx, rtx, rtx);
+extern rtx        gen_sibcall_value             (rtx, rtx, rtx, rtx);
+extern rtx        gen_call                      (rtx, rtx, rtx, rtx);
+extern rtx        gen_call_value                (rtx, rtx, rtx, rtx);
+extern rtx        gen_untyped_call              (rtx, rtx, rtx);
+extern rtx        gen_restore_stack_nonlocal    (rtx, rtx);
+extern rtx        gen_mem_thread_fence          (rtx);
+extern rtx        gen_atomic_compare_and_swapsi (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_compare_and_swapdi (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_atomic_test_and_set       (rtx, rtx, rtx);
+extern rtx        gen_movv64sf                  (rtx, rtx);
+extern rtx        gen_riscv_sfpassignlr         (rtx, rtx);
+extern rtx        gen_riscv_sfpkeepalive        (rtx, rtx);
+extern rtx        gen_riscv_sfpload             (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpload_lv          (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfploadi            (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfploadi_lv         (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpstore            (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmuli             (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpaddi             (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpdivp2            (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpdivp2_lv         (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpexexp            (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpexman            (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpabs              (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmov              (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfplz               (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpexexp_lv         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpexman_lv         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpabs_lv           (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmov_lv           (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfplz_lv            (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpiadd_i           (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpiadd_i_lv        (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpshft_i           (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpnot              (rtx, rtx);
+extern rtx        gen_riscv_sfpnot_lv           (rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetexp_i         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetman_i         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetsgn_i         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetexp_i_lv      (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetman_i_lv      (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpsetsgn_i_lv      (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmad              (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmad_lv           (rtx, rtx, rtx, rtx, rtx, rtx);
 
 #endif /* GCC_INSN_FLAGS_H */
