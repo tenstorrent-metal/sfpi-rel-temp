@@ -72,6 +72,7 @@ along with GCC; see the file COPYING3.  If not see
       NEXT_PASS (pass_rebuild_cgraph_edges, 2);
       NEXT_PASS (pass_local_fn_summary, 1);
       NEXT_PASS (pass_early_inline, 1);
+      // Not here i hope
       NEXT_PASS (pass_all_early_optimizations, 1);
       PUSH_INSERT_PASSES_WITHIN (pass_all_early_optimizations)
 	  NEXT_PASS (pass_remove_cgraph_callee_edges, 1);
@@ -91,6 +92,7 @@ along with GCC; see the file COPYING3.  If not see
 	  NEXT_PASS (pass_early_vrp, 1);
 	  NEXT_PASS (pass_merge_phi, 1);
           NEXT_PASS (pass_dse, 1);
+          // Candidate position
 	  NEXT_PASS (pass_cd_dce, 1);
 	  NEXT_PASS_WITH_ARG (pass_phiopt, 1, true /* early_p */);
 	  NEXT_PASS (pass_tail_recursion, 1);
@@ -403,6 +405,11 @@ along with GCC; see the file COPYING3.  If not see
   NEXT_PASS (pass_cleanup_cfg_post_optimizing, 1);
   NEXT_PASS (pass_warn_function_noreturn, 1);
   NEXT_PASS (pass_gen_hsail, 1);
+
+  NEXT_PASS (pass_riscv_sfpu_live, 1);
+  NEXT_PASS (pass_riscv_sfpu_cc, 1);
+  NEXT_PASS (pass_riscv_sfpu_combine, 1);
+  NEXT_PASS (pass_riscv_sfpu_move, 1);
 
   NEXT_PASS (pass_expand, 1);
 

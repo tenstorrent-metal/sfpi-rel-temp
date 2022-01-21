@@ -696,7 +696,7 @@
 
 /* Define if your assembler and linker support thread-local storage. */
 #ifndef USED_FOR_TARGET
-#define HAVE_AS_TLS 1
+/* #undef HAVE_AS_TLS */
 #endif
 
 
