@@ -188,10 +188,8 @@
 #define HAVE_riscv_sfpabs_int (TARGET_SFPU)
 #define HAVE_riscv_sfpmov_int (TARGET_SFPU)
 #define HAVE_riscv_sfplz_int (TARGET_SFPU)
-#define HAVE_riscv_sfpmul (TARGET_SFPU)
-#define HAVE_riscv_sfpadd (TARGET_SFPU)
-#define HAVE_riscv_sfpmul_lv (TARGET_SFPU)
-#define HAVE_riscv_sfpadd_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpmul_int (TARGET_SFPU)
+#define HAVE_riscv_sfpadd_int (TARGET_SFPU)
 #define HAVE_riscv_sfpiadd_v (TARGET_SFPU)
 #define HAVE_riscv_sfpiadd_i_int (TARGET_SFPU)
 #define HAVE_riscv_sfpshft_v (TARGET_SFPU)
@@ -292,6 +290,10 @@
 #define HAVE_riscv_sfpabs_lv (TARGET_SFPU)
 #define HAVE_riscv_sfpmov_lv (TARGET_SFPU)
 #define HAVE_riscv_sfplz_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpmul (TARGET_SFPU)
+#define HAVE_riscv_sfpadd (TARGET_SFPU)
+#define HAVE_riscv_sfpmul_lv (TARGET_SFPU)
+#define HAVE_riscv_sfpadd_lv (TARGET_SFPU)
 #define HAVE_riscv_sfpiadd_i (TARGET_SFPU)
 #define HAVE_riscv_sfpiadd_i_lv (TARGET_SFPU)
 #define HAVE_riscv_sfpiadd_v_ex (TARGET_SFPU)
@@ -493,10 +495,8 @@ extern rtx        gen_riscv_sfpexman_int        (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpabs_int          (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpmov_int          (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfplz_int           (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmul              (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpadd              (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpmul_lv           (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfpadd_lv           (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmul_int          (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpadd_int          (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpiadd_v           (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpiadd_i_int       (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpshft_v           (rtx, rtx, rtx);
@@ -597,6 +597,10 @@ extern rtx        gen_riscv_sfpexman_lv         (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpabs_lv           (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpmov_lv           (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfplz_lv            (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmul              (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpadd              (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpmul_lv           (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfpadd_lv           (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpiadd_i           (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpiadd_i_lv        (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpiadd_v_ex        (rtx, rtx, rtx, rtx);
