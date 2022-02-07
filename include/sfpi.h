@@ -162,6 +162,7 @@ class CondOpExExp;
 class CondOpIAddI;
 class CondOpIAddV;
 class CondOpLz;
+class CCCtrl;
 class CCCtrlBase;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -458,8 +459,15 @@ public:
     sfpi_inline const CondComp operator==(int32_t val) const;
     sfpi_inline const CondComp operator!=(int32_t val) const;
     sfpi_inline const CondComp operator<(int32_t val) const;
+    sfpi_inline const CondComp operator<=(int32_t val) const;
+    sfpi_inline const CondComp operator>(int32_t val) const;
     sfpi_inline const CondComp operator>=(int32_t val) const;
+
+    sfpi_inline const CondComp operator==(const VecShortBase src) const;
+    sfpi_inline const CondComp operator!=(const VecShortBase src) const;
     sfpi_inline const CondComp operator<(const VecShortBase src) const;
+    sfpi_inline const CondComp operator<=(const VecShortBase src) const;
+    sfpi_inline const CondComp operator>(const VecShortBase src) const;
     sfpi_inline const CondComp operator>=(const VecShortBase src) const;
 
     sfpi_inline const CondOpExExp exexp_cc(VecHalf src, const ExExpCC cc);
@@ -529,8 +537,15 @@ public:
     sfpi_inline const CondComp operator==(int32_t val) const;
     sfpi_inline const CondComp operator!=(int32_t val) const;
     sfpi_inline const CondComp operator<(int32_t val) const;
+    sfpi_inline const CondComp operator<=(int32_t val) const;
+    sfpi_inline const CondComp operator>(int32_t val) const;
     sfpi_inline const CondComp operator>=(int32_t val) const;
+
+    sfpi_inline const CondComp operator==(const VecShortBase src) const;
+    sfpi_inline const CondComp operator!=(const VecShortBase src) const;
     sfpi_inline const CondComp operator<(const VecShortBase src) const;
+    sfpi_inline const CondComp operator<=(const VecShortBase src) const;
+    sfpi_inline const CondComp operator>(const VecShortBase src) const;
     sfpi_inline const CondComp operator>=(const VecShortBase src) const;
 
     sfpi_inline const CondOpIAddI add_cc(const VecUShort src, int32_t val, IAddCC cc);
@@ -600,7 +615,7 @@ public:
     sfpi_inline const VecBool& get_cond() const { return *cond; }
     sfpi_inline const VecCond& get_op() const { return *op; }
 
-    sfpi_inline void emit() const;
+    sfpi_inline void emit(CCCtrl *cc) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -637,7 +652,7 @@ public:
     sfpi_inline const CondOperand& get_op_a() const { return op_a; }
     sfpi_inline const CondOperand& get_op_b() const { return op_b; }
 
-    sfpi_inline void emit(bool negate = false) const;
+    sfpi_inline void emit(CCCtrl* cc, bool negate = false) const;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -661,26 +676,28 @@ private:
     const int32_t imm;
     uint32_t mod1;
     uint32_t neg_mod1;
+    bool comp;
+    bool neg_comp;
 
 public:
-    sfpi_inline VecCond(CondOpType t) : type(t), op_a(), op_b(), imm(0), mod1(0), neg_mod1(0) {}
+    sfpi_inline VecCond(CondOpType t) : type(t), op_a(), op_b(), imm(0), mod1(0), neg_mod1(0), comp(false), neg_comp(false) {}
 
     template <class typeA, class typeB>
-    sfpi_inline VecCond(CondOpType t, const typeA a, const typeB b, int32_t i, uint32_t m, uint32_t nm) : type(t), op_a(a), op_b(b), imm(i), mod1(m), neg_mod1(nm) {}
+    sfpi_inline VecCond(CondOpType t, const typeA a, const typeB b, int32_t i, uint32_t m, uint32_t nm) : type(t), op_a(a), op_b(b), imm(i), mod1(m), neg_mod1(nm), comp(false), neg_comp(false) {}
 
     template <class typeA>
-    sfpi_inline VecCond(CondOpType t, const typeA a, Vec* const b, int32_t i, uint32_t m, uint32_t nm) : type(t), op_a(a), op_b(b), imm(i), mod1(m), neg_mod1(nm) {}
+    sfpi_inline VecCond(CondOpType t, const typeA a, Vec* const b, int32_t i, uint32_t m, uint32_t nm) : type(t), op_a(a), op_b(b), imm(i), mod1(m), neg_mod1(nm), comp(false), neg_comp(false) {}
 
     template <class typeA>
-    sfpi_inline VecCond(CondOpType t, const typeA a, int32_t i, uint32_t m, uint32_t nm) : type(t), op_a(a), op_b(), imm(i), mod1(m), neg_mod1(nm) {}
+    sfpi_inline VecCond(CondOpType t, const typeA a, int32_t i, uint32_t m, uint32_t nm, bool c = false, bool nc = false) : type(t), op_a(a), op_b(), imm(i), mod1(m), neg_mod1(nm), comp(c), neg_comp(nc) {}
 
     template <class typeA>
-    sfpi_inline VecCond(CondOpType t, const typeA a, VecShortBase b, uint32_t m, uint32_t nm) : type(t), op_a(a), op_b(b), imm(0), mod1(m), neg_mod1(nm) {}
+    sfpi_inline VecCond(CondOpType t, const typeA a, VecShortBase b, uint32_t m, uint32_t nm, bool c = false, bool nc = false) : type(t), op_a(a), op_b(b), imm(0), mod1(m), neg_mod1(nm), comp(c), neg_comp(nc) {}
 
     template <class typeA>
-    sfpi_inline VecCond(CondOpType t, const typeA a, const ScalarFP16 b, int32_t i, uint32_t m, uint32_t nm) : type(t), op_a(a), op_b(b), imm(i), mod1(m), neg_mod1(nm) {}
+    sfpi_inline VecCond(CondOpType t, const typeA a, const ScalarFP16 b, int32_t i, uint32_t m, uint32_t nm) : type(t), op_a(a), op_b(b), imm(i), mod1(m), neg_mod1(nm), comp(false), neg_comp(false) {}
 
-    sfpi_inline VecCond(CondOpType t, const VecShort a, int32_t i, uint32_t m, uint32_t nm);
+    sfpi_inline VecCond(CondOpType t, const VecShort a, int32_t i, uint32_t m, uint32_t nm, bool comp = false, bool neg_comp = false);
 
     // Negate
     sfpi_inline const VecCond operator!() const;
@@ -692,6 +709,8 @@ public:
     sfpi_inline const VecBool operator||(const VecBool& b) const { return VecBool(VecBool::VecBoolType::Or, *this, b); }
 
     sfpi_inline void emit(bool negate) const;
+
+    sfpi_inline bool issues_compc(bool negate) const { return negate ? neg_comp : comp; }
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -699,10 +718,12 @@ public:
 class CondComp : public VecCond {
 public:
     enum CondCompOpType {
-        CompLT0 = SFPCMP_EX_MOD1_CC_LT0,
-        CompNE0 = SFPCMP_EX_MOD1_CC_NE0,
-        CompGTE0 = SFPCMP_EX_MOD1_CC_GTE0,
-        CompEQ0 = SFPCMP_EX_MOD1_CC_EQ0,
+        CompLT = SFPCMP_EX_MOD1_CC_LT,
+        CompNE = SFPCMP_EX_MOD1_CC_NE,
+        CompGTE = SFPCMP_EX_MOD1_CC_GTE,
+        CompEQ = SFPCMP_EX_MOD1_CC_EQ,
+        CompLTE = SFPCMP_EX_MOD1_CC_LTE,
+        CompGT = SFPCMP_EX_MOD1_CC_GT,
     };
 
 private:
@@ -715,10 +736,10 @@ public:
     sfpi_inline CondComp(const CondCompOpType t, const VecHalf a, const VecHalf b) : VecCond(CondOpType::CompareVecHalf, a, b, 0, t, not_cond(t)) {}
 
     template <class type>
-    sfpi_inline CondComp(const CondCompOpType t, const type a, const int32_t b, const unsigned int mod) : VecCond(CondOpType::CompareShort, a, b, t | mod, not_cond(t) | mod) {}
+    sfpi_inline CondComp(const CondCompOpType t, const type a, const int32_t b, const unsigned int mod, bool c = false, bool nc = false) : VecCond(CondOpType::CompareShort, a, b, t | mod, not_cond(t) | mod, c, nc) {}
 
     template <class type>
-    sfpi_inline CondComp(const CondCompOpType t, const type a, const VecShortBase b, const unsigned int mod) : VecCond(CondOpType::CompareVecShort, a, b, t | mod, not_cond(t) | mod) {}
+        sfpi_inline CondComp(const CondCompOpType t, const type a, const VecShortBase b, const unsigned int mod, bool c = false, bool nc = false) : VecCond(CondOpType::CompareVecShort, a, b, t | mod, not_cond(t) | mod, c, nc) {}
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -757,19 +778,18 @@ class CCCtrl {
 protected:
     int push_count;
 
-    sfpi_inline void pop();
-
 public:
     sfpi_inline CCCtrl();
     sfpi_inline ~CCCtrl();
 
-    sfpi_inline void cc_if(const VecBool& op) const;
-    sfpi_inline void cc_if(const VecCond& op) const;
+    sfpi_inline void cc_if(const VecBool& op);
+    sfpi_inline void cc_if(const VecCond& op);
     sfpi_inline void cc_else() const;
     sfpi_inline void cc_elseif(const VecBool& cond);
     sfpi_inline void cc_elseif(const VecCond& cond);
 
     sfpi_inline void push();
+    sfpi_inline void pop();
 
     static sfpi_inline void enable_cc();
 };
@@ -822,18 +842,18 @@ sfpi_inline VecHalf DReg::operator-(const VecHalf b) const { return sfpi_int::fp
 sfpi_inline VecHalf DReg::operator-(const float b) const { return sfpi_int::fp_add(VecHalf(*this), VecHalf(-b)); }
 sfpi_inline VecHalf DReg::operator-(const ScalarFP16 b) const { return sfpi_int::fp_add(VecHalf(*this), b.negate()); }
 sfpi_inline VecHalf DReg::operator*(const VecHalf b) const  { return sfpi_int::fp_mul(VecHalf(*this), b); }
-sfpi_inline CondComp DReg::operator==(const float x) const {return CondComp(CondComp::CompEQ0, VecHalf(*this), ScalarFP16(x)); }
-sfpi_inline CondComp DReg::operator!=(const float x) const { return CondComp(CondComp::CompNE0, VecHalf(*this), ScalarFP16(x)); }
-sfpi_inline CondComp DReg::operator<(const float x) const { return CondComp(CondComp::CompLT0, VecHalf(*this), ScalarFP16(x)); }
-sfpi_inline CondComp DReg::operator>=(const float x) const { return CondComp(CondComp::CompGTE0, VecHalf(*this), ScalarFP16(x)); }
-sfpi_inline CondComp DReg::operator==(const ScalarFP16 x) const {return CondComp(CondComp::CompEQ0, VecHalf(*this), x); }
-sfpi_inline CondComp DReg::operator!=(const ScalarFP16 x) const { return CondComp(CondComp::CompNE0, VecHalf(*this), x); }
-sfpi_inline CondComp DReg::operator<(const ScalarFP16 x) const { return CondComp(CondComp::CompLT0, VecHalf(*this), x); }
-sfpi_inline CondComp DReg::operator>=(const ScalarFP16 x) const { return CondComp(CondComp::CompGTE0, VecHalf(*this), x); }
-sfpi_inline CondComp DReg::operator==(const VecHalf x) const {return CondComp(CondComp::CompEQ0, VecHalf(*this), x); }
-sfpi_inline CondComp DReg::operator!=(const VecHalf x) const { return CondComp(CondComp::CompNE0, VecHalf(*this), x); }
-sfpi_inline CondComp DReg::operator<(const VecHalf x) const { return CondComp(CondComp::CompLT0, VecHalf(*this), x); }
-sfpi_inline CondComp DReg::operator>=(const VecHalf x) const { return CondComp(CondComp::CompGTE0, VecHalf(*this), x); }
+sfpi_inline CondComp DReg::operator==(const float x) const {return CondComp(CondComp::CompEQ, VecHalf(*this), ScalarFP16(x)); }
+sfpi_inline CondComp DReg::operator!=(const float x) const { return CondComp(CondComp::CompNE, VecHalf(*this), ScalarFP16(x)); }
+sfpi_inline CondComp DReg::operator<(const float x) const { return CondComp(CondComp::CompLT, VecHalf(*this), ScalarFP16(x)); }
+sfpi_inline CondComp DReg::operator>=(const float x) const { return CondComp(CondComp::CompGTE, VecHalf(*this), ScalarFP16(x)); }
+sfpi_inline CondComp DReg::operator==(const ScalarFP16 x) const {return CondComp(CondComp::CompEQ, VecHalf(*this), x); }
+sfpi_inline CondComp DReg::operator!=(const ScalarFP16 x) const { return CondComp(CondComp::CompNE, VecHalf(*this), x); }
+sfpi_inline CondComp DReg::operator<(const ScalarFP16 x) const { return CondComp(CondComp::CompLT, VecHalf(*this), x); }
+sfpi_inline CondComp DReg::operator>=(const ScalarFP16 x) const { return CondComp(CondComp::CompGTE, VecHalf(*this), x); }
+sfpi_inline CondComp DReg::operator==(const VecHalf x) const {return CondComp(CondComp::CompEQ, VecHalf(*this), x); }
+sfpi_inline CondComp DReg::operator!=(const VecHalf x) const { return CondComp(CondComp::CompNE, VecHalf(*this), x); }
+sfpi_inline CondComp DReg::operator<(const VecHalf x) const { return CondComp(CondComp::CompLT, VecHalf(*this), x); }
+sfpi_inline CondComp DReg::operator>=(const VecHalf x) const { return CondComp(CondComp::CompGTE, VecHalf(*this), x); }
 
 template <>
 sfpi_inline void DReg::operator=(const VecHalf vec) const
@@ -888,10 +908,10 @@ sfpi_inline VecHalf DReg::operator-() const
 sfpi_inline VecHalf CReg::operator+(const VecHalf b) const { return sfpi_int::fp_add(VecHalf(*this), b); }
 sfpi_inline VecHalf CReg::operator-(const VecHalf b) const { return sfpi_int::fp_sub(VecHalf(*this), b); }
 sfpi_inline VecHalf CReg::operator*(const VecHalf b) const { return sfpi_int::fp_mul(VecHalf(*this), b); }
-sfpi_inline CondComp CReg::operator==(const VecHalf x) const { return CondComp(CondComp::CompEQ0, *this, x); }
-sfpi_inline CondComp CReg::operator!=(const VecHalf x) const { return CondComp(CondComp::CompNE0, *this, x); }
-sfpi_inline CondComp CReg::operator<(const VecHalf x) const { return CondComp(CondComp::CompLT0, *this, x); }
-sfpi_inline CondComp CReg::operator>=(const VecHalf x) const { return CondComp(CondComp::CompGTE0, *this, x); }
+sfpi_inline CondComp CReg::operator==(const VecHalf x) const { return CondComp(CondComp::CompEQ, *this, x); }
+sfpi_inline CondComp CReg::operator!=(const VecHalf x) const { return CondComp(CondComp::CompNE, *this, x); }
+sfpi_inline CondComp CReg::operator<(const VecHalf x) const { return CondComp(CondComp::CompLT, *this, x); }
+sfpi_inline CondComp CReg::operator>=(const VecHalf x) const { return CondComp(CondComp::CompGTE, *this, x); }
 
 sfpi_inline VecShortBase CReg::operator<<(uint32_t amt) const
 {
@@ -953,18 +973,18 @@ sfpi_inline VecHalf VecHalf::operator-(const VecHalf b) const { return sfpi_int:
 sfpi_inline VecHalf VecHalf::operator-(const float b) const { return sfpi_int::fp_add(*this, VecHalf(-b)); }
 sfpi_inline VecHalf VecHalf::operator-(const ScalarFP16 b) const { return sfpi_int::fp_add(*this, b.negate()); }
 sfpi_inline VecHalf VecHalf::operator*(const VecHalf b) const { return sfpi_int::fp_mul(*this, b); }
-sfpi_inline CondComp VecHalf::operator==(const float x) const { return CondComp(CondComp::CompEQ0, *this, ScalarFP16(x)); }
-sfpi_inline CondComp VecHalf::operator!=(const float x) const { return CondComp(CondComp::CompNE0, *this, ScalarFP16(x)); }
-sfpi_inline CondComp VecHalf::operator<(const float x) const { return CondComp(CondComp::CompLT0, *this, ScalarFP16(x)); }
-sfpi_inline CondComp VecHalf::operator>=(const float x) const { return CondComp(CondComp::CompGTE0, *this, ScalarFP16(x)); }
-sfpi_inline CondComp VecHalf::operator==(const ScalarFP16 x) const { return CondComp(CondComp::CompEQ0, *this, x); }
-sfpi_inline CondComp VecHalf::operator!=(const ScalarFP16 x) const { return CondComp(CondComp::CompNE0, *this, x); }
-sfpi_inline CondComp VecHalf::operator<(const ScalarFP16 x) const { return CondComp(CondComp::CompLT0, *this, x); }
-sfpi_inline CondComp VecHalf::operator>=(const ScalarFP16 x) const { return CondComp(CondComp::CompGTE0, *this, x); }
-sfpi_inline CondComp VecHalf::operator==(const VecHalf x) const { return CondComp(CondComp::CompEQ0, *this, x); }
-sfpi_inline CondComp VecHalf::operator!=(const VecHalf x) const { return CondComp(CondComp::CompNE0, *this, x); }
-sfpi_inline CondComp VecHalf::operator<(const VecHalf x) const { return CondComp(CondComp::CompLT0, *this, x); }
-sfpi_inline CondComp VecHalf::operator>=(const VecHalf x) const { return CondComp(CondComp::CompGTE0, *this, x); }
+sfpi_inline CondComp VecHalf::operator==(const float x) const { return CondComp(CondComp::CompEQ, *this, ScalarFP16(x)); }
+sfpi_inline CondComp VecHalf::operator!=(const float x) const { return CondComp(CondComp::CompNE, *this, ScalarFP16(x)); }
+sfpi_inline CondComp VecHalf::operator<(const float x) const { return CondComp(CondComp::CompLT, *this, ScalarFP16(x)); }
+sfpi_inline CondComp VecHalf::operator>=(const float x) const { return CondComp(CondComp::CompGTE, *this, ScalarFP16(x)); }
+sfpi_inline CondComp VecHalf::operator==(const ScalarFP16 x) const { return CondComp(CondComp::CompEQ, *this, x); }
+sfpi_inline CondComp VecHalf::operator!=(const ScalarFP16 x) const { return CondComp(CondComp::CompNE, *this, x); }
+sfpi_inline CondComp VecHalf::operator<(const ScalarFP16 x) const { return CondComp(CondComp::CompLT, *this, x); }
+sfpi_inline CondComp VecHalf::operator>=(const ScalarFP16 x) const { return CondComp(CondComp::CompGTE, *this, x); }
+sfpi_inline CondComp VecHalf::operator==(const VecHalf x) const { return CondComp(CondComp::CompEQ, *this, x); }
+sfpi_inline CondComp VecHalf::operator!=(const VecHalf x) const { return CondComp(CondComp::CompNE, *this, x); }
+sfpi_inline CondComp VecHalf::operator<(const VecHalf x) const { return CondComp(CondComp::CompLT, *this, x); }
+sfpi_inline CondComp VecHalf::operator>=(const VecHalf x) const { return CondComp(CondComp::CompGTE, *this, x); }
 
 sfpi_inline void VecHalf::operator*=(const VecHalf m)
 {
@@ -1147,25 +1167,37 @@ sfpi_inline const CondOpLz VecShort::lz_cc(const Vec src, LzCC cc) { return Cond
 sfpi_inline const CondOpIAddI VecShort::add_cc(const VecShort src, int32_t val, IAddCC cc) { return CondOpIAddI(this, src, cc, val); }
 sfpi_inline const CondOpIAddV VecShort::add_cc(const VecShort src, IAddCC cc) { return CondOpIAddV(this, src, cc); }
 
-sfpi_inline const CondComp VecShort::operator==(int32_t val) const { return CondComp(CondComp::CompEQ0, *this, val, SFPIADD_I_EX_MOD1_SIGNED); }
-sfpi_inline const CondComp VecShort::operator!=(int32_t val) const { return CondComp(CondComp::CompNE0, *this, val, SFPIADD_I_EX_MOD1_SIGNED); }
-sfpi_inline const CondComp VecShort::operator<(int32_t val) const { return CondComp(CondComp::CompLT0, *this, val, SFPIADD_I_EX_MOD1_SIGNED); }
-sfpi_inline const CondComp VecShort::operator>=(int32_t val) const { return CondComp(CondComp::CompGTE0, *this, val, SFPIADD_I_EX_MOD1_SIGNED); }
+sfpi_inline const CondComp VecShort::operator==(int32_t val) const { return CondComp(CondComp::CompEQ, *this, val, SFPIADD_I_EX_MOD1_SIGNED); }
+sfpi_inline const CondComp VecShort::operator!=(int32_t val) const { return CondComp(CondComp::CompNE, *this, val, SFPIADD_I_EX_MOD1_SIGNED); }
+sfpi_inline const CondComp VecShort::operator<(int32_t val) const { return CondComp(CondComp::CompLT, *this, val, SFPIADD_I_EX_MOD1_SIGNED); }
+sfpi_inline const CondComp VecShort::operator<=(int32_t val) const { return  CondComp(CondComp::CompLTE, *this, val, SFPIADD_I_EX_MOD1_SIGNED, true, false); }
+sfpi_inline const CondComp VecShort::operator>(int32_t val) const { return  CondComp(CondComp::CompGT, *this, val, SFPIADD_I_EX_MOD1_SIGNED, false, true); }
+sfpi_inline const CondComp VecShort::operator>=(int32_t val) const { return CondComp(CondComp::CompGTE, *this, val, SFPIADD_I_EX_MOD1_SIGNED); }
 
-sfpi_inline const CondComp VecShort::operator<(const VecShortBase src) const { return CondComp(CondComp::CompLT0, *this, src, 0); }
-sfpi_inline const CondComp VecShort::operator>=(const VecShortBase src) const { return CondComp(CondComp::CompGTE0, *this, src, 0); }
+sfpi_inline const CondComp VecShort::operator==(const VecShortBase src) const { return CondComp(CondComp::CompEQ, *this, src, 0); }
+sfpi_inline const CondComp VecShort::operator!=(const VecShortBase src) const { return CondComp(CondComp::CompNE, *this, src, 0); }
+sfpi_inline const CondComp VecShort::operator<(const VecShortBase src) const { return CondComp(CondComp::CompLT, *this, src, 0); }
+sfpi_inline const CondComp VecShort::operator<=(const VecShortBase src) const { return CondComp(CondComp::CompLTE, *this, src, 0, true, false); }
+sfpi_inline const CondComp VecShort::operator>(const VecShortBase src) const { return CondComp(CondComp::CompGT, *this, src, 0, false, true); }
+sfpi_inline const CondComp VecShort::operator>=(const VecShortBase src) const { return CondComp(CondComp::CompGTE, *this, src, 0); }
 
 //////////////////////////////////////////////////////////////////////////////
 sfpi_inline const CondOpIAddI VecUShort::add_cc(const VecUShort src, int32_t val, IAddCC cc) { return CondOpIAddI(this, src, cc, val); }
 sfpi_inline const CondOpIAddV VecUShort::add_cc(const VecUShort src, IAddCC cc) { return CondOpIAddV(this, src, cc); }
 
-sfpi_inline const CondComp VecUShort::operator==(int32_t val) const { return CondComp(CondComp::CompEQ0, *this, val, 0); }
-sfpi_inline const CondComp VecUShort::operator!=(int32_t val) const { return CondComp(CondComp::CompNE0, *this, val, 0); }
-sfpi_inline const CondComp VecUShort::operator<(int32_t val) const { return CondComp(CondComp::CompLT0, *this, val, 0); }
-sfpi_inline const CondComp VecUShort::operator>=(int32_t val) const { return CondComp(CondComp::CompGTE0, *this, val, 0); }
+sfpi_inline const CondComp VecUShort::operator==(int32_t val) const { return CondComp(CondComp::CompEQ, *this, val, 0); }
+sfpi_inline const CondComp VecUShort::operator!=(int32_t val) const { return CondComp(CondComp::CompNE, *this, val, 0); }
+sfpi_inline const CondComp VecUShort::operator<(int32_t val) const { return CondComp(CondComp::CompLT, *this, val, 0); }
+sfpi_inline const CondComp VecUShort::operator<=(int32_t val) const { return  CondComp(CondComp::CompLTE, *this, val, 0, true, false); }
+sfpi_inline const CondComp VecUShort::operator>(int32_t val) const { return  CondComp(CondComp::CompGT, *this, val, 0, false, true); }
+sfpi_inline const CondComp VecUShort::operator>=(int32_t val) const { return CondComp(CondComp::CompGTE, *this, val, 0); }
 
-sfpi_inline const CondComp VecUShort::operator<(const VecShortBase src) const { return CondComp(CondComp::CompLT0, *this, src, 0); }
-sfpi_inline const CondComp VecUShort::operator>=(const VecShortBase src) const { return CondComp(CondComp::CompGTE0, *this, src, 0); }
+sfpi_inline const CondComp VecUShort::operator==(const VecShortBase src) const { return CondComp(CondComp::CompEQ, *this, src, 0); }
+sfpi_inline const CondComp VecUShort::operator!=(const VecShortBase src) const { return CondComp(CondComp::CompNE, *this, src, 0); }
+sfpi_inline const CondComp VecUShort::operator<(const VecShortBase src) const { return CondComp(CondComp::CompLT, *this, src, 0); }
+sfpi_inline const CondComp VecUShort::operator<=(const VecShortBase src) const { return CondComp(CondComp::CompLTE, *this, src, 0, true, false); }
+sfpi_inline const CondComp VecUShort::operator>(const VecShortBase src) const { return CondComp(CondComp::CompGT, *this, src, 0, false, true); }
+sfpi_inline const CondComp VecUShort::operator>=(const VecShortBase src) const { return CondComp(CondComp::CompGTE, *this, src, 0); }
 
 sfpi_inline VecUShort VecUShort::operator>>(uint32_t amt) const
 {
@@ -1178,12 +1210,12 @@ sfpi_inline void VecUShort::operator>>=(uint32_t amt)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-sfpi_inline void CondOperand::emit() const
+sfpi_inline void CondOperand::emit(CCCtrl *cc) const
 {
     if (type == Type::VecCond) {
         op->emit(false);
     } else {
-        cond->emit();
+        cond->emit(cc);
     }
 }
 
@@ -1202,19 +1234,30 @@ sfpi_inline const VecBool VecBool::operator!() const
 // Use De Morgan's laws to convert || to !&& pass the ! down as we go
 // Each node may be negated from above, if the current node is an OR, then it
 // always negates itself and upates the propagated negate by flipping it
-#define __sfpi_cond_emit_loop(leftside, rightside)                                  \
+//
+// Descending the LHS uses the last PUSHC as the "gate" against which a COMPC
+// can be issued, however, descending the RHS would mess up the results from
+// the LHS w/o a new gate, hence the PUSHC prior to the RHS.  The POPC would
+// destroy the results of the RHS and so those results are saved/restored with
+// saved_enables.  This uses 1 reg per level for now, which could be optimized
+// to just 1 reg total w/ some compiler work to clean up unused LOADIs that
+// are set multiple times to the same register (this is a tradeoff of
+// imperfect performance for what is likely a rare case anyway).
+#define __sfpi_cond_emit_loop(leftside, rightside)                      \
 {                                                                       \
-    const VecBool* local_node = node;                                  \
+    const VecBool* local_node = node;                                   \
     bool negate_node = node->negate;                                    \
     bool negate_child = negate;                                         \
+    bool descended_right = false;                                       \
+    VecShort saved_enables = 1;                                         \
                                                                         \
     VecBool::VecBoolType node_type = negate ? node->get_neg_type() : node->get_type(); \
-    if (node_type == VecBool::VecBoolType::Or) {                      \
+    if (node_type == VecBool::VecBoolType::Or) {                        \
         negate_node = !negate_node;                                     \
-        negate_child = !negate;                                         \
+        negate_child = !negate_child;                                   \
     }                                                                   \
                                                                         \
-    if (node->op_a.get_type() == CondOperand::Type::VecBool) {         \
+    if (node->op_a.get_type() == CondOperand::Type::VecBool) {          \
         node = &node->op_a.get_cond();                                  \
         leftside;                                                       \
         node = local_node;                                              \
@@ -1222,37 +1265,54 @@ sfpi_inline const VecBool VecBool::operator!() const
         node->op_a.get_op().emit(negate_child);                         \
     }                                                                   \
                                                                         \
-    if (node->op_b.get_type() == CondOperand::Type::VecBool) {         \
+    if (node->op_b.get_type() == CondOperand::Type::VecBool) {          \
+        cc->push();                                                     \
         node = &node->op_b.get_cond();                                  \
         rightside;                                                      \
+        descended_right = true;                                         \
         node = local_node;                                              \
     } else {                                                            \
+        bool restore = false;                                           \
+        if (node->op_b.get_op().issues_compc(negate_child)) {           \
+            restore = true;                                             \
+            cc->push();                                                 \
+        }                                                               \
         node->op_b.get_op().emit(negate_child);                         \
+        if (restore) {                                                  \
+            saved_enables = 0;                                          \
+            cc->pop();                                                  \
+            __builtin_rvtt_sfpsetcc_v(saved_enables.get(), SFPSETCC_MOD1_LREG_EQ0); \
+        }                                                               \
     }                                                                   \
                                                                         \
+    if (descended_right) {                                              \
+        saved_enables = 0;                                              \
+        cc->pop();                                                      \
+        __builtin_rvtt_sfpsetcc_v(saved_enables.get(), SFPSETCC_MOD1_LREG_EQ0); \
+    }                                                                   \
     if (negate_node) {                                                  \
         __builtin_rvtt_sfpcompc();                                      \
     }                                                                   \
 }
 
-#define __sfpi_cond_emit_loop_mid(leftside, rightside)                              \
+#define __sfpi_cond_emit_loop_mid(leftside, rightside)                  \
     bool negate = negate_child;                                         \
     __sfpi_cond_emit_loop(leftside, rightside)
 
 #define __sfpi_cond_emit_error __builtin_rvtt_sfpillegal();
-sfpi_inline void VecBool::emit(bool negate) const
+sfpi_inline void VecBool::emit(CCCtrl *cc, bool negate) const
 {
     const VecBool* node = this;
 
     __sfpi_cond_emit_loop(
-        __sfpi_cond_emit_loop_mid(__sfpi_cond_emit_loop(__sfpi_cond_emit_error, __sfpi_cond_emit_error),
-                                  __sfpi_cond_emit_loop(__sfpi_cond_emit_error, __sfpi_cond_emit_error)),
-        __sfpi_cond_emit_loop_mid(__sfpi_cond_emit_loop(__sfpi_cond_emit_error, __sfpi_cond_emit_error),
-                                  __sfpi_cond_emit_loop(__sfpi_cond_emit_error, __sfpi_cond_emit_error)));
+        __sfpi_cond_emit_loop_mid(__sfpi_cond_emit_loop_mid(__sfpi_cond_emit_error, __sfpi_cond_emit_error),
+                                  __sfpi_cond_emit_loop_mid(__sfpi_cond_emit_error, __sfpi_cond_emit_error)),
+        __sfpi_cond_emit_loop_mid(__sfpi_cond_emit_loop_mid(__sfpi_cond_emit_error, __sfpi_cond_emit_error),
+                                  __sfpi_cond_emit_loop_mid(__sfpi_cond_emit_error, __sfpi_cond_emit_error)));
 }
 
-sfpi_inline VecCond::VecCond(CondOpType t, const VecShort a, int32_t i, uint32_t m, uint32_t nm) :
-    type(t), op_a(a), op_b(), imm(i), mod1(m), neg_mod1(nm)
+sfpi_inline VecCond::VecCond(CondOpType t, const VecShort a, int32_t i, uint32_t m, uint32_t nm, bool c, bool nc) :
+ type(t), op_a(a), op_b(), imm(i), mod1(m), neg_mod1(nm), comp(c), neg_comp(nc)
 {
 }
 
@@ -1316,17 +1376,21 @@ sfpi_inline void VecCond::emit(bool negate) const
 sfpi_inline CondComp::CondCompOpType CondComp::not_cond(const CondCompOpType t) const
 {
     switch (t) {
-    case CompLT0:
-        return CompGTE0;
-    case CompNE0:
-        return CompEQ0;
-    case CompGTE0:
-        return CompLT0;
-    case CompEQ0:
-        return CompNE0;
+    case CompLT:
+        return CompGTE;
+    case CompNE:
+        return CompEQ;
+    case CompGTE:
+        return CompLT;
+    case CompEQ:
+        return CompNE;
+    case CompLTE:
+        return CompGT;
+    case CompGT:
+        return CompLTE;
     default:
         // Should never get here
-        return CompNE0;
+        return CompNE;
     }
 }
 
@@ -1356,12 +1420,12 @@ sfpi_inline CCCtrl::CCCtrl() : push_count(0)
     push();
 }
 
-sfpi_inline void CCCtrl::cc_if(const VecBool& op) const
+sfpi_inline void CCCtrl::cc_if(const VecBool& op)
 {
-    op.emit();
+    op.emit(this);
 }
 
-sfpi_inline void CCCtrl::cc_if(const VecCond& op) const
+sfpi_inline void CCCtrl::cc_if(const VecCond& op)
 {
     op.emit(false);
 }
