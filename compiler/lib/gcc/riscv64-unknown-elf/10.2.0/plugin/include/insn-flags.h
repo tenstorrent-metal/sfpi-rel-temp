@@ -273,8 +273,8 @@
 #define HAVE_riscv_sfpkeepalive (TARGET_SFPU)
 #define HAVE_riscv_sfpload (TARGET_SFPU)
 #define HAVE_riscv_sfpload_lv (TARGET_SFPU)
-#define HAVE_riscv_sfploadi (TARGET_SFPU)
-#define HAVE_riscv_sfploadi_lv (TARGET_SFPU)
+#define HAVE_riscv_sfploadi_ex (TARGET_SFPU)
+#define HAVE_riscv_sfploadi_ex_lv (TARGET_SFPU)
 #define HAVE_riscv_sfpstore (TARGET_SFPU)
 #define HAVE_riscv_sfpmuli (TARGET_SFPU)
 #define HAVE_riscv_sfpaddi (TARGET_SFPU)
@@ -580,8 +580,8 @@ extern rtx        gen_riscv_sfpassignlr         (rtx, rtx);
 extern rtx        gen_riscv_sfpkeepalive        (rtx, rtx);
 extern rtx        gen_riscv_sfpload             (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpload_lv          (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfploadi            (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_sfploadi_lv         (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfploadi_ex         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_sfploadi_ex_lv      (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpstore            (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpmuli             (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_sfpaddi             (rtx, rtx, rtx, rtx, rtx);
