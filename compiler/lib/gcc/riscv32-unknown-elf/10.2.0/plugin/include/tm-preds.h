@@ -66,18 +66,28 @@ enum constraint_num
   CONSTRAINT_Q1,
   CONSTRAINT_Q2,
   CONSTRAINT_Q3,
+  CONSTRAINT_Q4,
+  CONSTRAINT_Q5,
+  CONSTRAINT_Q6,
+  CONSTRAINT_Q7,
   CONSTRAINT_l,
   CONSTRAINT_I,
   CONSTRAINT_J,
   CONSTRAINT_K,
   CONSTRAINT_L,
-  CONSTRAINT_M,
-  CONSTRAINT_N,
+  CONSTRAINT_M01U,
+  CONSTRAINT_M02U,
+  CONSTRAINT_M04U,
+  CONSTRAINT_M05U,
+  CONSTRAINT_M12S,
+  CONSTRAINT_M12U,
+  CONSTRAINT_M14U,
+  CONSTRAINT_M16U,
+  CONSTRAINT_M16S,
   CONSTRAINT_m,
   CONSTRAINT_o,
   CONSTRAINT_A,
   CONSTRAINT_p,
-  CONSTRAINT_R,
   CONSTRAINT_G,
   CONSTRAINT_S,
   CONSTRAINT_U,
@@ -148,7 +158,7 @@ static inline void
 insn_extra_constraint_allows_reg_mem (enum constraint_num c,
 				      bool *allows_reg, bool *allows_mem)
 {
-  if (c >= CONSTRAINT_R && c <= CONSTRAINT_U)
+  if (c >= CONSTRAINT_G && c <= CONSTRAINT_U)
     return;
   if (c >= CONSTRAINT_V && c <= CONSTRAINT__g)
     {
@@ -165,6 +175,7 @@ insn_constraint_len (char fc, const char *str ATTRIBUTE_UNUSED)
 {
   switch (fc)
     {
+    case 'M': return 4;
     case 'Q': return 2;
     default: break;
     }
@@ -202,7 +213,7 @@ get_constraint_type (enum constraint_num c)
 {
   if (c >= CONSTRAINT_p)
     {
-      if (c >= CONSTRAINT_R)
+      if (c >= CONSTRAINT_G)
         return CT_FIXED_FORM;
       return CT_ADDRESS;
     }
