@@ -217,7 +217,6 @@
 #define HAVE_riscv_gs_sfplut (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpnop (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpincrwc (TARGET_SFPU_GS)
-#define HAVE_riscv_gs_sfpillegal (TARGET_SFPU_GS || TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpassign_lv (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpkeepalive0_int (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpkeepalive1_int (TARGET_SFPU_WH)
@@ -269,9 +268,13 @@
 #define HAVE_riscv_wh_sfplutfp32_3r (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfplutfp32_6r (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpconfig_v (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpreplay (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpswap (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfptransp (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpshft2_g (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpshft2_ge (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpnop (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpincrwc (TARGET_SFPU_WH)
-#define HAVE_riscv_wh_sfpillegal (TARGET_SFPU_GS || TARGET_SFPU_WH)
 #define HAVE_mulditi3 (TARGET_MUL && TARGET_64BIT)
 #define HAVE_umulditi3 (TARGET_MUL && TARGET_64BIT)
 #define HAVE_usmulditi3 (TARGET_MUL && TARGET_64BIT)
@@ -328,8 +331,8 @@
 #define HAVE_riscv_gs_sfpkeepalive (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpload (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpload_lv (TARGET_SFPU_GS)
-#define HAVE_riscv_gs_sfploadi_ex (TARGET_SFPU_GS)
-#define HAVE_riscv_gs_sfploadi_ex_lv (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxloadi (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxloadi_lv (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpstore (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpmuli (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpaddi (TARGET_SFPU_GS)
@@ -351,9 +354,9 @@
 #define HAVE_riscv_gs_sfpadd_lv (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpiadd_i (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpiadd_i_lv (TARGET_SFPU_GS)
-#define HAVE_riscv_gs_sfpiadd_v_ex (TARGET_SFPU_GS)
-#define HAVE_riscv_gs_sfpiadd_i_ex (TARGET_SFPU_GS)
-#define HAVE_riscv_gs_sfpiadd_i_ex_lv (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxiadd_v (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxiadd_i (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxiadd_i_lv (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpshft_i (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpnot (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpnot_lv (TARGET_SFPU_GS)
@@ -365,14 +368,20 @@
 #define HAVE_riscv_gs_sfpsetsgn_i_lv (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpmad (TARGET_SFPU_GS)
 #define HAVE_riscv_gs_sfpmad_lv (TARGET_SFPU_GS)
-#define HAVE_riscv_gs_sfpscmp_ex (TARGET_SFPU_GS)
-#define HAVE_riscv_gs_sfpvcmp_ex (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxfcmps (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxfcmpv (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxicmps (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxicmpv (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxvif (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxbool (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxcondb (TARGET_SFPU_GS)
+#define HAVE_riscv_gs_sfpxcondi (TARGET_SFPU_GS)
 #define HAVE_riscv_wh_sfpassignlr (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpkeepalive (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpload (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpload_lv (TARGET_SFPU_WH)
-#define HAVE_riscv_wh_sfploadi_ex (TARGET_SFPU_WH)
-#define HAVE_riscv_wh_sfploadi_ex_lv (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxloadi (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxloadi_lv (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpstore (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpmuli (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpaddi (TARGET_SFPU_WH)
@@ -394,9 +403,9 @@
 #define HAVE_riscv_wh_sfpadd_lv (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpiadd_i (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpiadd_i_lv (TARGET_SFPU_WH)
-#define HAVE_riscv_wh_sfpiadd_v_ex (TARGET_SFPU_WH)
-#define HAVE_riscv_wh_sfpiadd_i_ex (TARGET_SFPU_WH)
-#define HAVE_riscv_wh_sfpiadd_i_ex_lv (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxiadd_v (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxiadd_i (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxiadd_i_lv (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpshft_i (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpnot (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpnot_lv (TARGET_SFPU_WH)
@@ -416,8 +425,14 @@
 #define HAVE_riscv_wh_sfpsetman_i_lv (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpmad (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpmad_lv (TARGET_SFPU_WH)
-#define HAVE_riscv_wh_sfpscmp_ex (TARGET_SFPU_WH)
-#define HAVE_riscv_wh_sfpvcmp_ex (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxfcmps (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxfcmpv (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxicmps (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxicmpv (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxvif (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxbool (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxcondb (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpxcondi (TARGET_SFPU_WH)
 extern rtx        gen_addsf3                     (rtx, rtx, rtx);
 extern rtx        gen_adddf3                     (rtx, rtx, rtx);
 extern rtx        gen_addsi3                     (rtx, rtx, rtx);
@@ -630,7 +645,6 @@ extern rtx        gen_riscv_gs_sfppopc           (void);
 extern rtx        gen_riscv_gs_sfplut            (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpnop            (void);
 extern rtx        gen_riscv_gs_sfpincrwc         (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_gs_sfpillegal        (void);
 extern rtx        gen_riscv_wh_sfpassign_lv      (rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpkeepalive0_int (rtx);
 extern rtx        gen_riscv_wh_sfpkeepalive1_int (rtx);
@@ -682,9 +696,13 @@ extern rtx        gen_riscv_wh_sfplut            (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfplutfp32_3r     (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfplutfp32_6r     (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpconfig_v       (rtx, rtx);
+extern rtx        gen_riscv_wh_sfpreplay         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpswap           (rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfptransp         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpshft2_g        (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpshft2_ge       (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpnop            (void);
 extern rtx        gen_riscv_wh_sfpincrwc         (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_wh_sfpillegal        (void);
 extern rtx        gen_mulditi3                   (rtx, rtx, rtx);
 extern rtx        gen_umulditi3                  (rtx, rtx, rtx);
 extern rtx        gen_usmulditi3                 (rtx, rtx, rtx);
@@ -741,8 +759,8 @@ extern rtx        gen_riscv_gs_sfpassignlr       (rtx, rtx);
 extern rtx        gen_riscv_gs_sfpkeepalive      (rtx, rtx);
 extern rtx        gen_riscv_gs_sfpload           (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpload_lv        (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_gs_sfploadi_ex       (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_gs_sfploadi_ex_lv    (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxloadi         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxloadi_lv      (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpstore          (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpmuli           (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpaddi           (rtx, rtx, rtx, rtx, rtx);
@@ -764,9 +782,9 @@ extern rtx        gen_riscv_gs_sfpmul_lv         (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpadd_lv         (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpiadd_i         (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpiadd_i_lv      (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_gs_sfpiadd_v_ex      (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_gs_sfpiadd_i_ex      (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_gs_sfpiadd_i_ex_lv   (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxiadd_v        (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxiadd_i        (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxiadd_i_lv     (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpshft_i         (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpnot            (rtx, rtx);
 extern rtx        gen_riscv_gs_sfpnot_lv         (rtx, rtx, rtx);
@@ -778,14 +796,20 @@ extern rtx        gen_riscv_gs_sfpsetman_i_lv    (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpsetsgn_i_lv    (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpmad            (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_gs_sfpmad_lv         (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_gs_sfpscmp_ex        (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_gs_sfpvcmp_ex        (rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxfcmps         (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxfcmpv         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxicmps         (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxicmpv         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxvif           (rtx);
+extern rtx        gen_riscv_gs_sfpxbool          (rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxcondb         (rtx, rtx);
+extern rtx        gen_riscv_gs_sfpxcondi         (rtx, rtx);
 extern rtx        gen_riscv_wh_sfpassignlr       (rtx, rtx);
 extern rtx        gen_riscv_wh_sfpkeepalive      (rtx, rtx);
 extern rtx        gen_riscv_wh_sfpload           (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpload_lv        (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_wh_sfploadi_ex       (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_wh_sfploadi_ex_lv    (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxloadi         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxloadi_lv      (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpstore          (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpmuli           (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpaddi           (rtx, rtx, rtx, rtx, rtx);
@@ -807,9 +831,9 @@ extern rtx        gen_riscv_wh_sfpmul_lv         (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpadd_lv         (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpiadd_i         (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpiadd_i_lv      (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_wh_sfpiadd_v_ex      (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_wh_sfpiadd_i_ex      (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_wh_sfpiadd_i_ex_lv   (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxiadd_v        (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxiadd_i        (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxiadd_i_lv     (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpshft_i         (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpnot            (rtx, rtx);
 extern rtx        gen_riscv_wh_sfpnot_lv         (rtx, rtx, rtx);
@@ -829,7 +853,13 @@ extern rtx        gen_riscv_wh_sfpsetman_i       (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpsetman_i_lv    (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpmad            (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpmad_lv         (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_wh_sfpscmp_ex        (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_wh_sfpvcmp_ex        (rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxfcmps         (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxfcmpv         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxicmps         (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxicmpv         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxvif           (rtx);
+extern rtx        gen_riscv_wh_sfpxbool          (rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxcondb         (rtx, rtx);
+extern rtx        gen_riscv_wh_sfpxcondi         (rtx, rtx);
 
 #endif /* GCC_INSN_FLAGS_H */
