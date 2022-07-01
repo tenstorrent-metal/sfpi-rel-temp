@@ -269,7 +269,7 @@
 #define HAVE_riscv_wh_sfplutfp32_6r (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpconfig_v (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpreplay (TARGET_SFPU_WH)
-#define HAVE_riscv_wh_sfpswap (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpswap_int (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfptransp (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpshft2_g (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpshft2_ge (TARGET_SFPU_WH)
@@ -427,6 +427,7 @@
 #define HAVE_riscv_wh_sfpmad_lv (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpxfcmps (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpxfcmpv (TARGET_SFPU_WH)
+#define HAVE_riscv_wh_sfpswap (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpxicmps (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpxicmpv (TARGET_SFPU_WH)
 #define HAVE_riscv_wh_sfpxvif (TARGET_SFPU_WH)
@@ -697,7 +698,7 @@ extern rtx        gen_riscv_wh_sfplutfp32_3r     (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfplutfp32_6r     (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpconfig_v       (rtx, rtx);
 extern rtx        gen_riscv_wh_sfpreplay         (rtx, rtx, rtx, rtx);
-extern rtx        gen_riscv_wh_sfpswap           (rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpswap_int       (rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfptransp         (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpshft2_g        (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpshft2_ge       (rtx, rtx, rtx, rtx, rtx);
@@ -855,6 +856,7 @@ extern rtx        gen_riscv_wh_sfpmad            (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpmad_lv         (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpxfcmps         (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpxfcmpv         (rtx, rtx, rtx, rtx);
+extern rtx        gen_riscv_wh_sfpswap           (rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpxicmps         (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpxicmpv         (rtx, rtx, rtx, rtx);
 extern rtx        gen_riscv_wh_sfpxvif           (rtx);

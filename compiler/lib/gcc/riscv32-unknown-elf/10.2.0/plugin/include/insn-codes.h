@@ -270,7 +270,7 @@ enum insn_code {
   CODE_FOR_riscv_wh_sfplutfp32_6r = 452,
   CODE_FOR_riscv_wh_sfpconfig_v = 453,
   CODE_FOR_riscv_wh_sfpreplay = 454,
-  CODE_FOR_riscv_wh_sfpswap = 455,
+  CODE_FOR_riscv_wh_sfpswap_int = 455,
   CODE_FOR_riscv_wh_sfptransp = 456,
   CODE_FOR_riscv_wh_sfpshft2_g = 457,
   CODE_FOR_riscv_wh_sfpshft2_ge = 458,
@@ -428,13 +428,14 @@ enum insn_code {
   CODE_FOR_riscv_wh_sfpmad_lv = 610,
   CODE_FOR_riscv_wh_sfpxfcmps = 611,
   CODE_FOR_riscv_wh_sfpxfcmpv = 612,
-  CODE_FOR_riscv_wh_sfpxicmps = 613,
-  CODE_FOR_riscv_wh_sfpxicmpv = 614,
-  CODE_FOR_riscv_wh_sfpxvif = 615,
-  CODE_FOR_riscv_wh_sfpxbool = 616,
-  CODE_FOR_riscv_wh_sfpxcondb = 617,
-  CODE_FOR_riscv_wh_sfpxcondi = 618
+  CODE_FOR_riscv_wh_sfpswap = 613,
+  CODE_FOR_riscv_wh_sfpxicmps = 614,
+  CODE_FOR_riscv_wh_sfpxicmpv = 615,
+  CODE_FOR_riscv_wh_sfpxvif = 616,
+  CODE_FOR_riscv_wh_sfpxbool = 617,
+  CODE_FOR_riscv_wh_sfpxcondb = 618,
+  CODE_FOR_riscv_wh_sfpxcondi = 619
 };
 
-const unsigned int NUM_INSN_CODES = 619;
+const unsigned int NUM_INSN_CODES = 620;
 #endif /* GCC_INSN_CODES_H */
