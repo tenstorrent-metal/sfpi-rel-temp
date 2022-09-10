@@ -69,7 +69,7 @@ sfpi_inline void __vDReg::operator=(const __vDReg dreg) const
 
 sfpi_inline vFloat __vDReg::operator=(const __vConstFloat creg) const
 {
-    __rvtt_vec_t lr = __builtin_rvtt_sfpassignlr(creg.get());
+    __rvtt_vec_t lr = __builtin_rvtt_sfpassignlreg(creg.get());
     __builtin_rvtt_sfpstore(lr, SFPSTORE_MOD0_FLOAT_REBIAS_EXP, reg);
     return vFloat(lr);
 }
@@ -84,7 +84,7 @@ sfpi_inline __vCond vFloat::operator>=(const float x) const { return __vCond(__v
 
 sfpi_inline vFloat vFloat::operator-=(const vFloat a)
 {
-    __rvtt_vec_t neg1 = __builtin_rvtt_sfpassignlr(vConstNeg1.get());
+    __rvtt_vec_t neg1 = __builtin_rvtt_sfpassignlreg(vConstNeg1.get());
     assign(__builtin_rvtt_sfpmad(neg1, a.get(), v, SFPMAD_MOD1_OFFSET_NONE));
     return v;
 }
@@ -134,16 +134,5 @@ sfpi_inline vType __vIntBase::operator^=(const vType b)
     v = __builtin_rvtt_sfpand(v, tmp1);
     return v;
 }
-
-//////////////////////////////////////////////////////////////////////////////
-enum class LRegs {
-    LReg0 = 0,
-    LReg1 = 1,
-    LReg2 = 2,
-    LReg3 = 3,
-    LRegCount = SFP_LREG_COUNT,
-};
-
-LRegAssigner::LRegAssigner() : lregs{LRegs::LReg0, LRegs::LReg1, LRegs::LReg2, LRegs::LReg3} {}
 
 } // namespace sfpi

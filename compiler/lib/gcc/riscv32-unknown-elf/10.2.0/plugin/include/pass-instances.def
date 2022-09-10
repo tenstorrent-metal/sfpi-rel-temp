@@ -181,6 +181,7 @@ along with GCC; see the file COPYING3.  If not see
      output to the assembler file.  */
   INSERT_PASSES_AFTER (all_passes)
   NEXT_PASS (pass_fixup_cfg, 3);
+  NEXT_PASS (pass_rvtt_nonimm_tag, 1);
   NEXT_PASS (pass_lower_eh_dispatch, 1);
   NEXT_PASS (pass_oacc_device_lower, 1);
   NEXT_PASS (pass_omp_device_lower, 1);
@@ -404,13 +405,13 @@ along with GCC; see the file COPYING3.  If not see
   NEXT_PASS (pass_warn_function_noreturn, 1);
   NEXT_PASS (pass_gen_hsail, 1);
 
-  NEXT_PASS (pass_riscv_sfpu_warn, 1);
-  NEXT_PASS (pass_riscv_sfpu_expand, 1);
-  NEXT_PASS (pass_riscv_sfpu_live, 1);
-  NEXT_PASS (pass_riscv_sfpu_cc, 1);
-  NEXT_PASS (pass_riscv_sfpu_combine, 1);
-  NEXT_PASS (pass_riscv_sfpu_move, 1);
-  NEXT_PASS (pass_riscv_sfpu_schedule, 1);
+  NEXT_PASS (pass_rvtt_warn, 1);
+  NEXT_PASS (pass_rvtt_nonimm_expand, 1);
+  NEXT_PASS (pass_rvtt_expand, 1);
+  NEXT_PASS (pass_rvtt_live, 1);
+  NEXT_PASS (pass_rvtt_cc, 1);
+  NEXT_PASS (pass_rvtt_combine, 1);
+  NEXT_PASS (pass_rvtt_move, 1);
 
   NEXT_PASS (pass_expand, 1);
 
@@ -469,7 +470,10 @@ NEXT_PASS (pass_shorten_memrefs, 1);
       NEXT_PASS (pass_early_remat, 1);
       NEXT_PASS (pass_ira, 1);
       NEXT_PASS (pass_reload, 1);
+      NEXT_PASS (pass_rvtt_nonimm, 1);
+      NEXT_PASS (pass_rvtt_schedule, 1);
       NEXT_PASS (pass_postreload, 1);
+      NEXT_PASS (pass_rvtt_replay, 1);
       PUSH_INSERT_PASSES_WITHIN (pass_postreload)
 	  NEXT_PASS (pass_postreload_cse, 1);
 	  NEXT_PASS (pass_gcse2, 1);
