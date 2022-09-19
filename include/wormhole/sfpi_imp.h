@@ -123,14 +123,34 @@ sfpi_inline vType __vIntBase::operator^=(const vType b)
     return v;
 }
 
-sfpi_inline void __vConstFloat::operator=(const vFloat in) const
+sfpi_inline void __vConstFloat::operator=(const float in) const
 {
-    __builtin_rvtt_sfpconfig_v(in.get(), get());
+    vFloat tmp = in;
+    __builtin_rvtt_sfpconfig_v(tmp.get(), get());
 }
 
-sfpi_inline void __vConstIntBase::operator=(const vInt in) const
+sfpi_inline void __vConstFloat::operator=(const s2vFloat16 in) const
 {
-    __builtin_rvtt_sfpconfig_v(in.get(), get());
+    vFloat tmp = in;
+    __builtin_rvtt_sfpconfig_v(tmp.get(), get());
 }
+
+sfpi_inline void __vConstIntBase::operator=(const int in) const
+{
+    vInt tmp = in;
+    __builtin_rvtt_sfpconfig_v(tmp.get(), get());
+}
+
+enum class LRegs {
+    LReg0 = 0,
+    LReg1 = 1,
+    LReg2 = 2,
+    LReg3 = 3,
+    LReg4 = 4,
+    LReg5 = 5,
+    LReg6 = 6,
+    LReg7 = 7,
+    LRegCount = SFP_LREG_COUNT,
+};
 
 } // namespace sfpi
