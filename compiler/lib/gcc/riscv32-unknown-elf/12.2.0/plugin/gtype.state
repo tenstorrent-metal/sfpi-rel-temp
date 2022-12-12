@@ -25258,7 +25258,7 @@
   (!fields 0 )
   nil 0 nil nil )
  
- (!type struct 1659 nil  gc_unused "anonymous:/home/pkeller/src/sfpi/tt-gcc/gcc/gcc/config/riscv/riscv.cc:2770"nil 
+ (!type struct 1659 nil  gc_unused "anonymous:/home/pkeller/src/sfpi/tt-gcc/gcc/gcc/config/riscv/riscv.cc:2785"nil 
   (!fields 0 )
   nil 0 nil nil )
  
@@ -31849,11 +31849,11 @@
   nil )
  (!pair  "riscv_save_restore_fn"
   (!type already_seen 2)
-  (!srcfileloc  "config/riscv/riscv.cc" 4167)
+  (!srcfileloc  "config/riscv/riscv.cc" 4182)
   nil )
  (!pair  "riscv_aggregate_field"
   (!type already_seen 1659)
-  (!srcfileloc  "config/riscv/riscv.cc" 2773)
+  (!srcfileloc  "config/riscv/riscv.cc" 2788)
   nil )
  (!pair  "omp_declare_variant_alt_hasher"
   (!type already_seen 1643)
@@ -36245,7 +36245,7 @@
   nil )
  (!pair  "riscv_tls_symbol"
   (!type already_seen 99)
-  (!srcfileloc  "config/riscv/riscv.cc" 1374)
+  (!srcfileloc  "config/riscv/riscv.cc" 1389)
   nil )
  (!pair  "stack_chk_fail_decl"
   (!type already_seen 23)
