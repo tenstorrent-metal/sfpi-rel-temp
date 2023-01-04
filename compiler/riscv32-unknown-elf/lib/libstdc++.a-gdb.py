@@ -1,5 +1,5 @@
 # -*- python -*-
-# Copyright (C) 2009-2022 Free Software Foundation, Inc.
+# Copyright (C) 2009-2020 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ import gdb
 import os
 import os.path
 
-pythondir = '/home/pkeller/src/sfpi/compiler/share/gcc-12.2.0/python'
+pythondir = '/home/pkeller/src/sfpi/compiler/share/gcc-10.2.0/python'
 libdir = '/home/pkeller/src/sfpi/compiler/riscv32-unknown-elf/lib'
 
 # This file might be loaded when there is no current objfile.  This
