@@ -456,6 +456,7 @@ NEXT_PASS (pass_shorten_memrefs, 1);
       NEXT_PASS (pass_combine, 1);
       NEXT_PASS (pass_if_after_combine, 1);
       NEXT_PASS (pass_jump_after_combine, 1);
+      NEXT_PASS (pass_rvtt_rmext, 1);
       NEXT_PASS (pass_partition_blocks, 1);
       NEXT_PASS (pass_outof_cfg_layout_mode, 1);
       NEXT_PASS (pass_split_all_insns, 1);
@@ -470,8 +471,6 @@ NEXT_PASS (pass_shorten_memrefs, 1);
       NEXT_PASS (pass_early_remat, 1);
       NEXT_PASS (pass_ira, 1);
       NEXT_PASS (pass_reload, 1);
-
-      NEXT_PASS (pass_rvtt_l1reorder, 1);
 
       NEXT_PASS (pass_rvtt_nonimm, 1);
       NEXT_PASS (pass_rvtt_schedule, 1);

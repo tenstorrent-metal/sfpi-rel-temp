@@ -37,9 +37,6 @@ extern enum attr_cannot_copy get_attr_cannot_copy (rtx_insn *);
 #define HAVE_ATTR_tune 1
 extern enum attr_tune get_attr_tune (void);
 
-#define HAVE_ATTR_rvtt_type 1
-extern enum attr_rvtt_type get_attr_rvtt_type (rtx_insn *);
-
 extern int num_delay_slots (rtx_insn *);
 extern int eligible_for_delay (rtx_insn *, int, rtx_insn *, int);
 

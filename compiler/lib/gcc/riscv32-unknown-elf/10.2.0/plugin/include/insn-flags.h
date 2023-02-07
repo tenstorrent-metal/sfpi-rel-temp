@@ -171,14 +171,6 @@
 #define HAVE_atomic_exchangedi ((TARGET_ATOMIC) && (TARGET_64BIT))
 #define HAVE_atomic_cas_value_strongsi (TARGET_ATOMIC)
 #define HAVE_atomic_cas_value_strongdi ((TARGET_ATOMIC) && (TARGET_64BIT))
-#define HAVE_rvtt_l1_load_ptr (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_l1_load_si (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_l1_load_hi (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_l1_load_qi (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_l1_load_usi (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_l1_load_uhi (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_l1_load_uqi (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_reg_read (TARGET_RVTT_GS || TARGET_RVTT_WH)
 #define HAVE_rvtt_load_immediate (TARGET_RVTT_GS || TARGET_RVTT_WH)
 #define HAVE_rvtt_sfpassignlreg_int (TARGET_RVTT_GS || TARGET_RVTT_WH)
 #define HAVE_rvtt_sfpnonimm_dst (TARGET_RVTT_GS || TARGET_RVTT_WH)
@@ -604,14 +596,6 @@ extern rtx        gen_atomic_exchangesi            (rtx, rtx, rtx, rtx);
 extern rtx        gen_atomic_exchangedi            (rtx, rtx, rtx, rtx);
 extern rtx        gen_atomic_cas_value_strongsi    (rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_atomic_cas_value_strongdi    (rtx, rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_rvtt_l1_load_ptr             (rtx, rtx);
-extern rtx        gen_rvtt_l1_load_si              (rtx, rtx);
-extern rtx        gen_rvtt_l1_load_hi              (rtx, rtx);
-extern rtx        gen_rvtt_l1_load_qi              (rtx, rtx);
-extern rtx        gen_rvtt_l1_load_usi             (rtx, rtx);
-extern rtx        gen_rvtt_l1_load_uhi             (rtx, rtx);
-extern rtx        gen_rvtt_l1_load_uqi             (rtx, rtx);
-extern rtx        gen_rvtt_reg_read                (rtx, rtx);
 extern rtx        gen_rvtt_load_immediate          (rtx, rtx);
 extern rtx        gen_rvtt_sfpassignlreg_int       (rtx);
 extern rtx        gen_rvtt_sfpnonimm_dst           (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
