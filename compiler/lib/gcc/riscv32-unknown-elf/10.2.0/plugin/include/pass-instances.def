@@ -514,7 +514,7 @@ NEXT_PASS (pass_shorten_memrefs, 1);
 	  NEXT_PASS (pass_split_for_shorten_branches, 1);
 	  NEXT_PASS (pass_convert_to_eh_region_ranges, 1);
 
-	  NEXT_PASS (pass_rvtt_gsl1war, 1);
+	  NEXT_PASS (pass_rvtt_hll, 1);
 
 	  NEXT_PASS (pass_shorten_branches, 1);
 	  NEXT_PASS (pass_set_nothrow_function_flags, 1);
