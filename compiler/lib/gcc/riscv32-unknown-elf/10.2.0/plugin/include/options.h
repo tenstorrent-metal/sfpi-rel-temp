@@ -5843,10 +5843,10 @@ extern int flag_rtti;
 #define flag_rtti global_options.x_flag_rtti
 #endif
 #ifdef GENERATOR_FILE
-extern int flag_rvtt_gsl1war;
+extern int flag_rvtt_gshllwar;
 #else
-  int x_flag_rvtt_gsl1war;
-#define flag_rvtt_gsl1war global_options.x_flag_rvtt_gsl1war
+  int x_flag_rvtt_gshllwar;
+#define flag_rvtt_gshllwar global_options.x_flag_rvtt_gshllwar
 #endif
 #ifdef GENERATOR_FILE
 extern int flag_rvtt_hll;

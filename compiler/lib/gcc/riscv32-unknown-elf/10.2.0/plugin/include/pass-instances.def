@@ -508,14 +508,17 @@ NEXT_PASS (pass_shorten_memrefs, 1);
 	  NEXT_PASS (pass_compute_alignments, 1);
 	  NEXT_PASS (pass_variable_tracking, 1);
 	  NEXT_PASS (pass_free_cfg, 1);
+
+          // Note: this pass should run as late as possible, ideally just before
+          // final.  However, the machine reorg pass, when using -msave-restore,
+          // injects an insn that causes df_analyze to crash, so run before that
+	  NEXT_PASS (pass_rvtt_hll, 1);
+
 	  NEXT_PASS (pass_machine_reorg, 1);
 	  NEXT_PASS (pass_cleanup_barriers, 1);
 	  NEXT_PASS (pass_delay_slots, 1);
 	  NEXT_PASS (pass_split_for_shorten_branches, 1);
 	  NEXT_PASS (pass_convert_to_eh_region_ranges, 1);
-
-	  NEXT_PASS (pass_rvtt_hll, 1);
-
 	  NEXT_PASS (pass_shorten_branches, 1);
 	  NEXT_PASS (pass_set_nothrow_function_flags, 1);
 	  NEXT_PASS (pass_dwarf2_frame, 1);
