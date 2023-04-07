@@ -507,13 +507,15 @@ NEXT_PASS (pass_shorten_memrefs, 1);
       PUSH_INSERT_PASSES_WITHIN (pass_late_compilation)
 	  NEXT_PASS (pass_compute_alignments, 1);
 	  NEXT_PASS (pass_variable_tracking, 1);
-	  NEXT_PASS (pass_free_cfg, 1);
 
           // Note: this pass should run as late as possible, ideally just before
           // final.  However, the machine reorg pass, when using -msave-restore,
           // injects an insn that causes df_analyze to crash, so run before that
+          // And, free_cfg pass calls free_bb_for_insn resulting in problems
+          // w/ df_analyze, so call before that
 	  NEXT_PASS (pass_rvtt_hll, 1);
 
+	  NEXT_PASS (pass_free_cfg, 1);
 	  NEXT_PASS (pass_machine_reorg, 1);
 	  NEXT_PASS (pass_cleanup_barriers, 1);
 	  NEXT_PASS (pass_delay_slots, 1);

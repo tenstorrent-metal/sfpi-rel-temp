@@ -1108,7 +1108,7 @@ namespace std
 /* #undef _GLIBCXX_HAVE_STRERROR_L */
 
 /* Define if strerror_r is available in <string.h>. */
-/* #undef _GLIBCXX_HAVE_STRERROR_R */
+#define _GLIBCXX_HAVE_STRERROR_R 1
 
 /* Define to 1 if you have the <strings.h> header file. */
 #define _GLIBCXX_HAVE_STRINGS_H 1
@@ -1571,13 +1571,13 @@ namespace std
 /* #undef _GLIBCXX_NO_C99_ROUNDING_FUNCS */
 
 /* Define if ptrdiff_t is int. */
-/* #undef _GLIBCXX_PTRDIFF_T_IS_INT */
+#define _GLIBCXX_PTRDIFF_T_IS_INT 1
 
 /* Define if using setrlimit to set resource limits during "make check" */
 /* #undef _GLIBCXX_RES_LIMITS */
 
 /* Define if size_t is unsigned int. */
-/* #undef _GLIBCXX_SIZE_T_IS_UINT */
+#define _GLIBCXX_SIZE_T_IS_UINT 1
 
 /* Define to the value of the EOF integer constant. */
 #define _GLIBCXX_STDIO_EOF -1
