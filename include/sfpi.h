@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: © 2023 Tenstorrent Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 ///////////////////////////////////////////////////////////////////////////////
 // sfpi.h: SFPu Interface
 //   This file provides a C++ wrapper around GCC style __builtin functions
@@ -121,6 +127,8 @@
 #include <grayskull/sfpi_hw.h>
 #elif defined(ARCH_WORMHOLE)
 #include <wormhole/sfpi_hw.h>
+#elif defined(ARCH_BLACKHOLE)
+#include <blackhole/sfpi_hw.h>
 #endif
 
 #include <sfpi_fp16.h>
@@ -266,7 +274,7 @@ class __vConstFloat : public __vRegBase {
 public:
     constexpr explicit __vConstFloat(int r) : __vRegBase(r) {}
 
-#ifdef ARCH_WORMHOLE
+#if !defined(ARCH_GRAYSKULL)
     sfpi_inline void operator=(const float in) const;
     sfpi_inline void operator=(const s2vFloat16 in) const;
 #endif
@@ -288,7 +296,7 @@ class __vConstIntBase : public __vRegBase {
 public:
     constexpr explicit __vConstIntBase(int r) : __vRegBase(r) {}
 
-#ifdef ARCH_WORMHOLE
+#if !defined(ARCH_GRAYSKULL)
     sfpi_inline void operator=(const int in) const;
 #endif
 
@@ -475,12 +483,12 @@ public:
     sfpi_inline vInt(const __vIntBase in) { assign(in.get()); };
     sfpi_inline vInt(short val) { loadss(val); }
     sfpi_inline vInt(int val) { loadsi(val); }
-#ifndef __clang__
+#ifndef COMPILE_FOR_EMULE
     sfpi_inline vInt(int32_t val) { loadsi(val); }
 #endif
     sfpi_inline vInt(unsigned short val) { loadus(val); }
     sfpi_inline vInt(unsigned int val) { loadui(val); }
-#ifndef __clang__
+#ifndef COMPILE_FOR_EMULE
     sfpi_inline vInt(uint32_t val) { loadui(val); }
 #endif
     sfpi_inline vInt(__vLReg lr) { __vBase::operator=(lr); }
@@ -559,12 +567,12 @@ public:
     sfpi_inline vUInt(const __vIntBase in) { assign(in.get()); }
     sfpi_inline vUInt(short val) { loadss(val); }
     sfpi_inline vUInt(int val) { loadsi(val); }
-#ifndef __clang__
+#ifndef COMPILE_FOR_EMULE
     sfpi_inline vUInt(int32_t val) { loadsi(val); }
 #endif
     sfpi_inline vUInt(unsigned short val) { loadus(val); }
     sfpi_inline vUInt(unsigned int val) { loadui(val); }
-#ifndef __clang__
+#ifndef COMPILE_FOR_EMULE
     sfpi_inline vUInt(uint32_t val) { loadui(val); }
 #endif
     sfpi_inline vUInt(__vLReg lr) { __vBase::operator=(lr); }
@@ -1233,4 +1241,7 @@ constexpr __LReg l_reg;
 #elif defined(ARCH_WORMHOLE)
 #include <wormhole/sfpi_imp.h>
 #include <wormhole/sfpi_lib.h>
+#elif defined(ARCH_BLACKHOLE)
+#include <blackhole/sfpi_imp.h>
+#include <blackhole/sfpi_lib.h>
 #endif

@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: © 2023 Tenstorrent Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 ///////////////////////////////////////////////////////////////////////////////
 // sfpi_fp16.h: fp16a/fp16b/int conversions
 ///////////////////////////////////////////////////////////////////////////////
@@ -10,6 +16,8 @@
 #include <grayskull/sfpi_hw.h>
 #elif defined(ARCH_WORMHOLE)
 #include <wormhole/sfpi_hw.h>
+#elif defined(ARCH_BLACKHOLE)
+#include <blackhole/sfpi_hw.h>
 #endif
 
 namespace sfpi {
@@ -45,11 +53,11 @@ class s2vFloat16a : public s2vFloat16 {
  public:
     sfpi_inline s2vFloat16a(const float in) : s2vFloat16(in, fp16a) {}
     sfpi_inline s2vFloat16a(const double in) : s2vFloat16(static_cast<float>(in), fp16a) {}
-#ifndef __clang__
+#ifndef COMPILE_FOR_EMULE
     sfpi_inline s2vFloat16a(const int in) : s2vFloat16(static_cast<int32_t>(in), fp16a) {}
 #endif
     sfpi_inline s2vFloat16a(const int32_t in) : s2vFloat16(in, fp16a) {}
-#ifndef __clang__
+#ifndef COMPILE_FOR_EMULE
     sfpi_inline s2vFloat16a(const unsigned int in) : s2vFloat16(static_cast<uint32_t>(in), fp16a) {}
 #endif
     sfpi_inline s2vFloat16a(const uint32_t in) : s2vFloat16(in, fp16a) {}
@@ -60,11 +68,11 @@ class s2vFloat16b : public s2vFloat16 {
  public:
     sfpi_inline s2vFloat16b(const float in) : s2vFloat16(in, fp16b) {}
     sfpi_inline s2vFloat16b(const double in) : s2vFloat16(static_cast<float>(in), fp16b) {}
-#ifndef __clang__
+#ifndef COMPILE_FOR_EMULE
     sfpi_inline s2vFloat16b(const int in) : s2vFloat16(static_cast<int32_t>(in), fp16b) {}
 #endif
     sfpi_inline s2vFloat16b(const int32_t in) : s2vFloat16(in, fp16b) {}
-#ifndef __clang__
+#ifndef COMPILE_FOR_EMULE
     sfpi_inline s2vFloat16b(const unsigned int in) : s2vFloat16(static_cast<uint32_t>(in), fp16b) {}
 #endif
     sfpi_inline s2vFloat16b(const uint32_t in) : s2vFloat16(in, fp16b) {}
