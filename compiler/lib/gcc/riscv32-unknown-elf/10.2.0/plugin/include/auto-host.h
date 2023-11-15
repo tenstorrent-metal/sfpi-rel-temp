@@ -696,7 +696,7 @@
 
 /* Define if your assembler and linker support thread-local storage. */
 #ifndef USED_FOR_TARGET
-#define HAVE_AS_TLS 1
+/* #undef HAVE_AS_TLS */
 #endif
 
 
@@ -1930,7 +1930,7 @@
 
 /* Define if valgrind's valgrind/memcheck.h header is installed. */
 #ifndef USED_FOR_TARGET
-/* #undef HAVE_VALGRIND_MEMCHECK_H */
+#define HAVE_VALGRIND_MEMCHECK_H 1
 #endif
 
 
@@ -1992,7 +1992,7 @@
 
 /* Define if isl is in use. */
 #ifndef USED_FOR_TARGET
-/* #undef HAVE_isl */
+#define HAVE_isl 1
 #endif
 
 

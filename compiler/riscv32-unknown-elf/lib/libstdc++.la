@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/localhome/pkeller/src/sfpi/compiler/riscv32-unknown-elf/lib'
+libdir='/home/pkeller/src/sfpi/compiler/riscv32-unknown-elf/lib'
