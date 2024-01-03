@@ -7,7 +7,7 @@ OUTPUT_FORMAT("elf64-bigriscv", "elf64-bigriscv",
 	      "elf64-bigriscv")
 OUTPUT_ARCH(riscv)
 ENTRY(_start)
-SEARCH_DIR("/home/pkeller/src/sfpi/compiler/riscv32-unknown-elf/lib");
+SEARCH_DIR("/home2/pkeller/src/sfpi/compiler/riscv32-unknown-elf/lib");
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */
