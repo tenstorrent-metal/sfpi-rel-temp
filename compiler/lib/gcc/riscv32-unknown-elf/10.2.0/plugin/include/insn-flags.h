@@ -171,13 +171,13 @@
 #define HAVE_atomic_exchangedi ((TARGET_ATOMIC) && (TARGET_64BIT))
 #define HAVE_atomic_cas_value_strongsi (TARGET_ATOMIC)
 #define HAVE_atomic_cas_value_strongdi ((TARGET_ATOMIC) && (TARGET_64BIT))
-#define HAVE_rvtt_load_immediate (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpassignlreg_int (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpnonimm_dst (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpnonimm_dst_src (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpnonimm_src (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpnonimm_store (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpincrwc (TARGET_RVTT_GS || TARGET_RVTT_WH)
+#define HAVE_rvtt_load_immediate (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpassignlreg_int (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpnonimm_dst (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpnonimm_dst_src (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpnonimm_src (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpnonimm_store (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpincrwc (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
 #define HAVE_rvtt_gs_l1_load_war (TARGET_RVTT_GS)
 #define HAVE_rvtt_gs_sfpgccmov_cc (TARGET_RVTT_GS  && \
    (   register_operand (operands[0], V64SFmode) \
@@ -282,6 +282,70 @@
 #define HAVE_rvtt_wh_sfpshft2_g (TARGET_RVTT_WH)
 #define HAVE_rvtt_wh_sfpshft2_ge (TARGET_RVTT_WH)
 #define HAVE_rvtt_wh_sfpnop (TARGET_RVTT_WH)
+#define HAVE_rvtt_bh_sfpgccmov_cc (TARGET_RVTT_BH  && \
+   (   register_operand (operands[0], V64SFmode) \
+    || reg_or_0_operand (operands[1], V64SFmode)))
+#define HAVE_rvtt_bh_sfpassign_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppreservelreg0_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppreservelreg1_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppreservelreg2_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppreservelreg3_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppreservelreg4_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppreservelreg5_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppreservelreg6_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppreservelreg7_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpload_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfploadi_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpstore_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmuli_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpaddi_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpdivp2_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpexexp_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpexman_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpabs_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmov_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfplz_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmul_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpadd_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpiadd_v_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpiadd_i_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpshft_v (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpshft_i_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpand (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpor (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpxor (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpnot_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpcast_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpshft2_e_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpstochrnd_i_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpstochrnd_v_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetexp_v (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetman_v (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetsgn_v (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetexp_i_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetsgn_i_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetman_i_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmad_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetcc_i (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetcc_v (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpencc (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpcompc (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppushc (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfppopc (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfplut (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfplutfp32_3r (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfplutfp32_6r (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpconfig_v (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpreplay (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpswap_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfptransp (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpshft2_g (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpshft2_ge (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpnop (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmul24_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfparecip_int (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpgt (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfple (TARGET_RVTT_BH)
 #define HAVE_mulditi3 (TARGET_MUL && TARGET_64BIT)
 #define HAVE_umulditi3 (TARGET_MUL && TARGET_64BIT)
 #define HAVE_usmulditi3 (TARGET_MUL && TARGET_64BIT)
@@ -334,13 +398,13 @@
 #define HAVE_atomic_compare_and_swapdi ((TARGET_ATOMIC) && (TARGET_64BIT))
 #define HAVE_atomic_test_and_set (TARGET_ATOMIC)
 #define HAVE_movv64sf 1
-#define HAVE_rvtt_sfpassignlreg (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpxicmps (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpxicmpv (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpxvif (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpxbool (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpxcondb (TARGET_RVTT_GS || TARGET_RVTT_WH)
-#define HAVE_rvtt_sfpxcondi (TARGET_RVTT_GS || TARGET_RVTT_WH)
+#define HAVE_rvtt_sfpassignlreg (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpxicmps (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpxicmpv (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpxvif (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpxbool (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpxcondb (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
+#define HAVE_rvtt_sfpxcondi (TARGET_RVTT_GS || TARGET_RVTT_WH || TARGET_RVTT_BH)
 #define HAVE_rvtt_gs_sfppreservelreg (TARGET_RVTT_GS)
 #define HAVE_rvtt_gs_sfpload (TARGET_RVTT_GS)
 #define HAVE_rvtt_gs_sfpload_lv (TARGET_RVTT_GS)
@@ -430,6 +494,59 @@
 #define HAVE_rvtt_wh_sfpxfcmps (TARGET_RVTT_WH)
 #define HAVE_rvtt_wh_sfpxfcmpv (TARGET_RVTT_WH)
 #define HAVE_rvtt_wh_sfpswap (TARGET_RVTT_WH)
+#define HAVE_rvtt_bh_sfppreservelreg (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpload (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpload_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpxloadi (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpxloadi_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpstore (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmuli (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpaddi (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpdivp2 (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpdivp2_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpexexp (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpexman (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpabs (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmov (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfplz (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpexexp_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpexman_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpabs_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmov_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfplz_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmul (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpadd (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmul_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpadd_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpxiadd_v (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpxiadd_i (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpxiadd_i_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpshft_i (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpnot (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpnot_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpcast (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpcast_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpshft2_e (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpshft2_e_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpstochrnd_i (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpstochrnd_i_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpstochrnd_v (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpstochrnd_v_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetexp_i (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetsgn_i (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetexp_i_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetsgn_i_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetman_i (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpsetman_i_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmad (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmad_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpxfcmps (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpxfcmpv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpswap (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmul24 (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfpmul24_lv (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfparecip (TARGET_RVTT_BH)
+#define HAVE_rvtt_bh_sfparecip_lv (TARGET_RVTT_BH)
 extern rtx        gen_addsf3                       (rtx, rtx, rtx);
 extern rtx        gen_adddf3                       (rtx, rtx, rtx);
 extern rtx        gen_addsi3                       (rtx, rtx, rtx);
@@ -703,6 +820,68 @@ extern rtx        gen_rvtt_wh_sfptransp            (rtx, rtx, rtx, rtx);
 extern rtx        gen_rvtt_wh_sfpshft2_g           (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_rvtt_wh_sfpshft2_ge          (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_rvtt_wh_sfpnop               (void);
+extern rtx        gen_rvtt_bh_sfpgccmov_cc         (rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpassign_lv         (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfppreservelreg0_int (rtx);
+extern rtx        gen_rvtt_bh_sfppreservelreg1_int (rtx);
+extern rtx        gen_rvtt_bh_sfppreservelreg2_int (rtx);
+extern rtx        gen_rvtt_bh_sfppreservelreg3_int (rtx);
+extern rtx        gen_rvtt_bh_sfppreservelreg4_int (rtx);
+extern rtx        gen_rvtt_bh_sfppreservelreg5_int (rtx);
+extern rtx        gen_rvtt_bh_sfppreservelreg6_int (rtx);
+extern rtx        gen_rvtt_bh_sfppreservelreg7_int (rtx);
+extern rtx        gen_rvtt_bh_sfpload_int          (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfploadi_int         (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpstore_int         (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmuli_int          (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpaddi_int          (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpdivp2_int         (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpexexp_int         (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpexman_int         (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpabs_int           (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmov_int           (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfplz_int            (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmul_int           (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpadd_int           (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpiadd_v_int        (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpiadd_i_int        (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpshft_v            (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpshft_i_int        (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpand               (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpor                (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpxor               (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpnot_int           (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpcast_int          (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpshft2_e_int       (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpstochrnd_i_int    (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpstochrnd_v_int    (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetexp_v          (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetman_v          (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetsgn_v          (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetexp_i_int      (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetsgn_i_int      (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetman_i_int      (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmad_int           (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetcc_i           (rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetcc_v           (rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpencc              (rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpcompc             (void);
+extern rtx        gen_rvtt_bh_sfppushc             (rtx);
+extern rtx        gen_rvtt_bh_sfppopc              (rtx);
+extern rtx        gen_rvtt_bh_sfplut               (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfplutfp32_3r        (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfplutfp32_6r        (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpconfig_v          (rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpreplay            (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpswap_int          (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfptransp            (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpshft2_g           (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpshft2_ge          (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpnop               (void);
+extern rtx        gen_rvtt_bh_sfpmul24_int         (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfparecip_int        (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpgt                (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfple                (rtx, rtx, rtx);
 extern rtx        gen_mulditi3                     (rtx, rtx, rtx);
 extern rtx        gen_umulditi3                    (rtx, rtx, rtx);
 extern rtx        gen_usmulditi3                   (rtx, rtx, rtx);
@@ -851,5 +1030,58 @@ extern rtx        gen_rvtt_wh_sfpmad_lv            (rtx, rtx, rtx, rtx, rtx, rtx
 extern rtx        gen_rvtt_wh_sfpxfcmps            (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_rvtt_wh_sfpxfcmpv            (rtx, rtx, rtx, rtx);
 extern rtx        gen_rvtt_wh_sfpswap              (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfppreservelreg      (rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpload              (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpload_lv           (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpxloadi            (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpxloadi_lv         (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpstore             (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmuli              (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpaddi              (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpdivp2             (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpdivp2_lv          (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpexexp             (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpexman             (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpabs               (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmov               (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfplz                (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpexexp_lv          (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpexman_lv          (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpabs_lv            (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmov_lv            (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfplz_lv             (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmul               (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpadd               (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmul_lv            (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpadd_lv            (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpxiadd_v           (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpxiadd_i           (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpxiadd_i_lv        (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpshft_i            (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpnot               (rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpnot_lv            (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpcast              (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpcast_lv           (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpshft2_e           (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpshft2_e_lv        (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpstochrnd_i        (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpstochrnd_i_lv     (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpstochrnd_v        (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpstochrnd_v_lv     (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetexp_i          (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetsgn_i          (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetexp_i_lv       (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetsgn_i_lv       (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetman_i          (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpsetman_i_lv       (rtx, rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmad               (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmad_lv            (rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpxfcmps            (rtx, rtx, rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpxfcmpv            (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpswap              (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmul24             (rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfpmul24_lv          (rtx, rtx, rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfparecip            (rtx, rtx, rtx);
+extern rtx        gen_rvtt_bh_sfparecip_lv         (rtx, rtx, rtx, rtx);
 
 #endif /* GCC_INSN_FLAGS_H */
