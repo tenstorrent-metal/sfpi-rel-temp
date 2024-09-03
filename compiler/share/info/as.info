@@ -2,7 +2,7 @@ This is as.info, produced by makeinfo version 6.7 from as.texi.
 
 This file documents the GNU Assembler "as".
 
-   Copyright (C) 1991-2021 Free Software Foundation, Inc.
+   Copyright (C) 1991-2022 Free Software Foundation, Inc.
 
    Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -24,7 +24,7 @@ Using as
 ********
 
 This file is a user guide to the GNU assembler 'as' (GNU Binutils)
-version 2.36.1.
+version 2.39.
 
    This document is distributed under the terms of the GNU Free
 Documentation License.  A copy of the license is included in the section
@@ -74,6 +74,7 @@ Command-Line Options: Invoking.
       [-sectname-subst] [-size-check=[error|warning]]
       [-elf-stt-common=[no|yes]]
       [-generate-missing-build-notes=[no|yes]]
+      [-multibyte-handling=[allow|warn|warn-sym-only]]
       [-target-help] [TARGET-OPTIONS]
       [-|FILES ...]
 
@@ -578,6 +579,19 @@ Command-Line Options: Invoking.
 '--listing-cont-lines=NUMBER'
      Set the maximum number of lines printed in a listing for a single
      line of input to NUMBER + 1.
+
+'--multibyte-handling=allow'
+'--multibyte-handling=warn'
+'--multibyte-handling=warn-sym-only'
+     Controls how the assembler handles multibyte characters in the
+     input.  The default (which can be restored by using the 'allow'
+     argument) is to allow such characters without complaint.  Using the
+     'warn' argument will make the assembler generate a warning message
+     whenever any multibyte character is encountered.  Using the
+     'warn-sym-only' argument will only cause a warning to be generated
+     when a symbol is defined with a name that contains multibyte
+     characters.  (References to undefined symbols will not generate a
+     warning).
 
 '--no-pad-sections'
      Stop the assembler for padding the ends of output sections to the
@@ -1244,8 +1258,8 @@ s390 processor family.
      Specify which s390 processor variant is the target, 'g5' (or
      'arch3'), 'g6', 'z900' (or 'arch5'), 'z990' (or 'arch6'), 'z9-109',
      'z9-ec' (or 'arch7'), 'z10' (or 'arch8'), 'z196' (or 'arch9'),
-     'zEC12' (or 'arch10'), 'z13' (or 'arch11'), 'z14' (or 'arch12'), or
-     'z15' (or 'arch13').
+     'zEC12' (or 'arch10'), 'z13' (or 'arch11'), 'z14' (or 'arch12'),
+     'z15' (or 'arch13'), or 'z16' (or 'arch14').
 '-mregnames'
 '-mno-regnames'
      Allow or disallow symbolic names for registers.
@@ -2043,10 +2057,11 @@ A "symbol" is one or more characters chosen from the set of all letters
 most machines, you can also use '$' in symbol names; exceptions are
 noted in *note Machine Dependencies::.  No symbol may begin with a
 digit.  Case is significant.  There is no length limit; all characters
-are significant.  Multibyte characters are supported.  Symbols are
-delimited by characters not in that set, or by the beginning of a file
-(since the source program must end with a newline, the end of a file is
-not a possible symbol delimiter).  *Note Symbols::.
+are significant.  Multibyte characters are supported, but note that the
+setting of the '--multibyte-handling' option might prevent their use.
+Symbols are delimited by characters not in that set, or by the beginning
+of a file (since the source program must end with a newline, the end of
+a file is not a possible symbol delimiter).  *Note Symbols::.
 
    Symbol names may also be enclosed in double quote '"' characters.  In
 such cases any characters are allowed, except for the NUL character.  If
@@ -2655,7 +2670,10 @@ Symbol names begin with a letter or with one of '._'.  On most machines,
 you can also use '$' in symbol names; exceptions are noted in *note
 Machine Dependencies::.  That character may be followed by any string of
 digits, letters, dollar signs (unless otherwise noted for a particular
-target machine), and underscores.
+target machine), and underscores.  These restrictions do not apply when
+quoting symbol names by '"', which is permitted for most targets.
+Escaping characters in quoted symbol names with '\' generally extends
+only to '\' itself and '"', at the time of writing.
 
    Case of letters is significant: 'foo' is a different symbol name than
 'Foo'.
@@ -2663,10 +2681,17 @@ target machine), and underscores.
    Symbol names do not start with a digit.  An exception to this rule is
 made for Local Labels.  See below.
 
-   Multibyte characters are supported.  To generate a symbol name
-containing multibyte characters enclose it within double quotes and use
-escape codes.  cf *Note Strings::.  Generating a multibyte symbol name
-from a label is not currently supported.
+   Multibyte characters are supported, but note that the setting of the
+'multibyte-handling' option might prevent their use.  To generate a
+symbol name containing multibyte characters enclose it within double
+quotes and use escape codes.  cf *Note Strings::.  Generating a
+multibyte symbol name from a label is not currently supported.
+
+   Since multibyte symbol names are unusual, and could possibly be used
+maliciously, 'as' provides a command line option
+('--multibyte-handling=warn-sym-only') which can be used to generate a
+warning message whenever a symbol name containing multibyte characters
+is defined.
 
    Each symbol has exactly one name.  Each name in an assembly language
 program refers to exactly one symbol.  You may use that symbol name any
@@ -3077,7 +3102,7 @@ the result is absolute.
           "Is Less Than Or Equal To"
 
           The comparison operators can be used as infix operators.  A
-          true results has a value of -1 whereas a false result has a
+          true result has a value of -1 whereas a false result has a
           value of 0.  Note, these operators perform signed comparisons.
 
   4. Lowest Precedence
@@ -3124,6 +3149,7 @@ Dependencies::.
 * Asciz::                       '.asciz "STRING"'...
 * Attach_to_group::             '.attach_to_group NAME'
 * Balign::                      '.balign [ABS-EXPR[, ABS-EXPR]]'
+* Bss::                         '.bss SUBSECTION'
 * Bundle directives::           '.bundle_align_mode ABS-EXPR', etc
 * Byte::                        '.byte EXPRESSIONS'
 * CFI directives::		'.cfi_startproc [simple]', '.cfi_endproc', etc.
@@ -3389,7 +3415,7 @@ has been created.  Note if the group section does not exist at the point
 that this directive is used then it will be created.
 
 
-File: as.info,  Node: Balign,  Next: Bundle directives,  Prev: Attach_to_group,  Up: Pseudo Ops
+File: as.info,  Node: Balign,  Next: Bss,  Prev: Attach_to_group,  Up: Pseudo Ops
 
 7.8 '.balign[wl] [ABS-EXPR[, ABS-EXPR[, ABS-EXPR]]]'
 ====================================================
@@ -3427,13 +3453,25 @@ depends upon the endianness of the processor).  If it skips 1 or 3
 bytes, the fill value is undefined.
 
 
-File: as.info,  Node: Bundle directives,  Next: Byte,  Prev: Balign,  Up: Pseudo Ops
+File: as.info,  Node: Bss,  Next: Bundle directives,  Prev: Balign,  Up: Pseudo Ops
 
-7.9 Bundle directives
+7.9 '.bss SUBSECTION'
 =====================
 
-7.9.1 '.bundle_align_mode ABS-EXPR'
------------------------------------
+'.bss' tells 'as' to assemble the following statements onto the end of
+the bss section.  For ELF based targets an optional SUBSECTION
+expression (which must evaluate to a positive integer) can be provided.
+In this case the statements are appended to the end of the indicated bss
+subsection.
+
+
+File: as.info,  Node: Bundle directives,  Next: Byte,  Prev: Bss,  Up: Pseudo Ops
+
+7.10 Bundle directives
+======================
+
+7.10.1 '.bundle_align_mode ABS-EXPR'
+------------------------------------
 
 '.bundle_align_mode' enables or disables "aligned instruction bundle"
 mode.  In this mode, sequences of adjacent instructions are grouped into
@@ -3454,8 +3492,8 @@ at the end of that bundle is filled with no-op instructions so the
 instruction starts in the next bundle.  As a corollary, it's an error if
 any single instruction's encoding is longer than the bundle size.
 
-7.9.2 '.bundle_lock' and '.bundle_unlock'
------------------------------------------
+7.10.2 '.bundle_lock' and '.bundle_unlock'
+------------------------------------------
 
 The '.bundle_lock' and directive '.bundle_unlock' directives allow
 explicit control over instruction bundle padding.  These directives are
@@ -3486,7 +3524,7 @@ by another closing '.bundle_unlock' so that there is the same number of
 
 File: as.info,  Node: Byte,  Next: CFI directives,  Prev: Bundle directives,  Up: Pseudo Ops
 
-7.10 '.byte EXPRESSIONS'
+7.11 '.byte EXPRESSIONS'
 ========================
 
 '.byte' expects zero or more expressions, separated by commas.  Each
@@ -3495,10 +3533,10 @@ expression is assembled into the next byte.
 
 File: as.info,  Node: CFI directives,  Next: Comm,  Prev: Byte,  Up: Pseudo Ops
 
-7.11 CFI directives
+7.12 CFI directives
 ===================
 
-7.11.1 '.cfi_sections SECTION_LIST'
+7.12.1 '.cfi_sections SECTION_LIST'
 -----------------------------------
 
 '.cfi_sections' may be used to specify whether CFI directives should
@@ -3519,7 +3557,7 @@ different arguments, provided that CFI generation has not yet started.
 Once CFI generation has started however the section list is fixed and
 any attempts to redefine it will result in an error.
 
-7.11.2 '.cfi_startproc [simple]'
+7.12.2 '.cfi_startproc [simple]'
 --------------------------------
 
 '.cfi_startproc' is used at the beginning of each function that should
@@ -3529,14 +3567,14 @@ structures.  Don't forget to close the function by '.cfi_endproc'.
    Unless '.cfi_startproc' is used along with parameter 'simple' it also
 emits some architecture dependent initial CFI instructions.
 
-7.11.3 '.cfi_endproc'
+7.12.3 '.cfi_endproc'
 ---------------------
 
 '.cfi_endproc' is used at the end of a function where it closes its
 unwind entry previously opened by '.cfi_startproc', and emits it to
 '.eh_frame'.
 
-7.11.4 '.cfi_personality ENCODING [, EXP]'
+7.12.4 '.cfi_personality ENCODING [, EXP]'
 ------------------------------------------
 
 '.cfi_personality' defines personality routine and its encoding.
@@ -3548,14 +3586,14 @@ location where personality can be loaded from, not the personality
 routine itself.  The default after '.cfi_startproc' is '.cfi_personality
 0xff', no personality routine.
 
-7.11.5 '.cfi_personality_id ID'
+7.12.5 '.cfi_personality_id ID'
 -------------------------------
 
 'cfi_personality_id' defines a personality routine by its index as
 defined in a compact unwinding format.  Only valid when generating
 compact EH frames (i.e.  with '.cfi_sections eh_frame_entry'.
 
-7.11.6 '.cfi_fde_data [OPCODE1 [, ...]]'
+7.12.6 '.cfi_fde_data [OPCODE1 [, ...]]'
 ----------------------------------------
 
 'cfi_fde_data' is used to describe the compact unwind opcodes to be used
@@ -3564,7 +3602,7 @@ for the current function.  These are emitted inline in the
 the '.gnu.extab' section otherwise.  Only valid when generating compact
 EH frames (i.e.  with '.cfi_sections eh_frame_entry'.
 
-7.11.7 '.cfi_lsda ENCODING [, EXP]'
+7.12.7 '.cfi_lsda ENCODING [, EXP]'
 -----------------------------------
 
 '.cfi_lsda' defines LSDA and its encoding.  ENCODING must be a constant
@@ -3574,7 +3612,7 @@ second argument should be a constant or a symbol name.  The default
 after '.cfi_startproc' is '.cfi_lsda 0xff', meaning that no LSDA is
 present.
 
-7.11.8 '.cfi_inline_lsda' [ALIGN]
+7.12.8 '.cfi_inline_lsda' [ALIGN]
 ---------------------------------
 
 '.cfi_inline_lsda' marks the start of a LSDA data section and switches
@@ -3592,42 +3630,42 @@ terminated by a section directive.
 alignment is specified as a power of two, as with the '.p2align'
 directive.
 
-7.11.9 '.cfi_def_cfa REGISTER, OFFSET'
+7.12.9 '.cfi_def_cfa REGISTER, OFFSET'
 --------------------------------------
 
 '.cfi_def_cfa' defines a rule for computing CFA as: take address from
 REGISTER and add OFFSET to it.
 
-7.11.10 '.cfi_def_cfa_register REGISTER'
+7.12.10 '.cfi_def_cfa_register REGISTER'
 ----------------------------------------
 
 '.cfi_def_cfa_register' modifies a rule for computing CFA. From now on
 REGISTER will be used instead of the old one.  Offset remains the same.
 
-7.11.11 '.cfi_def_cfa_offset OFFSET'
+7.12.11 '.cfi_def_cfa_offset OFFSET'
 ------------------------------------
 
 '.cfi_def_cfa_offset' modifies a rule for computing CFA. Register
 remains the same, but OFFSET is new.  Note that it is the absolute
 offset that will be added to a defined register to compute CFA address.
 
-7.11.12 '.cfi_adjust_cfa_offset OFFSET'
+7.12.12 '.cfi_adjust_cfa_offset OFFSET'
 ---------------------------------------
 
 Same as '.cfi_def_cfa_offset' but OFFSET is a relative value that is
 added/subtracted from the previous offset.
 
-7.11.13 '.cfi_offset REGISTER, OFFSET'
+7.12.13 '.cfi_offset REGISTER, OFFSET'
 --------------------------------------
 
 Previous value of REGISTER is saved at offset OFFSET from CFA.
 
-7.11.14 '.cfi_val_offset REGISTER, OFFSET'
+7.12.14 '.cfi_val_offset REGISTER, OFFSET'
 ------------------------------------------
 
 Previous value of REGISTER is CFA + OFFSET.
 
-7.11.15 '.cfi_rel_offset REGISTER, OFFSET'
+7.12.15 '.cfi_rel_offset REGISTER, OFFSET'
 ------------------------------------------
 
 Previous value of REGISTER is saved at offset OFFSET from the current
@@ -3635,30 +3673,30 @@ CFA register.  This is transformed to '.cfi_offset' using the known
 displacement of the CFA register from the CFA. This is often easier to
 use, because the number will match the code it's annotating.
 
-7.11.16 '.cfi_register REGISTER1, REGISTER2'
+7.12.16 '.cfi_register REGISTER1, REGISTER2'
 --------------------------------------------
 
 Previous value of REGISTER1 is saved in register REGISTER2.
 
-7.11.17 '.cfi_restore REGISTER'
+7.12.17 '.cfi_restore REGISTER'
 -------------------------------
 
 '.cfi_restore' says that the rule for REGISTER is now the same as it was
 at the beginning of the function, after all initial instruction added by
 '.cfi_startproc' were executed.
 
-7.11.18 '.cfi_undefined REGISTER'
+7.12.18 '.cfi_undefined REGISTER'
 ---------------------------------
 
 From now on the previous value of REGISTER can't be restored anymore.
 
-7.11.19 '.cfi_same_value REGISTER'
+7.12.19 '.cfi_same_value REGISTER'
 ----------------------------------
 
 Current value of REGISTER is the same like in the previous frame, i.e.
 no restoration needed.
 
-7.11.20 '.cfi_remember_state' and '.cfi_restore_state'
+7.12.20 '.cfi_remember_state' and '.cfi_restore_state'
 ------------------------------------------------------
 
 '.cfi_remember_state' pushes the set of rules for every register onto an
@@ -3705,30 +3743,30 @@ size.  Instead, we can write:
 same as before the first '.cfi_restore' without having to use multiple
 '.cfi' directives.
 
-7.11.21 '.cfi_return_column REGISTER'
+7.12.21 '.cfi_return_column REGISTER'
 -------------------------------------
 
 Change return column REGISTER, i.e.  the return address is either
 directly in REGISTER or can be accessed by rules for REGISTER.
 
-7.11.22 '.cfi_signal_frame'
+7.12.22 '.cfi_signal_frame'
 ---------------------------
 
 Mark current function as signal trampoline.
 
-7.11.23 '.cfi_window_save'
+7.12.23 '.cfi_window_save'
 --------------------------
 
 SPARC register window has been saved.
 
-7.11.24 '.cfi_escape' EXPRESSION[, ...]
+7.12.24 '.cfi_escape' EXPRESSION[, ...]
 ---------------------------------------
 
 Allows the user to add arbitrary bytes to the unwind info.  One might
 use this to add OS-specific CFI opcodes, or generic CFI opcodes that GAS
 does not yet support.
 
-7.11.25 '.cfi_val_encoded_addr REGISTER, ENCODING, LABEL'
+7.12.25 '.cfi_val_encoded_addr REGISTER, ENCODING, LABEL'
 ---------------------------------------------------------
 
 The current value of REGISTER is LABEL.  The value of LABEL will be
@@ -3744,7 +3782,7 @@ another register.
 
 File: as.info,  Node: Comm,  Next: Data,  Prev: CFI directives,  Up: Pseudo Ops
 
-7.12 '.comm SYMBOL , LENGTH '
+7.13 '.comm SYMBOL , LENGTH '
 =============================
 
 '.comm' declares a common symbol named SYMBOL.  When linking, a common
@@ -3784,7 +3822,7 @@ strictly aligned.
 
 File: as.info,  Node: Data,  Next: Dc,  Prev: Comm,  Up: Pseudo Ops
 
-7.13 '.data SUBSECTION'
+7.14 '.data SUBSECTION'
 =======================
 
 '.data' tells 'as' to assemble the following statements onto the end of
@@ -3794,7 +3832,7 @@ expression).  If SUBSECTION is omitted, it defaults to zero.
 
 File: as.info,  Node: Dc,  Next: Dcb,  Prev: Data,  Up: Pseudo Ops
 
-7.14 '.dc[SIZE] EXPRESSIONS'
+7.15 '.dc[SIZE] EXPRESSIONS'
 ============================
 
 The '.dc' directive expects zero or more EXPRESSIONS separated by
@@ -3827,7 +3865,7 @@ floating point values.
 
 File: as.info,  Node: Dcb,  Next: Ds,  Prev: Dc,  Up: Pseudo Ops
 
-7.15 '.dcb[SIZE] NUMBER [,FILL]'
+7.16 '.dcb[SIZE] NUMBER [,FILL]'
 ================================
 
 This directive emits NUMBER copies of FILL, each of SIZE bytes.  Both
@@ -3856,7 +3894,7 @@ floating point values.
 
 File: as.info,  Node: Ds,  Next: Def,  Prev: Dcb,  Up: Pseudo Ops
 
-7.16 '.ds[SIZE] NUMBER [,FILL]'
+7.17 '.ds[SIZE] NUMBER [,FILL]'
 ===============================
 
 This directive emits NUMBER copies of FILL, each of SIZE bytes.  Both
@@ -3871,13 +3909,14 @@ be one of:
 ''.l''
      Emits 4-byte values.
 ''.p''
-     Emits 12-byte values.
+     Emits values with size matching packed-decimal floating-point ones.
 ''.s''
      Emits 4-byte values.
 ''.w''
      Emits 2-byte values.
 ''.x''
-     Emits 12-byte values.
+     Emits values with size matching long double precision
+     floating-point ones.
 
    Note - unlike the '.dcb' directive the '.d', '.s' and '.x' suffixes
 do not indicate that floating-point values are to be inserted.
@@ -3889,7 +3928,7 @@ do not indicate that floating-point values are to be inserted.
 
 File: as.info,  Node: Def,  Next: Desc,  Prev: Ds,  Up: Pseudo Ops
 
-7.17 '.def NAME'
+7.18 '.def NAME'
 ================
 
 Begin defining debugging information for a symbol NAME; the definition
@@ -3898,7 +3937,7 @@ extends until the '.endef' directive is encountered.
 
 File: as.info,  Node: Desc,  Next: Dim,  Prev: Def,  Up: Pseudo Ops
 
-7.18 '.desc SYMBOL, ABS-EXPRESSION'
+7.19 '.desc SYMBOL, ABS-EXPRESSION'
 ===================================
 
 This directive sets the descriptor of the symbol (*note Symbol
@@ -3912,7 +3951,7 @@ configured for COFF.
 
 File: as.info,  Node: Dim,  Next: Double,  Prev: Desc,  Up: Pseudo Ops
 
-7.19 '.dim'
+7.20 '.dim'
 ===========
 
 This directive is generated by compilers to include auxiliary debugging
@@ -3922,7 +3961,7 @@ information in the symbol table.  It is only permitted inside
 
 File: as.info,  Node: Double,  Next: Eject,  Prev: Dim,  Up: Pseudo Ops
 
-7.20 '.double FLONUMS'
+7.21 '.double FLONUMS'
 ======================
 
 '.double' expects zero or more flonums, separated by commas.  It
@@ -3933,7 +3972,7 @@ Dependencies::.
 
 File: as.info,  Node: Eject,  Next: Else,  Prev: Double,  Up: Pseudo Ops
 
-7.21 '.eject'
+7.22 '.eject'
 =============
 
 Force a page break at this point, when generating assembly listings.
@@ -3941,7 +3980,7 @@ Force a page break at this point, when generating assembly listings.
 
 File: as.info,  Node: Else,  Next: Elseif,  Prev: Eject,  Up: Pseudo Ops
 
-7.22 '.else'
+7.23 '.else'
 ============
 
 '.else' is part of the 'as' support for conditional assembly; see *note
@@ -3951,7 +3990,7 @@ if the condition for the preceding '.if' was false.
 
 File: as.info,  Node: Elseif,  Next: End,  Prev: Else,  Up: Pseudo Ops
 
-7.23 '.elseif'
+7.24 '.elseif'
 ==============
 
 '.elseif' is part of the 'as' support for conditional assembly; see
@@ -3961,7 +4000,7 @@ would otherwise fill the entire '.else' section.
 
 File: as.info,  Node: End,  Next: Endef,  Prev: Elseif,  Up: Pseudo Ops
 
-7.24 '.end'
+7.25 '.end'
 ===========
 
 '.end' marks the end of the assembly file.  'as' does not process
@@ -3970,7 +4009,7 @@ anything in the file past the '.end' directive.
 
 File: as.info,  Node: Endef,  Next: Endfunc,  Prev: End,  Up: Pseudo Ops
 
-7.25 '.endef'
+7.26 '.endef'
 =============
 
 This directive flags the end of a symbol definition begun with '.def'.
@@ -3978,7 +4017,7 @@ This directive flags the end of a symbol definition begun with '.def'.
 
 File: as.info,  Node: Endfunc,  Next: Endif,  Prev: Endef,  Up: Pseudo Ops
 
-7.26 '.endfunc'
+7.27 '.endfunc'
 ===============
 
 '.endfunc' marks the end of a function specified with '.func'.
@@ -3986,7 +4025,7 @@ File: as.info,  Node: Endfunc,  Next: Endif,  Prev: Endef,  Up: Pseudo Ops
 
 File: as.info,  Node: Endif,  Next: Equ,  Prev: Endfunc,  Up: Pseudo Ops
 
-7.27 '.endif'
+7.28 '.endif'
 =============
 
 '.endif' is part of the 'as' support for conditional assembly; it marks
@@ -3996,7 +4035,7 @@ the end of a block of code that is only assembled conditionally.  *Note
 
 File: as.info,  Node: Equ,  Next: Equiv,  Prev: Endif,  Up: Pseudo Ops
 
-7.28 '.equ SYMBOL, EXPRESSION'
+7.29 '.equ SYMBOL, EXPRESSION'
 ==============================
 
 This directive sets the value of SYMBOL to EXPRESSION.  It is synonymous
@@ -4011,7 +4050,7 @@ protected from later redefinition.  Compare *note Equiv::.
 
 File: as.info,  Node: Equiv,  Next: Eqv,  Prev: Equ,  Up: Pseudo Ops
 
-7.29 '.equiv SYMBOL, EXPRESSION'
+7.30 '.equiv SYMBOL, EXPRESSION'
 ================================
 
 The '.equiv' directive is like '.equ' and '.set', except that the
@@ -4030,7 +4069,7 @@ equivalent to
 
 File: as.info,  Node: Eqv,  Next: Err,  Prev: Equiv,  Up: Pseudo Ops
 
-7.30 '.eqv SYMBOL, EXPRESSION'
+7.31 '.eqv SYMBOL, EXPRESSION'
 ==============================
 
 The '.eqv' directive is like '.equiv', but no attempt is made to
@@ -4041,7 +4080,7 @@ current value is taken.
 
 File: as.info,  Node: Err,  Next: Error,  Prev: Eqv,  Up: Pseudo Ops
 
-7.31 '.err'
+7.32 '.err'
 ===========
 
 If 'as' assembles a '.err' directive, it will print an error message
@@ -4052,7 +4091,7 @@ code.
 
 File: as.info,  Node: Error,  Next: Exitm,  Prev: Err,  Up: Pseudo Ops
 
-7.32 '.error "STRING"'
+7.33 '.error "STRING"'
 ======================
 
 Similarly to '.err', this directive emits an error, but you can specify
@@ -4065,7 +4104,7 @@ file"'.  *Note Error and Warning Messages: Errors.
 
 File: as.info,  Node: Exitm,  Next: Extern,  Prev: Error,  Up: Pseudo Ops
 
-7.33 '.exitm'
+7.34 '.exitm'
 =============
 
 Exit early from the current macro definition.  *Note Macro::.
@@ -4073,7 +4112,7 @@ Exit early from the current macro definition.  *Note Macro::.
 
 File: as.info,  Node: Extern,  Next: Fail,  Prev: Exitm,  Up: Pseudo Ops
 
-7.34 '.extern'
+7.35 '.extern'
 ==============
 
 '.extern' is accepted in the source program--for compatibility with
@@ -4083,7 +4122,7 @@ as external.
 
 File: as.info,  Node: Fail,  Next: File,  Prev: Extern,  Up: Pseudo Ops
 
-7.35 '.fail EXPRESSION'
+7.36 '.fail EXPRESSION'
 =======================
 
 Generates an error or a warning.  If the value of the EXPRESSION is 500
@@ -4095,7 +4134,7 @@ nested macros or conditional assembly.
 
 File: as.info,  Node: File,  Next: Fill,  Prev: Fail,  Up: Pseudo Ops
 
-7.36 '.file'
+7.37 '.file'
 ============
 
 There are two different versions of the '.file' directive.  Targets that
@@ -4135,22 +4174,25 @@ filename table is shared with the '.debug_info' section of the DWARF2
 debugging information, and thus the user must know the exact indices
 that table entries will have.
 
-   If DWARF-5 support has been enabled via the '-gdwarf-5' option then
-an extended version of the 'file' is also allowed:
+   If DWARF5 support has been enabled via the '-gdwarf-5' option then an
+extended version of '.file' is also allowed:
 
      .file FILENO [DIRNAME] FILENAME [md5 VALUE]
 
    With this version a separate directory name is allowed, although if
-this is used then FILENAME should not contain any directory components.
-In addtion an md5 hash value of the contents of FILENAME can be
-provided.  This will be stored in the the file table as well, and can be
-used by tools reading the debug information to verify that the contents
-of the source file match the contents of the compiled file.
+this is used then FILENAME should not contain any directory component,
+except for FILENO equal to 0: in this case, DIRNAME is expected to be
+the current directory and FILENAME the currently processed file, and the
+latter need not be located in the former.  In addtion an MD5 hash value
+of the contents of FILENAME can be provided.  This will be stored in the
+the file table as well, and can be used by tools reading the debug
+information to verify that the contents of the source file match the
+contents of the compiled file.
 
 
 File: as.info,  Node: Fill,  Next: Float,  Prev: File,  Up: Pseudo Ops
 
-7.37 '.fill REPEAT , SIZE , VALUE'
+7.38 '.fill REPEAT , SIZE , VALUE'
 ==================================
 
 REPEAT, SIZE and VALUE are absolute expressions.  This emits REPEAT
@@ -4171,7 +4213,7 @@ are absent, SIZE is assumed to be 1.
 
 File: as.info,  Node: Float,  Next: Func,  Prev: Fill,  Up: Pseudo Ops
 
-7.38 '.float FLONUMS'
+7.39 '.float FLONUMS'
 =====================
 
 This directive assembles zero or more flonums, separated by commas.  It
@@ -4182,7 +4224,7 @@ Dependencies::.
 
 File: as.info,  Node: Func,  Next: Global,  Prev: Float,  Up: Pseudo Ops
 
-7.39 '.func NAME[,LABEL]'
+7.40 '.func NAME[,LABEL]'
 =========================
 
 '.func' emits debugging information to denote function NAME, and is
@@ -4196,7 +4238,7 @@ function must be terminated with '.endfunc'.
 
 File: as.info,  Node: Global,  Next: Gnu_attribute,  Prev: Func,  Up: Pseudo Ops
 
-7.40 '.global SYMBOL', '.globl SYMBOL'
+7.41 '.global SYMBOL', '.globl SYMBOL'
 ======================================
 
 '.global' makes the symbol visible to 'ld'.  If you define SYMBOL in
@@ -4215,7 +4257,7 @@ as well.  *Note HPPA Assembler Directives: HPPA Directives.
 
 File: as.info,  Node: Gnu_attribute,  Next: Hidden,  Prev: Global,  Up: Pseudo Ops
 
-7.41 '.gnu_attribute TAG,VALUE'
+7.42 '.gnu_attribute TAG,VALUE'
 ===============================
 
 Record a GNU object attribute for this file.  *Note Object Attributes::.
@@ -4223,7 +4265,7 @@ Record a GNU object attribute for this file.  *Note Object Attributes::.
 
 File: as.info,  Node: Hidden,  Next: hword,  Prev: Gnu_attribute,  Up: Pseudo Ops
 
-7.42 '.hidden NAMES'
+7.43 '.hidden NAMES'
 ====================
 
 This is one of the ELF visibility directives.  The other two are
@@ -4239,7 +4281,7 @@ as well.
 
 File: as.info,  Node: hword,  Next: Ident,  Prev: Hidden,  Up: Pseudo Ops
 
-7.43 '.hword EXPRESSIONS'
+7.44 '.hword EXPRESSIONS'
 =========================
 
 This expects zero or more EXPRESSIONS, and emits a 16 bit number for
@@ -4251,7 +4293,7 @@ architecture, it may also be a synonym for '.word'.
 
 File: as.info,  Node: Ident,  Next: If,  Prev: hword,  Up: Pseudo Ops
 
-7.44 '.ident'
+7.45 '.ident'
 =============
 
 This directive is used by some assemblers to place tags in object files.
@@ -4265,7 +4307,7 @@ ELF, comments are emitted to the '.comment' section.
 
 File: as.info,  Node: If,  Next: Incbin,  Prev: Ident,  Up: Pseudo Ops
 
-7.45 '.if ABSOLUTE EXPRESSION'
+7.46 '.if ABSOLUTE EXPRESSION'
 ==============================
 
 '.if' marks the beginning of a section of code which is only considered
@@ -4346,7 +4388,7 @@ subsequent '.else' block.
 
 File: as.info,  Node: Incbin,  Next: Include,  Prev: If,  Up: Pseudo Ops
 
-7.46 '.incbin "FILE"[,SKIP[,COUNT]]'
+7.47 '.incbin "FILE"[,SKIP[,COUNT]]'
 ====================================
 
 The 'incbin' directive includes FILE verbatim at the current location.
@@ -4363,7 +4405,7 @@ before and after the 'incbin' directive.
 
 File: as.info,  Node: Include,  Next: Int,  Prev: Incbin,  Up: Pseudo Ops
 
-7.47 '.include "FILE"'
+7.48 '.include "FILE"'
 ======================
 
 This directive provides a way to include supporting files at specified
@@ -4377,7 +4419,7 @@ FILE.
 
 File: as.info,  Node: Int,  Next: Internal,  Prev: Include,  Up: Pseudo Ops
 
-7.48 '.int EXPRESSIONS'
+7.49 '.int EXPRESSIONS'
 =======================
 
 Expect zero or more EXPRESSIONS, of any section, separated by commas.
@@ -4388,7 +4430,7 @@ what kind of target the assembly is for.
 
 File: as.info,  Node: Internal,  Next: Irp,  Prev: Int,  Up: Pseudo Ops
 
-7.49 '.internal NAMES'
+7.50 '.internal NAMES'
 ======================
 
 This is one of the ELF visibility directives.  The other two are
@@ -4405,7 +4447,7 @@ symbols as well.
 
 File: as.info,  Node: Irp,  Next: Irpc,  Prev: Internal,  Up: Pseudo Ops
 
-7.50 '.irp SYMBOL,VALUES'...
+7.51 '.irp SYMBOL,VALUES'...
 ============================
 
 Evaluate a sequence of statements assigning different values to SYMBOL.
@@ -4433,7 +4475,7 @@ use \SYMBOL.
 
 File: as.info,  Node: Irpc,  Next: Lcomm,  Prev: Irp,  Up: Pseudo Ops
 
-7.51 '.irpc SYMBOL,VALUES'...
+7.52 '.irpc SYMBOL,VALUES'...
 =============================
 
 Evaluate a sequence of statements assigning different values to SYMBOL.
@@ -4462,7 +4504,7 @@ at *Note Macro::.
 
 File: as.info,  Node: Lcomm,  Next: Lflags,  Prev: Irpc,  Up: Pseudo Ops
 
-7.52 '.lcomm SYMBOL , LENGTH'
+7.53 '.lcomm SYMBOL , LENGTH'
 =============================
 
 Reserve LENGTH (an absolute expression) bytes for a local common denoted
@@ -4481,7 +4523,7 @@ section.
 
 File: as.info,  Node: Lflags,  Next: Line,  Prev: Lcomm,  Up: Pseudo Ops
 
-7.53 '.lflags'
+7.54 '.lflags'
 ==============
 
 'as' accepts this directive, for compatibility with other assemblers,
@@ -4490,7 +4532,7 @@ but ignores it.
 
 File: as.info,  Node: Line,  Next: Linkonce,  Prev: Lflags,  Up: Pseudo Ops
 
-7.54 '.line LINE-NUMBER'
+7.55 '.line LINE-NUMBER'
 ========================
 
 Change the logical line number.  LINE-NUMBER must be an absolute
@@ -4511,7 +4553,7 @@ compilers to generate auxiliary symbol information for debugging.
 
 File: as.info,  Node: Linkonce,  Next: List,  Prev: Line,  Up: Pseudo Ops
 
-7.55 '.linkonce [TYPE]'
+7.56 '.linkonce [TYPE]'
 =======================
 
 Mark the current section so that the linker only includes a single copy
@@ -4546,7 +4588,7 @@ following strings.  For example:
 
 File: as.info,  Node: List,  Next: Ln,  Prev: Linkonce,  Up: Pseudo Ops
 
-7.56 '.list'
+7.57 '.list'
 ============
 
 Control (in conjunction with the '.nolist' directive) whether or not
@@ -4562,7 +4604,7 @@ initial value of the listing counter is one.
 
 File: as.info,  Node: Ln,  Next: Loc,  Prev: List,  Up: Pseudo Ops
 
-7.57 '.ln LINE-NUMBER'
+7.58 '.ln LINE-NUMBER'
 ======================
 
 '.ln' is a synonym for '.line'.
@@ -4570,7 +4612,7 @@ File: as.info,  Node: Ln,  Next: Loc,  Prev: List,  Up: Pseudo Ops
 
 File: as.info,  Node: Loc,  Next: Loc_mark_labels,  Prev: Ln,  Up: Pseudo Ops
 
-7.58 '.loc FILENO LINENO [COLUMN] [OPTIONS]'
+7.59 '.loc FILENO LINENO [COLUMN] [OPTIONS]'
 ============================================
 
 When emitting DWARF2 line number information, the '.loc' directive will
@@ -4625,7 +4667,7 @@ directives.
 
 File: as.info,  Node: Loc_mark_labels,  Next: Local,  Prev: Loc,  Up: Pseudo Ops
 
-7.59 '.loc_mark_labels ENABLE'
+7.60 '.loc_mark_labels ENABLE'
 ==============================
 
 When emitting DWARF2 line number information, the '.loc_mark_labels'
@@ -4637,7 +4679,7 @@ or 0, to enable or disable this function respectively.
 
 File: as.info,  Node: Local,  Next: Long,  Prev: Loc_mark_labels,  Up: Pseudo Ops
 
-7.60 '.local NAMES'
+7.61 '.local NAMES'
 ===================
 
 This directive, which is available for ELF targets, marks each symbol in
@@ -4653,7 +4695,7 @@ Comm::) to define aligned local common data.
 
 File: as.info,  Node: Long,  Next: Macro,  Prev: Local,  Up: Pseudo Ops
 
-7.61 '.long EXPRESSIONS'
+7.62 '.long EXPRESSIONS'
 ========================
 
 '.long' is the same as '.int'.  *Note '.int': Int.
@@ -4661,7 +4703,7 @@ File: as.info,  Node: Long,  Next: Macro,  Prev: Local,  Up: Pseudo Ops
 
 File: as.info,  Node: Macro,  Next: MRI,  Prev: Long,  Up: Pseudo Ops
 
-7.62 '.macro'
+7.63 '.macro'
 =============
 
 The commands '.macro' and '.endm' allow you to define macros that
@@ -4794,6 +4836,31 @@ With that definition, 'SUM 0,5' is equivalent to this assembly input:
      pseudo ops also applies to the identifiers used in '.irp' (*note
      Irp::) and '.irpc' (*note Irpc::) as well.
 
+     Another issue can occur with the actual arguments passed during
+     macro invocation: Multiple arguments can be separated by blanks or
+     commas.  To have arguments actually contain blanks or commas (or
+     potentially other non-alpha- numeric characters), individual
+     arguments will need to be enclosed in either parentheses '()',
+     square brackets '[]', or double quote '"' characters.  The latter
+     may be the only viable option in certain situations, as only double
+     quotes are actually stripped while establishing arguments.  It may
+     be important to be aware of two escaping models used when
+     processing such quoted argument strings: For one two adjacent
+     double quotes represent a single double quote in the resulting
+     argument, going along the lines of the stripping of the enclosing
+     quotes.  But then double quotes can also be escaped by a backslash
+     '\', but this backslash will not be retained in the resulting
+     actual argument as then seen / used while expanding the macro.
+
+     As a consequence to the first of these escaping mechanisms two
+     string literals intended to be representing separate macro
+     arguments need to be separated by white space (or, better yet, by a
+     comma).  To state it differently, such adjacent string literals -
+     even if separated only by a blank - will not be concatenated when
+     determining macro arguments, even if they're only separated by
+     white space.  This is unlike certain other pseudo ops, e.g.
+     '.ascii'.
+
 '.endm'
      Mark the end of a macro definition.
 
@@ -4813,7 +4880,7 @@ With that definition, 'SUM 0,5' is equivalent to this assembly input:
 
 File: as.info,  Node: MRI,  Next: Noaltmacro,  Prev: Macro,  Up: Pseudo Ops
 
-7.63 '.mri VAL'
+7.64 '.mri VAL'
 ===============
 
 If VAL is non-zero, this tells 'as' to enter MRI mode.  If VAL is zero,
@@ -4824,7 +4891,7 @@ MRI mode: M.
 
 File: as.info,  Node: Noaltmacro,  Next: Nolist,  Prev: MRI,  Up: Pseudo Ops
 
-7.64 '.noaltmacro'
+7.65 '.noaltmacro'
 ==================
 
 Disable alternate macro mode.  *Note Altmacro::.
@@ -4832,7 +4899,7 @@ Disable alternate macro mode.  *Note Altmacro::.
 
 File: as.info,  Node: Nolist,  Next: Nop,  Prev: Noaltmacro,  Up: Pseudo Ops
 
-7.65 '.nolist'
+7.66 '.nolist'
 ==============
 
 Control (in conjunction with the '.list' directive) whether or not
@@ -4844,7 +4911,7 @@ whenever the counter is greater than zero.
 
 File: as.info,  Node: Nop,  Next: Nops,  Prev: Nolist,  Up: Pseudo Ops
 
-7.66 '.nop [SIZE]'
+7.67 '.nop [SIZE]'
 ==================
 
 This directive emits no-op instructions.  It is provided on all
@@ -4860,7 +4927,7 @@ using '.nop' with SIZE.
 
 File: as.info,  Node: Nops,  Next: Octa,  Prev: Nop,  Up: Pseudo Ops
 
-7.67 '.nops SIZE[, CONTROL]'
+7.68 '.nops SIZE[, CONTROL]'
 ============================
 
 This directive emits no-op instructions.  It is specific to the Intel
@@ -4880,7 +4947,7 @@ supported size.
 
 File: as.info,  Node: Octa,  Next: Offset,  Prev: Nops,  Up: Pseudo Ops
 
-7.68 '.octa BIGNUMS'
+7.69 '.octa BIGNUMS'
 ====================
 
 This directive expects zero or more bignums, separated by commas.  For
@@ -4892,7 +4959,7 @@ hence _octa_-word for 16 bytes.
 
 File: as.info,  Node: Offset,  Next: Org,  Prev: Octa,  Up: Pseudo Ops
 
-7.69 '.offset LOC'
+7.70 '.offset LOC'
 ==================
 
 Set the location counter to LOC in the absolute section.  LOC must be an
@@ -4902,7 +4969,7 @@ with absolute values.  Do not confuse it with the '.org' directive.
 
 File: as.info,  Node: Org,  Next: P2align,  Prev: Offset,  Up: Pseudo Ops
 
-7.70 '.org NEW-LC , FILL'
+7.71 '.org NEW-LC , FILL'
 =========================
 
 Advance the location counter of the current section to NEW-LC.  NEW-LC
@@ -4931,7 +4998,7 @@ expression.  If the comma and FILL are omitted, FILL defaults to zero.
 
 File: as.info,  Node: P2align,  Next: PopSection,  Prev: Org,  Up: Pseudo Ops
 
-7.71 '.p2align[wl] [ABS-EXPR[, ABS-EXPR[, ABS-EXPR]]]'
+7.72 '.p2align[wl] [ABS-EXPR[, ABS-EXPR[, ABS-EXPR]]]'
 ======================================================
 
 Pad the location counter (in the current subsection) to a particular
@@ -4970,7 +5037,7 @@ bytes, the fill value is undefined.
 
 File: as.info,  Node: PopSection,  Next: Previous,  Prev: P2align,  Up: Pseudo Ops
 
-7.72 '.popsection'
+7.73 '.popsection'
 ==================
 
 This is one of the ELF section stack manipulation directives.  The
@@ -4985,7 +5052,7 @@ popped off the stack.
 
 File: as.info,  Node: Previous,  Next: Print,  Prev: PopSection,  Up: Pseudo Ops
 
-7.73 '.previous'
+7.74 '.previous'
 ================
 
 This is one of the ELF section stack manipulation directives.  The
@@ -5033,7 +5100,7 @@ section with the top section on the section stack.
 
 File: as.info,  Node: Print,  Next: Protected,  Prev: Previous,  Up: Pseudo Ops
 
-7.74 '.print STRING'
+7.75 '.print STRING'
 ====================
 
 'as' will print STRING on the standard output during assembly.  You must
@@ -5042,7 +5109,7 @@ put STRING in double quotes.
 
 File: as.info,  Node: Protected,  Next: Psize,  Prev: Print,  Up: Pseudo Ops
 
-7.75 '.protected NAMES'
+7.76 '.protected NAMES'
 =======================
 
 This is one of the ELF visibility directives.  The other two are
@@ -5058,7 +5125,7 @@ would normally preempt this.
 
 File: as.info,  Node: Psize,  Next: Purgem,  Prev: Protected,  Up: Pseudo Ops
 
-7.76 '.psize LINES , COLUMNS'
+7.77 '.psize LINES , COLUMNS'
 =============================
 
 Use this directive to declare the number of lines--and, optionally, the
@@ -5077,7 +5144,7 @@ explicitly specified with '.eject'.
 
 File: as.info,  Node: Purgem,  Next: PushSection,  Prev: Psize,  Up: Pseudo Ops
 
-7.77 '.purgem NAME'
+7.78 '.purgem NAME'
 ===================
 
 Undefine the macro NAME, so that later uses of the string will not be
@@ -5086,7 +5153,7 @@ expanded.  *Note Macro::.
 
 File: as.info,  Node: PushSection,  Next: Quad,  Prev: Purgem,  Up: Pseudo Ops
 
-7.78 '.pushsection NAME [, SUBSECTION] [, "FLAGS"[, @TYPE[,ARGUMENTS]]]'
+7.79 '.pushsection NAME [, SUBSECTION] [, "FLAGS"[, @TYPE[,ARGUMENTS]]]'
 ========================================================================
 
 This is one of the ELF section stack manipulation directives.  The
@@ -5103,7 +5170,7 @@ Section::) directive.
 
 File: as.info,  Node: Quad,  Next: Reloc,  Prev: PushSection,  Up: Pseudo Ops
 
-7.79 '.quad BIGNUMS'
+7.80 '.quad BIGNUMS'
 ====================
 
 '.quad' expects zero or more bignums, separated by commas.  For each
@@ -5117,7 +5184,7 @@ hence _quad_-word for 8 bytes.
 
 File: as.info,  Node: Reloc,  Next: Rept,  Prev: Quad,  Up: Pseudo Ops
 
-7.80 '.reloc OFFSET, RELOC_NAME[, EXPRESSION]'
+7.81 '.reloc OFFSET, RELOC_NAME[, EXPRESSION]'
 ==============================================
 
 Generate a relocation at OFFSET of type RELOC_NAME with value
@@ -5133,7 +5200,7 @@ support addends stored in the section.
 
 File: as.info,  Node: Rept,  Next: Sbttl,  Prev: Reloc,  Up: Pseudo Ops
 
-7.81 '.rept COUNT'
+7.82 '.rept COUNT'
 ==================
 
 Repeat the sequence of lines between the '.rept' directive and the next
@@ -5158,7 +5225,7 @@ were zero.
 
 File: as.info,  Node: Sbttl,  Next: Scl,  Prev: Rept,  Up: Pseudo Ops
 
-7.82 '.sbttl "SUBHEADING"'
+7.83 '.sbttl "SUBHEADING"'
 ==========================
 
 Use SUBHEADING as the title (third line, immediately after the title
@@ -5170,7 +5237,7 @@ if it appears within ten lines of the top of a page.
 
 File: as.info,  Node: Scl,  Next: Section,  Prev: Sbttl,  Up: Pseudo Ops
 
-7.83 '.scl CLASS'
+7.84 '.scl CLASS'
 =================
 
 Set the storage-class value for a symbol.  This directive may only be
@@ -5181,7 +5248,7 @@ debugging information.
 
 File: as.info,  Node: Section,  Next: Set,  Prev: Scl,  Up: Pseudo Ops
 
-7.84 '.section NAME'
+7.85 '.section NAME'
 ====================
 
 Use the '.section' directive to assemble the following code into a
@@ -5461,7 +5528,7 @@ work.
 
 File: as.info,  Node: Set,  Next: Short,  Prev: Section,  Up: Pseudo Ops
 
-7.85 '.set SYMBOL, EXPRESSION'
+7.86 '.set SYMBOL, EXPRESSION'
 ==============================
 
 Set the value of SYMBOL to EXPRESSION.  This changes SYMBOL's value and
@@ -5487,7 +5554,7 @@ EXPRESSION' instead.
 
 File: as.info,  Node: Short,  Next: Single,  Prev: Set,  Up: Pseudo Ops
 
-7.86 '.short EXPRESSIONS'
+7.87 '.short EXPRESSIONS'
 =========================
 
 '.short' is normally the same as '.word'.  *Note '.word': Word.
@@ -5498,7 +5565,7 @@ numbers of different lengths.  *Note Machine Dependencies::.
 
 File: as.info,  Node: Single,  Next: Size,  Prev: Short,  Up: Pseudo Ops
 
-7.87 '.single FLONUMS'
+7.88 '.single FLONUMS'
 ======================
 
 This directive assembles zero or more flonums, separated by commas.  It
@@ -5509,7 +5576,7 @@ Dependencies::.
 
 File: as.info,  Node: Size,  Next: Skip,  Prev: Single,  Up: Pseudo Ops
 
-7.88 '.size'
+7.89 '.size'
 ============
 
 This directive is used to set the size associated with a symbol.
@@ -5537,7 +5604,7 @@ function symbols.
 
 File: as.info,  Node: Skip,  Next: Sleb128,  Prev: Size,  Up: Pseudo Ops
 
-7.89 '.skip SIZE [,FILL]'
+7.90 '.skip SIZE [,FILL]'
 =========================
 
 This directive emits SIZE bytes, each of value FILL.  Both SIZE and FILL
@@ -5547,7 +5614,7 @@ assumed to be zero.  This is the same as '.space'.
 
 File: as.info,  Node: Sleb128,  Next: Space,  Prev: Skip,  Up: Pseudo Ops
 
-7.90 '.sleb128 EXPRESSIONS'
+7.91 '.sleb128 EXPRESSIONS'
 ===========================
 
 SLEB128 stands for "signed little endian base 128."  This is a compact,
@@ -5557,7 +5624,7 @@ debugging format.  *Note '.uleb128': Uleb128.
 
 File: as.info,  Node: Space,  Next: Stab,  Prev: Sleb128,  Up: Pseudo Ops
 
-7.91 '.space SIZE [,FILL]'
+7.92 '.space SIZE [,FILL]'
 ==========================
 
 This directive emits SIZE bytes, each of value FILL.  Both SIZE and FILL
@@ -5573,7 +5640,7 @@ assumed to be zero.  This is the same as '.skip'.
 
 File: as.info,  Node: Stab,  Next: String,  Prev: Space,  Up: Pseudo Ops
 
-7.92 '.stabd, .stabn, .stabs'
+7.93 '.stabd, .stabn, .stabs'
 =============================
 
 There are three directives that begin '.stab'.  All emit symbols (*note
@@ -5628,7 +5695,7 @@ earlier assemblers!
 
 File: as.info,  Node: String,  Next: Struct,  Prev: Stab,  Up: Pseudo Ops
 
-7.93 '.string' "STR", '.string8' "STR", '.string16'
+7.94 '.string' "STR", '.string8' "STR", '.string16'
 ===================================================
 
 "STR", '.string32' "STR", '.string64' "STR"
@@ -5653,7 +5720,7 @@ are stored in target endianness byte order.
 
 File: as.info,  Node: Struct,  Next: SubSection,  Prev: String,  Up: Pseudo Ops
 
-7.94 '.struct EXPRESSION'
+7.95 '.struct EXPRESSION'
 =========================
 
 Switch to the absolute section, and set the section offset to
@@ -5674,7 +5741,7 @@ section before further assembly.
 
 File: as.info,  Node: SubSection,  Next: Symver,  Prev: Struct,  Up: Pseudo Ops
 
-7.95 '.subsection NAME'
+7.96 '.subsection NAME'
 =======================
 
 This is one of the ELF section stack manipulation directives.  The
@@ -5689,7 +5756,7 @@ section stack in place of the then current top of stack subsection.
 
 File: as.info,  Node: Symver,  Next: Tag,  Prev: SubSection,  Up: Pseudo Ops
 
-7.96 '.symver'
+7.97 '.symver'
 ==============
 
 Use the '.symver' directive to bind symbols to specific version nodes
@@ -5744,7 +5811,7 @@ assembled, the symbol name, NAME, will be changed to NAME2@@NODENAME.
 
 File: as.info,  Node: Tag,  Next: Text,  Prev: Symver,  Up: Pseudo Ops
 
-7.97 '.tag STRUCTNAME'
+7.98 '.tag STRUCTNAME'
 ======================
 
 This directive is generated by compilers to include auxiliary debugging
@@ -5755,7 +5822,7 @@ the symbol table with instances of those structures.
 
 File: as.info,  Node: Text,  Next: Title,  Prev: Tag,  Up: Pseudo Ops
 
-7.98 '.text SUBSECTION'
+7.99 '.text SUBSECTION'
 =======================
 
 Tells 'as' to assemble the following statements onto the end of the text
@@ -5765,8 +5832,8 @@ SUBSECTION is omitted, subsection number zero is used.
 
 File: as.info,  Node: Title,  Next: Tls_common,  Prev: Text,  Up: Pseudo Ops
 
-7.99 '.title "HEADING"'
-=======================
+7.100 '.title "HEADING"'
+========================
 
 Use HEADING as the title (second line, immediately after the source file
 name and pagenumber) when generating assembly listings.
@@ -5777,7 +5844,7 @@ if it appears within ten lines of the top of a page.
 
 File: as.info,  Node: Tls_common,  Next: Type,  Prev: Title,  Up: Pseudo Ops
 
-7.100 '.tls_common SYMBOL, LENGTH[, ALIGNMENT]'
+7.101 '.tls_common SYMBOL, LENGTH[, ALIGNMENT]'
 ===============================================
 
 This directive behaves in the same way as the '.comm' directive (*note
@@ -5786,7 +5853,7 @@ Comm::) except that SYMBOL has type of STT_TLS instead of STT_OBJECT.
 
 File: as.info,  Node: Type,  Next: Uleb128,  Prev: Tls_common,  Up: Pseudo Ops
 
-7.101 '.type'
+7.102 '.type'
 =============
 
 This directive is used to set the type of a symbol.
@@ -5874,7 +5941,7 @@ above.
 
 File: as.info,  Node: Uleb128,  Next: Val,  Prev: Type,  Up: Pseudo Ops
 
-7.102 '.uleb128 EXPRESSIONS'
+7.103 '.uleb128 EXPRESSIONS'
 ============================
 
 ULEB128 stands for "unsigned little endian base 128."  This is a
@@ -5884,7 +5951,7 @@ symbolic debugging format.  *Note '.sleb128': Sleb128.
 
 File: as.info,  Node: Val,  Next: Version,  Prev: Uleb128,  Up: Pseudo Ops
 
-7.103 '.val ADDR'
+7.104 '.val ADDR'
 =================
 
 This directive, permitted only within '.def'/'.endef' pairs, records the
@@ -5893,7 +5960,7 @@ address ADDR as the value attribute of a symbol table entry.
 
 File: as.info,  Node: Version,  Next: VTableEntry,  Prev: Val,  Up: Pseudo Ops
 
-7.104 '.version "STRING"'
+7.105 '.version "STRING"'
 =========================
 
 This directive creates a '.note' section and places into it an ELF
@@ -5902,7 +5969,7 @@ formatted note of type NT_VERSION. The note's name is set to 'string'.
 
 File: as.info,  Node: VTableEntry,  Next: VTableInherit,  Prev: Version,  Up: Pseudo Ops
 
-7.105 '.vtable_entry TABLE, OFFSET'
+7.106 '.vtable_entry TABLE, OFFSET'
 ===================================
 
 This directive finds or creates a symbol 'table' and creates a
@@ -5911,7 +5978,7 @@ This directive finds or creates a symbol 'table' and creates a
 
 File: as.info,  Node: VTableInherit,  Next: Warning,  Prev: VTableEntry,  Up: Pseudo Ops
 
-7.106 '.vtable_inherit CHILD, PARENT'
+7.107 '.vtable_inherit CHILD, PARENT'
 =====================================
 
 This directive finds the symbol 'child' and finds or creates the symbol
@@ -5922,7 +5989,7 @@ parent name of '0' is treated as referring to the '*ABS*' section.
 
 File: as.info,  Node: Warning,  Next: Weak,  Prev: VTableInherit,  Up: Pseudo Ops
 
-7.107 '.warning "STRING"'
+7.108 '.warning "STRING"'
 =========================
 
 Similar to the directive '.error' (*note '.error "STRING"': Error.), but
@@ -5931,7 +5998,7 @@ just emits a warning.
 
 File: as.info,  Node: Weak,  Next: Weakref,  Prev: Warning,  Up: Pseudo Ops
 
-7.108 '.weak NAMES'
+7.109 '.weak NAMES'
 ===================
 
 This directive sets the weak attribute on the comma separated list of
@@ -5950,7 +6017,7 @@ creates an alternate symbol to hold the default value.
 
 File: as.info,  Node: Weakref,  Next: Word,  Prev: Weak,  Up: Pseudo Ops
 
-7.109 '.weakref ALIAS, TARGET'
+7.110 '.weakref ALIAS, TARGET'
 ==============================
 
 This directive creates an alias to the target symbol that enables the
@@ -5973,7 +6040,7 @@ handled within the assembler.
 
 File: as.info,  Node: Word,  Next: Zero,  Prev: Weakref,  Up: Pseudo Ops
 
-7.110 '.word EXPRESSIONS'
+7.111 '.word EXPRESSIONS'
 =========================
 
 This directive expects zero or more EXPRESSIONS, of any section,
@@ -6011,7 +6078,7 @@ and so on, for as many entries in the original jump table as necessary.
 
 File: as.info,  Node: Zero,  Next: 2byte,  Prev: Word,  Up: Pseudo Ops
 
-7.111 '.zero SIZE'
+7.112 '.zero SIZE'
 ==================
 
 This directive emits SIZE 0-valued bytes.  SIZE must be an absolute
@@ -6023,7 +6090,7 @@ confusing however.
 
 File: as.info,  Node: 2byte,  Next: 4byte,  Prev: Zero,  Up: Pseudo Ops
 
-7.112 '.2byte EXPRESSION [, EXPRESSION]*'
+7.113 '.2byte EXPRESSION [, EXPRESSION]*'
 =========================================
 
 This directive expects zero or more expressions, separated by commas.
@@ -6040,12 +6107,10 @@ the values.  As a result of this, if relocations are generated, they may
 be different from those used for inserting values with a guaranteed
 alignment.
 
-   This directive is only available for ELF targets,
-
 
 File: as.info,  Node: 4byte,  Next: 8byte,  Prev: 2byte,  Up: Pseudo Ops
 
-7.113 '.4byte EXPRESSION [, EXPRESSION]*'
+7.114 '.4byte EXPRESSION [, EXPRESSION]*'
 =========================================
 
 Like the '.2byte' directive, except that it inserts unaligned, four byte
@@ -6054,7 +6119,7 @@ long values into the output.
 
 File: as.info,  Node: 8byte,  Next: Deprecated,  Prev: 4byte,  Up: Pseudo Ops
 
-7.114 '.8byte EXPRESSION [, EXPRESSION]*'
+7.115 '.8byte EXPRESSION [, EXPRESSION]*'
 =========================================
 
 Like the '.2byte' directive, except that it inserts unaligned, eight
@@ -6063,7 +6128,7 @@ byte long bignum values into the output.
 
 File: as.info,  Node: Deprecated,  Prev: 8byte,  Up: Pseudo Ops
 
-7.115 Deprecated Directives
+7.116 Deprecated Directives
 ===========================
 
 One day these directives won't work.  They are included for
@@ -6358,12 +6423,13 @@ File: as.info,  Node: AArch64 Options,  Next: AArch64 Extensions,  Up: AArch64-D
      'cortex-a35', 'cortex-a53', 'cortex-a55', 'cortex-a57',
      'cortex-a65', 'cortex-a65ae', 'cortex-a72', 'cortex-a73',
      'cortex-a75', 'cortex-a76', 'cortex-a76ae', 'cortex-a77',
-     'cortex-a78', 'cortex-a78ae', 'cortex-a78c', 'ares', 'exynos-m1',
-     'falkor', 'neoverse-n1', 'neoverse-n2', 'neoverse-e1',
-     'neoverse-v1', 'qdf24xx', 'saphira', 'thunderx', 'vulcan', 'xgene1'
-     'xgene2', 'cortex-r82', and 'cortex-x1'.  The special name 'all'
-     may be used to allow the assembler to accept instructions valid for
-     any supported processor, including all optional extensions.
+     'cortex-a78', 'cortex-a78ae', 'cortex-a78c', 'cortex-a510',
+     'cortex-a710', 'ares', 'exynos-m1', 'falkor', 'neoverse-n1',
+     'neoverse-n2', 'neoverse-e1', 'neoverse-v1', 'qdf24xx', 'saphira',
+     'thunderx', 'vulcan', 'xgene1' 'xgene2', 'cortex-r82', 'cortex-x1',
+     and 'cortex-x2'.  The special name 'all' may be used to allow the
+     assembler to accept instructions valid for any supported processor,
+     including all optional extensions.
 
      In addition to the basic instruction set, the assembler can be told
      to accept, or restrict, various extension mnemonics that extend the
@@ -6380,7 +6446,8 @@ File: as.info,  Node: AArch64 Options,  Next: AArch64 Extensions,  Up: AArch64-D
      instruction which will not execute on the target architecture.  The
      following architecture names are recognized: 'armv8-a',
      'armv8.1-a', 'armv8.2-a', 'armv8.3-a', 'armv8.4-a' 'armv8.5-a',
-     'armv8.6-a', 'armv8.7-a', and 'armv8-r'.
+     'armv8.6-a', 'armv8.7-a', 'armv8.8-a', 'armv8-r', 'armv9-a',
+     'armv9.1-a', 'armv9.2-a', and 'armv9.3-a'.
 
      If both '-mcpu' and '-march' are specified, the assembler will use
      the setting for '-mcpu'.  If neither are specified, the assembler
@@ -6422,10 +6489,9 @@ automatically cause those extensions to be disabled.
 Extension Minimum      Enabled by   Description
           Architecture default
 ----------------------------------------------------------------------------
-'i8mm'    ARMv8.2-A    ARMv8.6-A    Enable Int8 Matrix Multiply
-                       or later     extension.
-'f32mm'   ARMv8.2-A    No           Enable F32 Matrix Multiply extension.
-'f64mm'   ARMv8.2-A    No           Enable F64 Matrix Multiply extension.
+'aes'     ARMv8-A      No           Enable the AES cryptographic
+                                    extensions.  This implies 'fp' and
+                                    'simd'.
 'bf16'    ARMv8.2-A    ARMv8.6-A    Enable BFloat16 extension.
                        or later
 'compnum' ARMv8.2-A    ARMv8.3-A    Enable the complex number SIMD
@@ -6436,28 +6502,40 @@ Extension Minimum      Enabled by   Description
 'crypto'  ARMv8-A      No           Enable cryptographic extensions.
                                     This implies 'fp', 'simd', 'aes' and
                                     'sha2'.
-'aes'     ARMv8-A      No           Enable the AES cryptographic
-                                    extensions.  This implies 'fp' and
-                                    'simd'.
-'sha2'    ARMv8-A      No           Enable the SHA2 cryptographic
-                                    extensions.  This implies 'fp' and
-                                    'simd'.
-'sha3'    ARMv8.2-A    No           Enable the ARMv8.2-A SHA2 and SHA3
-                                    cryptographic extensions.  This
-                                    implies 'fp', 'simd' and 'sha2'.
-'sm4'     ARMv8.2-A    No           Enable the ARMv8.2-A SM3 and SM4
-                                    cryptographic extensions.  This
-                                    implies 'fp' and 'simd'.
-'fp'      ARMv8-A      ARMv8-A or   Enable floating-point extensions.
-                       later
+'dotprod' ARMv8.2-A    ARMv8.4-A    Enable the Dot Product extension.
+                       or later     This implies 'simd'.
+'f32mm'   ARMv8.2-A    No           Enable F32 Matrix Multiply extension.
+                                    This implies 'sve'.
+'f64mm'   ARMv8.2-A    No           Enable F64 Matrix Multiply extension.
+                                    This implies 'sve'.
+'flagm'   ARMv8-A      ARMv8.4-A    Enable Flag Manipulation
+                       or later     instructions.
+'fp16fml' ARMv8.2-A    ARMv8.4-A    Enable ARMv8.2 16-bit floating-point
+                       or later     multiplication variant support.  This
+                                    implies 'fp' and 'fp16'.
 'fp16'    ARMv8.2-A    ARMv8.2-A    Enable ARMv8.2 16-bit floating-point
                        or later     support.  This implies 'fp'.
+'fp'      ARMv8-A      ARMv8-A or   Enable floating-point extensions.
+                       later
+'hbc'                  Armv8.8-A    Enable Armv8.8-A hinted conditional
+                       or later     branch instructions
+'i8mm'    ARMv8.2-A    ARMv8.6-A    Enable Int8 Matrix Multiply
+                       or later     extension.
 'lor'     ARMv8-A      ARMv8.1-A    Enable Limited Ordering Regions
                        or later     extensions.
+'ls64'    ARMv8.6-A    ARMv8.7-A    Enable 64 Byte Loads/Stores.
+                       or later
 'lse'     ARMv8-A      ARMv8.1-A    Enable Large System extensions.
                        or later
+'memtag'  ARMv8.5-A    No           Enable ARMv8.5-A Memory Tagging
+                                    Extensions.
+'mops'                 Armv8.8-A    Enable Armv8.8-A memcpy and memset
+                       or later     acceleration instructions
 'pan'     ARMv8-A      ARMv8.1-A    Enable Privileged Access Never
                        or later     support.
+'pauth'   ARMv8-A      No           Enable Pointer Authentication.
+'predres' ARMv8-A      ARMv8.5-A    Enable the Execution and Data and
+                       or later     Prediction instructions.
 'profile' ARMv8.2-A    No           Enable statistical profiling
                                     extensions.
 'ras'     ARMv8-A      ARMv8.2-A    Enable the Reliability, Availability
@@ -6466,40 +6544,42 @@ Extension Minimum      Enabled by   Description
                        or later     extension.
 'rdma'    ARMv8-A      ARMv8.1-A    Enable ARMv8.1 Advanced SIMD
                        or later     extensions.  This implies 'simd'.
-'simd'    ARMv8-A      ARMv8-A or   Enable Advanced SIMD extensions.
-                       later        This implies 'fp'.
-'sve'     ARMv8.2-A    No           Enable the Scalable Vector
-                                    Extensions.  This implies 'fp16',
-                                    'simd' and 'compnum'.
-'dotprod' ARMv8.2-A    ARMv8.4-A    Enable the Dot Product extension.
-                       or later     This implies 'simd'.
-'fp16fml' ARMv8.2-A    ARMv8.4-A    Enable ARMv8.2 16-bit floating-point
-                       or later     multiplication variant support.  This
-                                    implies 'fp16'.
-'sb'      ARMv8-A      ARMv8.5-A    Enable the speculation barrier
-                       or later     instruction sb.
-'predres' ARMv8-A      ARMv8.5-A    Enable the Execution and Data and
-                       or later     Prediction instructions.
 'rng'     ARMv8.5-A    No           Enable ARMv8.5-A random number
                                     instructions.
+'sb'      ARMv8-A      ARMv8.5-A    Enable the speculation barrier
+                       or later     instruction sb.
+'sha2'    ARMv8-A      No           Enable the SHA2 cryptographic
+                                    extensions.  This implies 'fp' and
+                                    'simd'.
+'sha3'    ARMv8.2-A    No           Enable the ARMv8.2-A SHA2 and SHA3
+                                    cryptographic extensions.  This
+                                    implies 'fp', 'simd' and 'sha2'.
+'simd'    ARMv8-A      ARMv8-A or   Enable Advanced SIMD extensions.
+                       later        This implies 'fp'.
+'sm4'     ARMv8.2-A    No           Enable the ARMv8.2-A SM3 and SM4
+                                    cryptographic extensions.  This
+                                    implies 'fp' and 'simd'.
+'sme'     Armv9-A      No           Enable SME Extension.
+'sme-f64' Armv9-A      No           Enable SME F64 Extension.
+'sme-i64' Armv9-A      No           Enable SME I64 Extension.
 'ssbs'    ARMv8-A      ARMv8.5-A    Enable Speculative Store Bypassing
                        or later     Safe state read and write.
-'memtag'  ARMv8.5-A    No           Enable ARMv8.5-A Memory Tagging
-                                    Extensions.
-'tme'     ARMv8-A      No           Enable Transactional Memory
-                                    Extensions.
-'sve2'    ARMv8-A      No           Enable the SVE2 Extension.
-'sve2-bitperm'ARMv8-A  No           Enable SVE2 BITPERM Extension.
-'sve2-sm4'ARMv8-A      No           Enable SVE2 SM4 Extension.
+'sve'     ARMv8.2-A    Armv9-A or   Enable the Scalable Vector
+                       later        Extensions.  This implies 'fp16',
+                                    'simd' and 'compnum'.
+'sve2'    ARMv8-A      Armv9-A or   Enable the SVE2 Extension.  This
+                       later        implies 'sve'.
 'sve2-aes'ARMv8-A      No           Enable SVE2 AES Extension.  This also
                                     enables the .Q->.B form of the
                                     'pmullt' and 'pmullb' instructions.
-'sve2-sha3'ARMv8-A     No           Enable SVE2 SHA3 Extension.
-'flagm'   ARMv8-A      ARMv8.4-A    Enable Flag Manipulation
-                       or later     instructions.
-'ls64'    ARMv8.6-A    ARMv8.7-A    Enable 64 Byte Loads/Stores.
-                       or later
-'pauth'   ARMv8-A      No           Enable Pointer Authentication.
+                                    This implies 'aes' and 'sve2'.
+'sve2-bitperm'ARMv8-A  No           Enable SVE2 BITPERM Extension.
+'sve2-sha3'ARMv8-A     No           Enable SVE2 SHA3 Extension.  This
+                                    implies 'sha3' and 'sve2'.
+'sve2-sm4'ARMv8-A      No           Enable SVE2 SM4 Extension.  This
+                                    implies 'sm4' and 'sve2'.
+'tme'     ARMv8-A      No           Enable Transactional Memory
+                                    Extensions.
 
 
 File: as.info,  Node: AArch64 Syntax,  Next: AArch64 Floating Point,  Prev: AArch64 Extensions,  Up: AArch64-Dependent
@@ -7802,10 +7882,11 @@ File: as.info,  Node: ARM Options,  Next: ARM Syntax,  Up: ARM-Dependent
      'cortex-a15', 'cortex-a17', 'cortex-a32', 'cortex-a35',
      'cortex-a53', 'cortex-a55', 'cortex-a57', 'cortex-a72',
      'cortex-a73', 'cortex-a75', 'cortex-a76', 'cortex-a76ae',
-     'cortex-a77', 'cortex-a78', 'cortex-a78ae', 'cortex-a78c', 'ares',
-     'cortex-r4', 'cortex-r4f', 'cortex-r5', 'cortex-r7', 'cortex-r8',
-     'cortex-r52', 'cortex-m35p', 'cortex-m33', 'cortex-m23',
-     'cortex-m7', 'cortex-m4', 'cortex-m3', 'cortex-m1', 'cortex-m0',
+     'cortex-a77', 'cortex-a78', 'cortex-a78ae', 'cortex-a78c',
+     'cortex-a710', 'ares', 'cortex-r4', 'cortex-r4f', 'cortex-r5',
+     'cortex-r7', 'cortex-r8', 'cortex-r52', 'cortex-r52plus',
+     'cortex-m35p', 'cortex-m33', 'cortex-m23', 'cortex-m7',
+     'cortex-m4', 'cortex-m3', 'cortex-m1', 'cortex-m0',
      'cortex-m0plus', 'cortex-x1', 'exynos-m1', 'marvell-pj4',
      'marvell-whitney', 'neoverse-n1', 'neoverse-n2', 'neoverse-v1',
      'xgene1', 'xgene2', 'ep9312' (ARM920 with Cirrus Maverick
@@ -7867,9 +7948,10 @@ File: as.info,  Node: ARM Options,  Next: ARM Syntax,  Up: ARM-Dependent
      'armv6-m', 'armv6s-m', 'armv7', 'armv7-a', 'armv7ve', 'armv7-r',
      'armv7-m', 'armv7e-m', 'armv8-a', 'armv8.1-a', 'armv8.2-a',
      'armv8.3-a', 'armv8-r', 'armv8.4-a', 'armv8.5-a', 'armv8-m.base',
-     'armv8-m.main', 'armv8.1-m.main', 'armv8.6-a', 'iwmmxt', 'iwmmxt2'
-     and 'xscale'.  If both '-mcpu' and '-march' are specified, the
-     assembler will use the setting for '-mcpu'.
+     'armv8-m.main', 'armv8.1-m.main', 'armv8.6-a', 'armv8.7-a',
+     'armv8.8-a', 'armv9-a', 'iwmmxt', 'iwmmxt2' and 'xscale'.  If both
+     '-mcpu' and '-march' are specified, the assembler will use the
+     setting for '-mcpu'.
 
      The architecture option can be extended with a set extension
      options.  These extensions are context sensitive, i.e.  the same
@@ -9011,6 +9093,10 @@ File: as.info,  Node: AVR Options,  Next: AVR Syntax,  Up: AVR-Dependent
 '-mgcc-isr'
      Enable the '__gcc_isr' pseudo instruction.
 
+'-mno-dollar-line-separator'
+     Do not treat the '$' character as a line separator character.  This
+     is for languages where '$' is valid character inside symbol names.
+
 
 File: as.info,  Node: AVR Syntax,  Next: AVR Opcodes,  Prev: AVR Options,  Up: AVR-Dependent
 
@@ -9038,7 +9124,8 @@ line number directive (*note Comments::) or a preprocessor control
 command (*note Preprocessing::).
 
    The '$' character can be used instead of a newline to separate
-statements.
+statements.  Note: the '-mno-dollar-line-separator' option disables this
+behaviour.
 
 
 File: as.info,  Node: AVR-Regs,  Next: AVR-Modifiers,  Prev: AVR-Chars,  Up: AVR Syntax
@@ -11821,10 +11908,10 @@ The i386 version of 'as' has a few machine dependent options:
      following processor names are recognized: 'i8086', 'i186', 'i286',
      'i386', 'i486', 'i586', 'i686', 'pentium', 'pentiumpro',
      'pentiumii', 'pentiumiii', 'pentium4', 'prescott', 'nocona',
-     'core', 'core2', 'corei7', 'l1om', 'k1om', 'iamcu', 'k6', 'k6_2',
-     'athlon', 'opteron', 'k8', 'amdfam10', 'bdver1', 'bdver2',
-     'bdver3', 'bdver4', 'znver1', 'znver2', 'znver3', 'btver1',
-     'btver2', 'generic32' and 'generic64'.
+     'core', 'core2', 'corei7', 'iamcu', 'k6', 'k6_2', 'athlon',
+     'opteron', 'k8', 'amdfam10', 'bdver1', 'bdver2', 'bdver3',
+     'bdver4', 'znver1', 'znver2', 'znver3', 'btver1', 'btver2',
+     'generic32' and 'generic64'.
 
      In addition to the basic instruction set, the assembler can be told
      to accept various extension mnemonics.  For example,
@@ -11843,23 +11930,23 @@ The i386 version of 'as' has a few machine dependent options:
      'avx512vbmi', 'avx512_4fmaps', 'avx512_4vnniw', 'avx512_vpopcntdq',
      'avx512_vbmi2', 'avx512_vnni', 'avx512_bitalg',
      'avx512_vp2intersect', 'tdx', 'avx512_bf16', 'avx_vnni',
-     'noavx512f', 'noavx512cd', 'noavx512er', 'noavx512pf',
-     'noavx512vl', 'noavx512bw', 'noavx512dq', 'noavx512ifma',
-     'noavx512vbmi', 'noavx512_4fmaps', 'noavx512_4vnniw',
-     'noavx512_vpopcntdq', 'noavx512_vbmi2', 'noavx512_vnni',
-     'noavx512_bitalg', 'noavx512_vp2intersect', 'notdx',
-     'noavx512_bf16', 'noavx_vnni', 'noenqcmd', 'noserialize',
-     'notsxldtrk', 'amx_int8', 'noamx_int8', 'amx_bf16', 'noamx_bf16',
-     'amx_tile', 'noamx_tile', 'nouintr', 'nohreset', 'vmx', 'vmfunc',
-     'smx', 'xsave', 'xsaveopt', 'xsavec', 'xsaves', 'aes', 'pclmul',
-     'fsgsbase', 'rdrnd', 'f16c', 'bmi2', 'fma', 'movbe', 'ept',
-     'lzcnt', 'popcnt', 'hle', 'rtm', 'invpcid', 'clflush', 'mwaitx',
-     'clzero', 'wbnoinvd', 'pconfig', 'waitpkg', 'uintr', 'cldemote',
-     'rdpru', 'mcommit', 'sev_es', 'lwp', 'fma4', 'xop', 'cx16',
-     'syscall', 'rdtscp', '3dnow', '3dnowa', 'sse4a', 'sse5', 'snp',
-     'invlpgb', 'tlbsync', 'svme' and 'padlock'.  Note that rather than
-     extending a basic instruction set, the extension mnemonics starting
-     with 'no' revoke the respective functionality.
+     'avx512_fp16', 'noavx512f', 'noavx512cd', 'noavx512er',
+     'noavx512pf', 'noavx512vl', 'noavx512bw', 'noavx512dq',
+     'noavx512ifma', 'noavx512vbmi', 'noavx512_4fmaps',
+     'noavx512_4vnniw', 'noavx512_vpopcntdq', 'noavx512_vbmi2',
+     'noavx512_vnni', 'noavx512_bitalg', 'noavx512_vp2intersect',
+     'notdx', 'noavx512_bf16', 'noavx_vnni', 'noavx512_fp16',
+     'noenqcmd', 'noserialize', 'notsxldtrk', 'amx_int8', 'noamx_int8',
+     'amx_bf16', 'noamx_bf16', 'amx_tile', 'noamx_tile', 'nouintr',
+     'nohreset', 'vmx', 'vmfunc', 'smx', 'xsave', 'xsaveopt', 'xsavec',
+     'xsaves', 'aes', 'pclmul', 'fsgsbase', 'rdrnd', 'f16c', 'bmi2',
+     'fma', 'movbe', 'ept', 'lzcnt', 'popcnt', 'hle', 'rtm', 'invpcid',
+     'clflush', 'mwaitx', 'clzero', 'wbnoinvd', 'pconfig', 'waitpkg',
+     'uintr', 'cldemote', 'rdpru', 'mcommit', 'sev_es', 'lwp', 'fma4',
+     'xop', 'cx16', 'syscall', 'rdtscp', '3dnow', '3dnowa', 'sse4a',
+     'sse5', 'snp', 'invlpgb', 'tlbsync', 'svme' and 'padlock'.  Note
+     that rather than extending a basic instruction set, the extension
+     mnemonics starting with 'no' revoke the respective functionality.
 
      When the '.arch' directive is used with '-march', the '.arch'
      directive will take precedent.
@@ -11875,6 +11962,10 @@ The i386 version of 'as' has a few machine dependent options:
 '-msse2avx'
      This option specifies that the assembler should encode SSE
      instructions with VEX prefix.
+
+'-muse-unaligned-vector-move'
+     This option specifies that the assembler should encode aligned
+     vector move as unaligned vector move.
 
 '-msse-check=NONE'
 '-msse-check=WARNING'
@@ -12332,9 +12423,10 @@ naming.  'as' accepts either naming for these instructions.
    * 'movzx' -- zero-extend 'reg16/mem16' to 'reg64' (x86-64 only).
 
 are called 'movsbw/movsxb/movsx', 'movsbl/movsxb/movsx',
-'movsbq/movsb/movsx', 'movswl/movsxw', 'movswq/movsxw', 'movslq/movsxl',
-'movzbw/movzxb/movzx', 'movzbl/movzxb/movzx', 'movzbq/movzxb/movzx',
-'movzwl/movzxw' and 'movzwq/movzxw' in AT&T syntax.
+'movsbq/movsxb/movsx', 'movswl/movsxw', 'movswq/movsxw',
+'movslq/movsxl', 'movzbw/movzxb/movzx', 'movzbl/movzxb/movzx',
+'movzbq/movzxb/movzx', 'movzwl/movzxw' and 'movzwq/movzxw' in AT&T
+syntax.
 
    Far call/jump instructions are 'lcall' and 'ljmp' in AT&T syntax, but
 are 'call far' and 'jump far' in Intel convention.
@@ -12600,8 +12692,9 @@ Instruction mnemonic suffixes specify the operand's data type.
 Constructors build these data types into memory.
 
    * Floating point constructors are '.float' or '.single', '.double',
-     and '.tfloat' for 32-, 64-, and 80-bit formats.  These correspond
-     to instruction mnemonic suffixes 's', 'l', and 't'.  't' stands for
+     '.tfloat', '.hfloat', and '.bfloat16' for 32-, 64-, 80-, and 16-bit
+     (two flavors) formats respectively.  The former three correspond to
+     instruction mnemonic suffixes 's', 'l', and 't'.  't' stands for
      80-bit (ten byte) real.  The 80387 only supports this format via
      the 'fldt' (load 80-bit real to stack top) and 'fstpt' (store
      80-bit real and pop stack) instructions.
@@ -12742,11 +12835,12 @@ with the '.arch CPU_TYPE' directive.  This directive enables a warning
 when gas detects an instruction that is not supported on the CPU
 specified.  The choices for CPU_TYPE are:
 
+'default'      'push'         'pop'
 'i8086'        'i186'         'i286'         'i386'
 'i486'         'i586'         'i686'         'pentium'
 'pentiumpro'   'pentiumii'    'pentiumiii'   'pentium4'
 'prescott'     'nocona'       'core'         'core2'
-'corei7'       'l1om'         'k1om'         'iamcu'
+'corei7'       'iamcu'
 'k6'           'k6_2'         'athlon'       'k8'
 'amdfam10'     'bdver1'       'bdver2'       'bdver3'
 'bdver4'       'znver1'       'znver2'       'znver3'
@@ -12768,9 +12862,8 @@ specified.  The choices for CPU_TYPE are:
 '.avx512vbmi'  '.avx512_4fmaps''.avx512_4vnniw'
 '.avx512_vpopcntdq''.avx512_vbmi2''.avx512_vnni'
 '.avx512_bitalg''.avx512_bf16''.avx512_vp2intersect'
-'.tdx'         '.avx_vnni'
-'.clwb'        '.rdpid'       '.ptwrite'
-'.ibt'
+'.tdx'         '.avx_vnni'    '.avx512_fp16'
+'.clwb'        '.rdpid'       '.ptwrite'     '.ibt'
 '.wbnoinvd'    '.pconfig'     '.waitpkg'     '.cldemote'
 '.shstk'       '.gfni'        '.vaes'        '.vpclmulqdq'
 '.movdiri'     '.movdir64b'   '.enqcmd'      '.tsxldtrk'
@@ -18583,7 +18676,7 @@ The following table lists all available RISC-V specific directives.
           Enables or disables the generation of compressed instructions.
           Instructions are opportunistically compressed by the RISC-V
           assembler when possible, but sometimes this behavior is not
-          desirable.
+          desirable, especially when handling alignments.
 
      'pic'
      'nopic'
@@ -18597,17 +18690,41 @@ The following table lists all available RISC-V specific directives.
           linker opportunistically relax some code sequences, but
           sometimes this behavior is not desirable.
 
-'csr-check'
-'no-csr-check'
-     Enables or disables the CSR checking.
+     'csr-check'
+     'no-csr-check'
+          Enables or disables the CSR checking.
 
-'.insn VALUE'
+     'arch, +EXTENSION[VERSION] [,...,+EXTENSION_N[VERSION_N]]'
+     'arch, -EXTENSION [,...,-EXTENSION_N]'
+     'arch, =ISA'
+          Enables or disables the extensions for specific code region.
+          For example, '.option arch, +m2p0' means add m extension with
+          version 2.0, and '.option arch, -f, -d' means remove
+          extensions, f and d, from the architecture string.  Note that,
+          '.option arch, +c, -c' have the same behavior as '.option rvc,
+          norvc'.  However, they are also undesirable sometimes.
+          Besides, '.option arch, -i' is illegal, since we cannot remove
+          the base i extension anytime.  If you want to reset the whole
+          ISA string, you can also use '.option arch, =rv32imac' to
+          overwrite the previous settings.
+
+'.insn TYPE, OPERAND [,...,OPERAND_N]'
+'.insn INSN_LENGTH, VALUE'
 '.insn VALUE'
      This directive permits the numeric representation of an
      instructions and makes the assembler insert the operands according
      to one of the instruction formats for '.insn' (*note
      RISC-V-Formats::).  For example, the instruction 'add a0, a1, a2'
-     could be written as '.insn r 0x33, 0, 0, a0, a1, a2'.
+     could be written as '.insn r 0x33, 0, 0, a0, a1, a2'.  But in fact,
+     the instruction formats are difficult to use for some users, so
+     most of them are using '.word' to encode the instruction directly,
+     rather than using '.insn'.  It is fine for now, but will be wrong
+     when the mapping symbols are supported, since '.word' will not be
+     shown as an instruction, it should be shown as data.  Therefore, we
+     also support two more formats of the '.insn', the instruction 'add
+     a0, a1, a2' could also be written as '.insn 0x4, 0xc58533' or
+     '.insn 0xc58533'.  When the INSN_LENGTH is set, then assembler will
+     check if the VALUE is a valid INSN_LENGTH bytes instruction.
 
 '.attribute TAG, VALUE'
      Set the object attribute TAG to VALUE.
@@ -18731,7 +18848,7 @@ File: as.info,  Node: RISC-V-Formats,  Next: RISC-V-ATTRIBUTE,  Prev: RISC-V-Mod
 9.38.4 RISC-V Instruction Formats
 ---------------------------------
 
-The RISC-V Instruction Set Manual Volume I: User-Level ISA lists 12
+The RISC-V Instruction Set Manual Volume I: User-Level ISA lists 15
 instruction formats where some of the formats have multiple variants.
 For the '.insn' pseudo directive the assembler recognizes some of the
 formats.  Typically, the most general variant of the instruction format
@@ -18759,6 +18876,8 @@ instruction formats:
      simm12      Sign-extended 12-bit immediate for operand x.
      simm20      Sign-extended 20-bit immediate for operand x.
      simm6       Sign-extended 6-bit immediate for operand x.
+     uimm5       Unsigned 5-bit immediate for operand x.
+     uimm6       Unsigned 6-bit immediate for operand x.
      uimm8       Unsigned 8-bit immediate for operand x.
      symbol      Symbol or lable reference for operand x.
 
@@ -18846,87 +18965,105 @@ instruction, 11 indicates a four byte instruction.
    The following table lists the RISC-V instruction formats that are
 available with the '.insn' pseudo directive:
 
-'R type: .insn r opcode, func3, func7, rd, rs1, rs2'
-     +-------+-----+-----+-------+----+-------------+
-     | func7 | rs2 | rs1 | func3 | rd |      opcode |
-     +-------+-----+-----+-------+----+-------------+
-     31      25    20    15      12   7             0
+'R type: .insn r opcode6, func3, func7, rd, rs1, rs2'
+     +-------+-----+-----+-------+----+---------+
+     | func7 | rs2 | rs1 | func3 | rd | opcode6 |
+     +-------+-----+-----+-------+----+---------+
+     31      25    20    15      12   7        0
 
-'R type with 4 register operands: .insn r opcode, func3, func2, rd, rs1, rs2, rs3'
-'R4 type: .insn r4 opcode, func3, func2, rd, rs1, rs2, rs3'
-     +-----+-------+-----+-----+-------+----+-------------+
-     | rs3 | func2 | rs2 | rs1 | func3 | rd |      opcode |
-     +-----+-------+-----+-----+-------+----+-------------+
-     31    27      25    20    15      12   7             0
+'R type with 4 register operands: .insn r opcode6, func3, func2, rd, rs1, rs2, rs3'
+'R4 type: .insn r4 opcode6, func3, func2, rd, rs1, rs2, rs3'
+     +-----+-------+-----+-----+-------+----+---------+
+     | rs3 | func2 | rs2 | rs1 | func3 | rd | opcode6 |
+     +-----+-------+-----+-----+-------+----+---------+
+     31    27      25    20    15      12   7         0
 
-'I type: .insn i opcode, func3, rd, rs1, simm12'
-'I type: .insn i opcode, func3, rd, simm12(rs1)'
-     +-------------+-----+-------+----+-------------+
-     |      simm12 | rs1 | func3 | rd |      opcode |
-     +-------------+-----+-------+----+-------------+
-     31            20    15      12   7             0
+'I type: .insn i opcode6, func3, rd, rs1, simm12'
+'I type: .insn i opcode6, func3, rd, simm12(rs1)'
+     +--------------+-----+-------+----+---------+
+     | simm12[11:0] | rs1 | func3 | rd | opcode6 |
+     +--------------+-----+-------+----+---------+
+     31             20    15      12   7         0
 
-'S type: .insn s opcode, func3, rs2, simm12(rs1)'
-     +--------------+-----+-----+-------+-------------+-------------+
-     | simm12[11:5] | rs2 | rs1 | func3 | simm12[4:0] |      opcode |
-     +--------------+-----+-----+-------+-------------+-------------+
-     31             25    20    15      12            7             0
+'S type: .insn s opcode6, func3, rs2, simm12(rs1)'
+     +--------------+-----+-----+-------+-------------+---------+
+     | simm12[11:5] | rs2 | rs1 | func3 | simm12[4:0] | opcode6 |
+     +--------------+-----+-----+-------+-------------+---------+
+     31             25    20    15      12            7         0
 
-'B type: .insn s opcode, func3, rs1, rs2, symbol'
-'SB type: .insn sb opcode, func3, rs1, rs2, symbol'
-     +------------+--------------+-----+-----+-------+-------------+-------------+--------+
-     | simm12[12] | simm12[10:5] | rs2 | rs1 | func3 | simm12[4:1] | simm12[11]] | opcode |
-     +------------+--------------+-----+-----+-------+-------------+-------------+--------+
-     31          30            25    20    15      12           7            0
+'B type: .insn s opcode6, func3, rs1, rs2, symbol'
+'SB type: .insn sb opcode6, func3, rs1, rs2, symbol'
+     +-----------------+-----+-----+-------+----------------+---------+
+     | simm12[12|10:5] | rs2 | rs1 | func3 | simm12[4:1|11] | opcode6 |
+     +-----------------+-----+-----+-------+----------------+---------+
+     31                25    20    15      12               7         0
 
-'U type: .insn u opcode, rd, simm20'
-     +---------------------------+----+-------------+
-     |                    simm20 | rd |      opcode |
-     +---------------------------+----+-------------+
-     31                          12   7             0
+'U type: .insn u opcode6, rd, simm20'
+     +--------------------------+----+---------+
+     | simm20[20|10:1|11|19:12] | rd | opcode6 |
+     +--------------------------+----+---------+
+     31                         12   7         0
 
-'J type: .insn j opcode, rd, symbol'
-'UJ type: .insn uj opcode, rd, symbol'
-     +------------+--------------+------------+---------------+----+-------------+
-     | simm20[20] | simm20[10:1] | simm20[11] | simm20[19:12] | rd |      opcode |
-     +------------+--------------+------------+---------------+----+-------------+
-     31           30             21           20              12   7             0
+'J type: .insn j opcode6, rd, symbol'
+'UJ type: .insn uj opcode6, rd, symbol'
+     +------------+--------------+------------+---------------+----+---------+
+     | simm20[20] | simm20[10:1] | simm20[11] | simm20[19:12] | rd | opcode6 |
+     +------------+--------------+------------+---------------+----+---------+
+     31           30             21           20              12   7         0
 
 'CR type: .insn cr opcode2, func4, rd, rs2'
-     +---------+--------+-----+---------+
-     |   func4 | rd/rs1 | rs2 | opcode2 |
-     +---------+--------+-----+---------+
-     15        12       7     2        0
+     +-------+--------+-----+---------+
+     | func4 | rd/rs1 | rs2 | opcode2 |
+     +-------+--------+-----+---------+
+     15      12       7     2        0
 
 'CI type: .insn ci opcode2, func3, rd, simm6'
-     +---------+-----+--------+-----+---------+
-     |   func3 | imm | rd/rs1 | imm | opcode2 |
-     +---------+-----+--------+-----+---------+
-     15        13    12       7     2         0
+     +-------+----------+--------+------------+---------+
+     | func3 | simm6[5] | rd/rs1 | simm6[4:0] | opcode2 |
+     +-------+----------+--------+------------+---------+
+     15      13         12       7            2         0
 
-'CIW type: .insn ciw opcode2, func3, rd, uimm8'
-     +---------+--------------+-----+---------+
-     |   func3 |          imm | rd' | opcode2 |
-     +---------+--------------+-----+---------+
-     15        13             7     2         0
+'CIW type: .insn ciw opcode2, func3, rd', uimm8'
+     +-------+------------+-----+---------+
+     | func3 | uimm8[7:0] | rd' | opcode2 |
+     +-------+-------- ---+-----+---------+
+     15      13           5     2         0
 
-'CA type: .insn ca opcode2, func6, func2, rd, rs2'
-     +---------+----------+-------+------+--------+
-     |   func6 | rd'/rs1' | func2 | rs2' | opcode |
-     +---------+----------+-------+------+--------+
-     15        10         7       5      2        0
+'CSS type: .insn css opcode2, func3, rd, uimm6'
+     +-------+------------+----+---------+
+     | func3 | uimm6[5:0] | rd | opcode2 |
+     +-------+------------+----+---------+
+     15      13           7    2         0
 
-'CB type: .insn cb opcode2, func3, rs1, symbol'
-     +---------+--------+------+--------+---------+
-     |   func3 | offset | rs1' | offset | opcode2 |
-     +---------+--------+------+--------+---------+
-     15        13       10     7        2         0
+'CL type: .insn cl opcode2, func3, rd', uimm5(rs1')'
+     +-------+------------+------+------------+------+---------+
+     | func3 | uimm5[4:2] | rs1' | uimm5[1:0] |  rd' | opcode2 |
+     +-------+------------+------+------------+------+---------+
+     15      13           10     7            5      2         0
+
+'CS type: .insn cs opcode2, func3, rs2', uimm5(rs1')'
+     +-------+------------+------+------------+------+---------+
+     | func3 | uimm5[4:2] | rs1' | uimm5[1:0] | rs2' | opcode2 |
+     +-------+------------+------+------------+------+---------+
+     15      13           10     7            5      2         0
+
+'CA type: .insn ca opcode2, func6, func2, rd', rs2''
+     +-- ----+----------+-------+------+---------+
+     | func6 | rd'/rs1' | func2 | rs2' | opcode2 |
+     +-------+----------+-------+------+---------+
+     15      10         7       5      2         0
+
+'CB type: .insn cb opcode2, func3, rs1', symbol'
+     +-------+--------------+------+------------------+---------+
+     | func3 | simm8[8|4:3] | rs1' | simm8[7:6|2:1|5] | opcode2 |
+     +-------+--------------+------+------------------+---------+
+     15      13             10     7                  2         0
 
 'CJ type: .insn cj opcode2, symbol'
-     +---------+--------------------+---------+
-     |   func3 |        jump target | opcode2 |
-     +---------+--------------------+---------+
-     15        13             7     2         0
+     +-------+-------------------------------+---------+
+     | func3 | simm11[11|4|9:8|10|6|7|3:1|5] | opcode2 |
+     +-------+-------------------------------+---------+
+     15      13                              2         0
 
    For the complete list of all instruction format variants see The
 RISC-V Instruction Set Manual Volume I: User-Level ISA.
@@ -19156,9 +19293,9 @@ options:
      initialised data (.data) and uninitialised data sections (.bss).
 
 '-muse-renesas-section-names'
-     This option controls the default names given to the code (.P),
-     initialised data (.D_1) and uninitialised data sections (.B_1).
-     This is the default.
+     This option controls the default names given to the code (P),
+     initialised data (D_1) and uninitialised data sections (B_1).  This
+     is the default.
 
 '-msmall-data-limit'
      This option tells the assembler that the small data limit feature
@@ -19324,7 +19461,7 @@ chip levels.  The architecture modes are the Enterprise System
 Architecture (ESA) and the newer z/Architecture mode.  The chip levels
 are g5 (or arch3), g6, z900 (or arch5), z990 (or arch6), z9-109, z9-ec
 (or arch7), z10 (or arch8), z196 (or arch9), zEC12 (or arch10), z13 (or
-arch11), z14 (or arch12), and z15 (or arch13).
+arch11), z14 (or arch12), z15 (or arch13), or z16 (or arch14).
 
 * Menu:
 
@@ -19364,7 +19501,8 @@ The following table lists all available s390 specific options:
      processor names are recognized: 'g5' (or 'arch3'), 'g6', 'z900' (or
      'arch5'), 'z990' (or 'arch6'), 'z9-109', 'z9-ec' (or 'arch7'),
      'z10' (or 'arch8'), 'z196' (or 'arch9'), 'zEC12' (or 'arch10'),
-     'z13' (or 'arch11'), 'z14' (or 'arch12'), and 'z15' (or 'arch13').
+     'z13' (or 'arch11'), 'z14' (or 'arch12'), 'z15' (or 'arch13'), and
+     'z16' (or 'arch14').
 
      Assembling an instruction that is not supported on the target
      processor results in an error message.
@@ -19582,7 +19720,7 @@ File: as.info,  Node: s390 Formats,  Next: s390 Aliases,  Prev: s390 Operands,  
 9.41.3.4 Instruction Formats
 ............................
 
-The Principles of Operation manuals lists 26 instruction formats where
+The Principles of Operation manuals lists 35 instruction formats where
 some of the formats have multiple variants.  For the '.insn' pseudo
 directive the assembler recognizes some of the formats.  Typically, the
 most general variant of the instruction format is used by the '.insn'
@@ -19759,6 +19897,42 @@ available with the '.insn' pseudo directive:
      | OpCode | R3 |OpCd| B1 |     D1      | B2 |     D2     |
      +--------+----+----+----+-------------+----+------------+
      0        8    12   16   20            32   36           47
+
+'VRV format: <insn> V1,D2(V2,B2),M3'
+     +--------+----+----+----+-------------+----+------------+
+     | OpCode | V1 | V2 | B2 |     D2      | M3 |   Opcode   |
+     +--------+----+----+----+-------------+----+------------+
+     0        8    12   16   20            32   36           47
+
+'VRI format: <insn> V1,V2,I3,M4,M5'
+     +--------+----+----+-------------+----+----+------------+
+     | OpCode | V1 | V2 |     I3      | M5 | M4 |   Opcode   |
+     +--------+----+----+-------------+----+----+------------+
+     0        8    12   16            28   32   36           47
+
+'VRX format: <insn> V1,D2(R2,B2),M3'
+     +--------+----+----+----+-------------+----+------------+
+     | OpCode | V1 | R2 | B2 |     D2      | M3 |   Opcode   |
+     +--------+----+----+----+-------------+----+------------+
+     0        8    12   16   20            32   36           47
+
+'VRS format: <insn> R1,V3,D2(B2),M4'
+     +--------+----+----+----+-------------+----+------------+
+     | OpCode | R1 | V3 | B2 |     D2      | M4 |   Opcode   |
+     +--------+----+----+----+-------------+----+------------+
+     0        8    12   16   20            32   36           47
+
+'VRR format: <insn> V1,V2,V3,M4,M5,M6'
+     +--------+----+----+----+---+----+----+----+------------+
+     | OpCode | V1 | V2 | V3 |///| M6 | M5 | M4 |   Opcode   |
+     +--------+----+----+----+---+----+----+----+------------+
+     0        8    12   16       24   28   32   36           47
+
+'VSI format: <insn> V1,D2(B2),I3'
+     +--------+---------+----+-------------+----+------------+
+     | OpCode |   I3    | B2 |     D2      | V1 |   Opcode   |
+     +--------+---------+----+-------------+----+------------+
+     0        8         16   20            32   36           47
 
    For the complete list of all instruction format variants see the
 Principles of Operation manuals.
@@ -25478,7 +25652,7 @@ contact that organization first.
 individuals in the file 'etc/SERVICE' in the GNU Emacs distribution.
 
    In any event, we also recommend that you send bug reports for 'as' to
-<http://www.sourceware.org/bugzilla/>.
+<https://sourceware.org/bugzilla/>.
 
    The fundamental principle of reporting bugs usefully is this: *report
 all the facts*.  If you are not sure whether to state a fact or leave it
@@ -26294,7 +26468,7 @@ AS Index
 * --base-size-default-32:                M68K-Opts.          (line   66)
 * --big:                                 SH Options.         (line    9)
 * --bitwise-or option, M680x0:           M68K-Opts.          (line   59)
-* --compress-debug-sections= option:     Overview.           (line  378)
+* --compress-debug-sections= option:     Overview.           (line  379)
 * --disp-size-default-16:                M68K-Opts.          (line   75)
 * --disp-size-default-32:                M68K-Opts.          (line   75)
 * --divide option, i386:                 i386-Options.       (line   25)
@@ -26304,7 +26478,7 @@ AS Index
 * --enforce-aligned-data:                Sparc-Aligned-Data. (line   11)
 * --fatal-warnings:                      W.                  (line   16)
 * --fdpic:                               SH Options.         (line   31)
-* --fix-v4bx command-line option, ARM:   ARM Options.        (line  380)
+* --fix-v4bx command-line option, ARM:   ARM Options.        (line  382)
 * --fixed-special-register-names command-line option, MMIX: MMIX-Opts.
                                                              (line    8)
 * --force-long-branches:                 M68HC11-Opts.       (line   81)
@@ -26400,17 +26574,17 @@ AS Index
 * -D:                                    D.                  (line    6)
 * -D, ignored on VAX:                    VAX-Opts.           (line   11)
 * -d, VAX option:                        VAX-Opts.           (line   16)
-* -eabi= command-line option, ARM:       ARM Options.        (line  356)
+* -eabi= command-line option, ARM:       ARM Options.        (line  358)
 * -EB command-line option, AArch64:      AArch64 Options.    (line    6)
 * -EB command-line option, ARC:          ARC Options.        (line   84)
-* -EB command-line option, ARM:          ARM Options.        (line  361)
+* -EB command-line option, ARM:          ARM Options.        (line  363)
 * -EB command-line option, BPF:          BPF Options.        (line    6)
 * -EB option (MIPS):                     MIPS Options.       (line   13)
 * -EB option, M32R:                      M32R-Opts.          (line   39)
 * -EB option, TILE-Gx:                   TILE-Gx Options.    (line   11)
 * -EL command-line option, AArch64:      AArch64 Options.    (line   10)
 * -EL command-line option, ARC:          ARC Options.        (line   88)
-* -EL command-line option, ARM:          ARM Options.        (line  372)
+* -EL command-line option, ARM:          ARM Options.        (line  374)
 * -EL command-line option, BPF:          BPF Options.        (line   10)
 * -EL option (MIPS):                     MIPS Options.       (line   13)
 * -EL option, M32R:                      M32R-Opts.          (line   32)
@@ -26431,7 +26605,7 @@ AS Index
 * -Ip option, M32RX:                     M32R-Opts.          (line   97)
 * -J, ignored on VAX:                    VAX-Opts.           (line   27)
 * -K:                                    K.                  (line    6)
-* -k command-line option, ARM:           ARM Options.        (line  376)
+* -k command-line option, ARM:           ARM Options.        (line  378)
 * -KPIC option, M32R:                    M32R-Opts.          (line   42)
 * -KPIC option, MIPS:                    MIPS Options.       (line   21)
 * -L:                                    L.                  (line    6)
@@ -26483,26 +26657,26 @@ AS Index
 * -m8byte-align command-line option, V850: V850 Options.     (line   86)
 * -mabi= command-line option, AArch64:   AArch64 Options.    (line   14)
 * -mabi=ABI option, RISC-V:              RISC-V-Options.     (line   33)
-* -madd-bnd-prefix option, i386:         i386-Options.       (line  159)
-* -madd-bnd-prefix option, x86-64:       i386-Options.       (line  159)
-* -malign-branch-boundary= option, i386: i386-Options.       (line  205)
-* -malign-branch-boundary= option, x86-64: i386-Options.     (line  205)
-* -malign-branch-prefix-size= option, i386: i386-Options.    (line  220)
-* -malign-branch-prefix-size= option, x86-64: i386-Options.  (line  220)
-* -malign-branch= option, i386:          i386-Options.       (line  212)
-* -malign-branch= option, x86-64:        i386-Options.       (line  212)
+* -madd-bnd-prefix option, i386:         i386-Options.       (line  163)
+* -madd-bnd-prefix option, x86-64:       i386-Options.       (line  163)
+* -malign-branch-boundary= option, i386: i386-Options.       (line  209)
+* -malign-branch-boundary= option, x86-64: i386-Options.     (line  209)
+* -malign-branch-prefix-size= option, i386: i386-Options.    (line  224)
+* -malign-branch-prefix-size= option, x86-64: i386-Options.  (line  224)
+* -malign-branch= option, i386:          i386-Options.       (line  216)
+* -malign-branch= option, x86-64:        i386-Options.       (line  216)
 * -mall:                                 PDP-11-Options.     (line   26)
 * -mall-enabled command-line option, LM32: LM32 Options.     (line   30)
 * -mall-extensions:                      PDP-11-Options.     (line   26)
 * -mall-opcodes command-line option, AVR: AVR Options.       (line  111)
-* -mamd64 option, x86-64:                i386-Options.       (line  290)
-* -mapcs-26 command-line option, ARM:    ARM Options.        (line  328)
-* -mapcs-32 command-line option, ARM:    ARM Options.        (line  328)
-* -mapcs-float command-line option, ARM: ARM Options.        (line  342)
-* -mapcs-reentrant command-line option, ARM: ARM Options.    (line  347)
+* -mamd64 option, x86-64:                i386-Options.       (line  294)
+* -mapcs-26 command-line option, ARM:    ARM Options.        (line  330)
+* -mapcs-32 command-line option, ARM:    ARM Options.        (line  330)
+* -mapcs-float command-line option, ARM: ARM Options.        (line  344)
+* -mapcs-reentrant command-line option, ARM: ARM Options.    (line  349)
 * -march-attr option, RISC-V:            RISC-V-Options.     (line   48)
-* -march= command-line option, AArch64:  AArch64 Options.    (line   43)
-* -march= command-line option, ARM:      ARM Options.        (line   85)
+* -march= command-line option, AArch64:  AArch64 Options.    (line   44)
+* -march= command-line option, ARM:      ARM Options.        (line   86)
 * -march= command-line option, M680x0:   M68K-Opts.          (line    8)
 * -march= command-line option, TIC6X:    TIC6X Options.      (line    6)
 * -march= command-line option, Z80:      Z80 Options.        (line    6)
@@ -26510,21 +26684,21 @@ AS Index
 * -march= option, s390:                  s390 Options.       (line   25)
 * -march= option, x86-64:                i386-Options.       (line   32)
 * -march=ISA option, RISC-V:             RISC-V-Options.     (line   15)
-* -matpcs command-line option, ARM:      ARM Options.        (line  334)
-* -mavxscalar= option, i386:             i386-Options.       (line  104)
-* -mavxscalar= option, x86-64:           i386-Options.       (line  104)
+* -matpcs command-line option, ARM:      ARM Options.        (line  336)
+* -mavxscalar= option, i386:             i386-Options.       (line  108)
+* -mavxscalar= option, x86-64:           i386-Options.       (line  108)
 * -mbarrel-shift-enabled command-line option, LM32: LM32 Options.
                                                              (line   12)
 * -mbig-endian:                          RX-Opts.            (line   20)
 * -mbig-endian option, RISC-V:           RISC-V-Options.     (line   71)
-* -mbig-obj option, i386:                i386-Options.       (line  173)
-* -mbig-obj option, x86-64:              i386-Options.       (line  173)
+* -mbig-obj option, i386:                i386-Options.       (line  177)
+* -mbig-obj option, x86-64:              i386-Options.       (line  177)
 * -mbranches-within-32B-boundaries option, i386: i386-Options.
-                                                             (line  225)
+                                                             (line  229)
 * -mbranches-within-32B-boundaries option, x86-64: i386-Options.
-                                                             (line  225)
+                                                             (line  229)
 * -mbreak-enabled command-line option, LM32: LM32 Options.   (line   27)
-* -mccs command-line option, ARM:        ARM Options.        (line  389)
+* -mccs command-line option, ARM:        ARM Options.        (line  391)
 * -mcis:                                 PDP-11-Options.     (line   32)
 * -mcode-density command-line option, ARC: ARC Options.      (line   93)
 * -mconstant-gp command-line option, IA-64: IA-64 Options.   (line    6)
@@ -26552,34 +26726,34 @@ AS Index
                                                              (line   13)
 * -merrors-to-file option, stderr redirect: TIC54X-Opts.     (line   20)
 * -mesa option, s390:                    s390 Options.       (line   17)
-* -mevexlig= option, i386:               i386-Options.       (line  125)
-* -mevexlig= option, x86-64:             i386-Options.       (line  125)
-* -mevexrcig= option, i386:              i386-Options.       (line  280)
-* -mevexrcig= option, x86-64:            i386-Options.       (line  280)
-* -mevexwig= option, i386:               i386-Options.       (line  135)
-* -mevexwig= option, x86-64:             i386-Options.       (line  135)
+* -mevexlig= option, i386:               i386-Options.       (line  129)
+* -mevexlig= option, x86-64:             i386-Options.       (line  129)
+* -mevexrcig= option, i386:              i386-Options.       (line  284)
+* -mevexrcig= option, x86-64:            i386-Options.       (line  284)
+* -mevexwig= option, i386:               i386-Options.       (line  139)
+* -mevexwig= option, x86-64:             i386-Options.       (line  139)
 * -mf option, far-mode:                  TIC54X-Opts.        (line    8)
 * -mf11:                                 PDP-11-Options.     (line  122)
 * -mfar-mode option, far-mode:           TIC54X-Opts.        (line    8)
 * -mfdpic command-line option, Blackfin: Blackfin Options.   (line   19)
-* -mfence-as-lock-add= option, i386:     i386-Options.       (line  186)
-* -mfence-as-lock-add= option, x86-64:   i386-Options.       (line  186)
+* -mfence-as-lock-add= option, i386:     i386-Options.       (line  190)
+* -mfence-as-lock-add= option, x86-64:   i386-Options.       (line  190)
 * -mfis:                                 PDP-11-Options.     (line   51)
-* -mfloat-abi= command-line option, ARM: ARM Options.        (line  351)
+* -mfloat-abi= command-line option, ARM: ARM Options.        (line  353)
 * -mfp-11:                               PDP-11-Options.     (line   56)
-* -mfp16-format= command-line option:    ARM Options.        (line  289)
+* -mfp16-format= command-line option:    ARM Options.        (line  291)
 * -mfpp:                                 PDP-11-Options.     (line   56)
 * -mfpu:                                 PDP-11-Options.     (line   56)
-* -mfpu= command-line option, ARM:       ARM Options.        (line  265)
+* -mfpu= command-line option, ARM:       ARM Options.        (line  267)
 * -mfpuda command-line option, ARC:      ARC Options.        (line  111)
 * -mgcc-abi:                             RX-Opts.            (line   63)
 * -mgcc-abi command-line option, V850:   V850 Options.       (line   79)
 * -mgcc-isr command-line option, AVR:    AVR Options.        (line  132)
 * -mhard-float command-line option, V850: V850 Options.      (line  101)
 * -micache-enabled command-line option, LM32: LM32 Options.  (line   21)
-* -mimplicit-it command-line option, ARM: ARM Options.       (line  312)
+* -mimplicit-it command-line option, ARM: ARM Options.       (line  314)
 * -mint-register:                        RX-Opts.            (line   57)
-* -mintel64 option, x86-64:              i386-Options.       (line  290)
+* -mintel64 option, x86-64:              i386-Options.       (line  294)
 * -mip2022 option, IP2K:                 IP2K-Opts.          (line   14)
 * -mip2022ext option, IP2022:            IP2K-Opts.          (line    9)
 * -misa-spec=ISAspec option, RISC-V:     RISC-V-Options.     (line   21)
@@ -26597,14 +26771,14 @@ AS Index
 * -mkd11z:                               PDP-11-Options.     (line  118)
 * -mkev11:                               PDP-11-Options.     (line   51)
 * -mkev11 <1>:                           PDP-11-Options.     (line   51)
-* -mlfence-after-load= option, i386:     i386-Options.       (line  233)
-* -mlfence-after-load= option, x86-64:   i386-Options.       (line  233)
+* -mlfence-after-load= option, i386:     i386-Options.       (line  237)
+* -mlfence-after-load= option, x86-64:   i386-Options.       (line  237)
 * -mlfence-before-indirect-branch= option, i386: i386-Options.
-                                                             (line  240)
+                                                             (line  244)
 * -mlfence-before-indirect-branch= option, x86-64: i386-Options.
-                                                             (line  240)
-* -mlfence-before-ret= option, i386:     i386-Options.       (line  260)
-* -mlfence-before-ret= option, x86-64:   i386-Options.       (line  260)
+                                                             (line  244)
+* -mlfence-before-ret= option, i386:     i386-Options.       (line  264)
+* -mlfence-before-ret= option, x86-64:   i386-Options.       (line  264)
 * -mlimited-eis:                         PDP-11-Options.     (line   64)
 * -mlink-relax command-line option, AVR: AVR Options.        (line  123)
 * -mlittle-endian:                       RX-Opts.            (line   26)
@@ -26618,20 +26792,22 @@ AS Index
 * -mmcu= command-line option, AVR:       AVR Options.        (line    6)
 * -mmfpt:                                PDP-11-Options.     (line   70)
 * -mmicrocode:                           PDP-11-Options.     (line   83)
-* -mmnemonic= option, i386:              i386-Options.       (line  142)
-* -mmnemonic= option, x86-64:            i386-Options.       (line  142)
+* -mmnemonic= option, i386:              i386-Options.       (line  146)
+* -mmnemonic= option, x86-64:            i386-Options.       (line  146)
 * -mmultiply-enabled command-line option, LM32: LM32 Options.
                                                              (line    6)
 * -mmutiproc:                            PDP-11-Options.     (line   73)
 * -mmxps:                                PDP-11-Options.     (line   77)
-* -mnaked-reg option, i386:              i386-Options.       (line  154)
-* -mnaked-reg option, x86-64:            i386-Options.       (line  154)
+* -mnaked-reg option, i386:              i386-Options.       (line  158)
+* -mnaked-reg option, x86-64:            i386-Options.       (line  158)
 * -mnan= command-line option, MIPS:      MIPS Options.       (line  439)
 * -mno-allow-string-insns:               RX-Opts.            (line   82)
 * -mno-arch-attr option, RISC-V:         RISC-V-Options.     (line   56)
 * -mno-cis:                              PDP-11-Options.     (line   32)
 * -mno-csm:                              PDP-11-Options.     (line   43)
 * -mno-csr-check option, RISC-V:         RISC-V-Options.     (line   65)
+* -mno-dollar-line-separator command line option, AVR: AVR Options.
+                                                             (line  135)
 * -mno-dsbt command-line option, TIC6X:  TIC6X Options.      (line   13)
 * -mno-eis:                              PDP-11-Options.     (line   46)
 * -mno-extensions:                       PDP-11-Options.     (line   29)
@@ -26650,35 +26826,35 @@ AS Index
 * -mno-mxps:                             PDP-11-Options.     (line   77)
 * -mno-pic:                              PDP-11-Options.     (line   11)
 * -mno-pic command-line option, TIC6X:   TIC6X Options.      (line   36)
-* -mno-regnames option, s390:            s390 Options.       (line   50)
+* -mno-regnames option, s390:            s390 Options.       (line   51)
 * -mno-relax option, RISC-V:             RISC-V-Options.     (line   45)
 * -mno-skip-bug command-line option, AVR: AVR Options.       (line  114)
 * -mno-spl:                              PDP-11-Options.     (line   80)
 * -mno-sym32:                            MIPS Options.       (line  348)
 * -mno-verbose-error command-line option, AArch64: AArch64 Options.
-                                                             (line   64)
+                                                             (line   66)
 * -mno-wrap command-line option, AVR:    AVR Options.        (line  117)
 * -mnopic command-line option, Blackfin: Blackfin Options.   (line   22)
 * -mnps400 command-line option, ARC:     ARC Options.        (line  102)
-* -momit-lock-prefix= option, i386:      i386-Options.       (line  177)
-* -momit-lock-prefix= option, x86-64:    i386-Options.       (line  177)
+* -momit-lock-prefix= option, i386:      i386-Options.       (line  181)
+* -momit-lock-prefix= option, x86-64:    i386-Options.       (line  181)
 * -mpic:                                 PDP-11-Options.     (line   11)
 * -mpic command-line option, TIC6X:      TIC6X Options.      (line   36)
 * -mpid:                                 RX-Opts.            (line   50)
 * -mpid= command-line option, TIC6X:     TIC6X Options.      (line   23)
 * -mpriv-spec=PRIVspec option, RISC-V:   RISC-V-Options.     (line   27)
 * -mreg-prefix=PREFIX option, reg-prefix: S12Z Options.      (line    9)
-* -mregnames option, s390:               s390 Options.       (line   47)
+* -mregnames option, s390:               s390 Options.       (line   48)
 * -mrelax command-line option, ARC:      ARC Options.        (line   97)
 * -mrelax command-line option, V850:     V850 Options.       (line   72)
 * -mrelax option, RISC-V:                RISC-V-Options.     (line   41)
-* -mrelax-relocations= option, i386:     i386-Options.       (line  195)
-* -mrelax-relocations= option, x86-64:   i386-Options.       (line  195)
+* -mrelax-relocations= option, i386:     i386-Options.       (line  199)
+* -mrelax-relocations= option, x86-64:   i386-Options.       (line  199)
 * -mrh850-abi command-line option, V850: V850 Options.       (line   82)
 * -mrmw command-line option, AVR:        AVR Options.        (line  120)
 * -mrx-abi:                              RX-Opts.            (line   69)
-* -mshared option, i386:                 i386-Options.       (line  164)
-* -mshared option, x86-64:               i386-Options.       (line  164)
+* -mshared option, i386:                 i386-Options.       (line  168)
+* -mshared option, x86-64:               i386-Options.       (line  168)
 * -mshort:                               M68HC11-Opts.       (line   40)
 * -mshort <1>:                           XGATE-Opts.         (line    8)
 * -mshort-double:                        M68HC11-Opts.       (line   49)
@@ -26689,21 +26865,23 @@ AS Index
 * -msoft-float command-line option, V850: V850 Options.      (line   95)
 * -mspfp command-line option, ARC:       ARC Options.        (line  105)
 * -mspl:                                 PDP-11-Options.     (line   80)
-* -msse-check= option, i386:             i386-Options.       (line   94)
-* -msse-check= option, x86-64:           i386-Options.       (line   94)
+* -msse-check= option, i386:             i386-Options.       (line   98)
+* -msse-check= option, x86-64:           i386-Options.       (line   98)
 * -msse2avx option, i386:                i386-Options.       (line   90)
 * -msse2avx option, x86-64:              i386-Options.       (line   90)
 * -msym32:                               MIPS Options.       (line  348)
-* -msyntax= option, i386:                i386-Options.       (line  148)
-* -msyntax= option, x86-64:              i386-Options.       (line  148)
+* -msyntax= option, i386:                i386-Options.       (line  152)
+* -msyntax= option, x86-64:              i386-Options.       (line  152)
 * -mt11:                                 PDP-11-Options.     (line  130)
-* -mthumb command-line option, ARM:      ARM Options.        (line  302)
-* -mthumb-interwork command-line option, ARM: ARM Options.   (line  307)
+* -mthumb command-line option, ARM:      ARM Options.        (line  304)
+* -mthumb-interwork command-line option, ARM: ARM Options.   (line  309)
 * -mtune= option, i386:                  i386-Options.       (line   82)
 * -mtune= option, x86-64:                i386-Options.       (line   82)
 * -mtune=ARCH command-line option, Visium: Visium Options.   (line    8)
 * -muse-conventional-section-names:      RX-Opts.            (line   33)
 * -muse-renesas-section-names:           RX-Opts.            (line   37)
+* -muse-unaligned-vector-move option, i386: i386-Options.    (line   94)
+* -muse-unaligned-vector-move option, x86-64: i386-Options.  (line   94)
 * -muser-enabled command-line option, LM32: LM32 Options.    (line   18)
 * -mv850 command-line option, V850:      V850 Options.       (line   23)
 * -mv850any command-line option, V850:   V850 Options.       (line   41)
@@ -26714,15 +26892,15 @@ AS Index
 * -mv850e2v4 command-line option, V850:  V850 Options.       (line   63)
 * -mv850e3v5 command-line option, V850:  V850 Options.       (line   66)
 * -mverbose-error command-line option, AArch64: AArch64 Options.
-                                                             (line   60)
-* -mvexwig= option, i386:                i386-Options.       (line  115)
-* -mvexwig= option, x86-64:              i386-Options.       (line  115)
+                                                             (line   62)
+* -mvexwig= option, i386:                i386-Options.       (line  119)
+* -mvexwig= option, x86-64:              i386-Options.       (line  119)
 * -mvxworks-pic option, MIPS:            MIPS Options.       (line   26)
-* -mwarn-areg-zero option, s390:         s390 Options.       (line   53)
-* -mwarn-deprecated command-line option, ARM: ARM Options.   (line  384)
-* -mwarn-syms command-line option, ARM:  ARM Options.        (line  392)
-* -mx86-used-note= option, i386:         i386-Options.       (line  273)
-* -mx86-used-note= option, x86-64:       i386-Options.       (line  273)
+* -mwarn-areg-zero option, s390:         s390 Options.       (line   54)
+* -mwarn-deprecated command-line option, ARM: ARM Options.   (line  386)
+* -mwarn-syms command-line option, ARM:  ARM Options.        (line  394)
+* -mx86-used-note= option, i386:         i386-Options.       (line  277)
+* -mx86-used-note= option, x86-64:       i386-Options.       (line  277)
 * -mzarch option, s390:                  s390 Options.       (line   17)
 * -m[no-]68851 command-line option, M680x0: M68K-Opts.       (line   21)
 * -m[no-]68881 command-line option, M680x0: M68K-Opts.       (line   21)
@@ -26743,17 +26921,17 @@ AS Index
 * -nocpp ignored (MIPS):                 MIPS Options.       (line  351)
 * -noreplace command-line option, Alpha: Alpha Options.      (line   40)
 * -o:                                    o.                  (line    6)
-* -O option, i386:                       i386-Options.       (line  296)
+* -O option, i386:                       i386-Options.       (line  300)
 * -O option, M32RX:                      M32R-Opts.          (line   59)
-* -O option, x86-64:                     i386-Options.       (line  296)
-* -O0 option, i386:                      i386-Options.       (line  296)
-* -O0 option, x86-64:                    i386-Options.       (line  296)
-* -O1 option, i386:                      i386-Options.       (line  296)
-* -O1 option, x86-64:                    i386-Options.       (line  296)
-* -O2 option, i386:                      i386-Options.       (line  296)
-* -O2 option, x86-64:                    i386-Options.       (line  296)
-* -Os option, i386:                      i386-Options.       (line  296)
-* -Os option, x86-64:                    i386-Options.       (line  296)
+* -O option, x86-64:                     i386-Options.       (line  300)
+* -O0 option, i386:                      i386-Options.       (line  300)
+* -O0 option, x86-64:                    i386-Options.       (line  300)
+* -O1 option, i386:                      i386-Options.       (line  300)
+* -O1 option, x86-64:                    i386-Options.       (line  300)
+* -O2 option, i386:                      i386-Options.       (line  300)
+* -O2 option, x86-64:                    i386-Options.       (line  300)
+* -Os option, i386:                      i386-Options.       (line  300)
+* -Os option, x86-64:                    i386-Options.       (line  300)
 * -parallel option, M32RX:               M32R-Opts.          (line   46)
 * -R:                                    R.                  (line    6)
 * -relax command-line option, Alpha:     Alpha Options.      (line   32)
@@ -26795,7 +26973,7 @@ AS Index
 * .arc_attribute directive, ARC:         ARC Directives.     (line  240)
 * .arm directive, ARM:                   ARM Directives.     (line   30)
 * .assume directive, Z80:                Z80 Directives.     (line   12)
-* .attribute directive, RISC-V:          RISC-V-Directives.  (line  100)
+* .attribute directive, RISC-V:          RISC-V-Directives.  (line  124)
 * .big directive, M32RX:                 M32R-Directives.    (line   88)
 * .bss directive, AArch64:               AArch64 Directives. (line   21)
 * .bss directive, ARM:                   ARM Directives.     (line   33)
@@ -27225,8 +27403,10 @@ AS Index
 * balignl directive:                     Balign.             (line   29)
 * balignw directive:                     Balign.             (line   29)
 * bes directive, TIC54X:                 TIC54X-Directives.  (line  194)
-* big endian output, MIPS:               Overview.           (line  856)
-* big endian output, PJ:                 Overview.           (line  760)
+* bfloat16 directive, i386:              i386-Float.         (line   14)
+* bfloat16 directive, x86-64:            i386-Float.         (line   14)
+* big endian output, MIPS:               Overview.           (line  870)
+* big endian output, PJ:                 Overview.           (line  774)
 * big-endian output, MIPS:               MIPS Options.       (line   13)
 * big-endian output, TIC6X:              TIC6X Options.      (line   46)
 * bignums:                               Bignums.            (line    6)
@@ -27258,6 +27438,7 @@ AS Index
                                                              (line    6)
 * break directive, TIC54X:               TIC54X-Directives.  (line  141)
 * BSD syntax:                            PDP-11-Syntax.      (line    6)
+* bss directive:                         Bss.                (line    6)
 * BSS directive:                         RISC-V-Directives.  (line   24)
 * bss directive, TIC54X:                 TIC54X-Directives.  (line   27)
 * bss section:                           Ld Sections.        (line   20)
@@ -27288,10 +27469,10 @@ AS Index
 * C54XDSP_DIR environment variable, TIC54X: TIC54X-Env.      (line    6)
 * call directive, Nios II:               Nios II Relocations.
                                                              (line   38)
-* call instructions, i386:               i386-Mnemonics.     (line  114)
+* call instructions, i386:               i386-Mnemonics.     (line  115)
 * call instructions, relaxation:         Xtensa Call Relaxation.
                                                              (line    6)
-* call instructions, x86-64:             i386-Mnemonics.     (line  114)
+* call instructions, x86-64:             i386-Mnemonics.     (line  115)
 * call_hiadj directive, Nios II:         Nios II Relocations.
                                                              (line   38)
 * call_lo directive, Nios II:            Nios II Relocations.
@@ -27402,7 +27583,7 @@ AS Index
 * D10V floating point:                   D10V-Float.         (line    6)
 * D10V line comment character:           D10V-Chars.         (line    6)
 * D10V opcode summary:                   D10V-Opcodes.       (line    6)
-* D10V optimization:                     Overview.           (line  639)
+* D10V optimization:                     Overview.           (line  653)
 * D10V options:                          D10V-Opts.          (line    6)
 * D10V registers:                        D10V-Regs.          (line    6)
 * D10V size modifiers:                   D10V-Size.          (line    6)
@@ -27415,10 +27596,10 @@ AS Index
 * D30V floating point:                   D30V-Float.         (line    6)
 * D30V Guarded Execution:                D30V-Guarded.       (line    6)
 * D30V line comment character:           D30V-Chars.         (line    6)
-* D30V nops:                             Overview.           (line  647)
-* D30V nops after 32-bit multiply:       Overview.           (line  650)
+* D30V nops:                             Overview.           (line  661)
+* D30V nops after 32-bit multiply:       Overview.           (line  664)
 * D30V opcode summary:                   D30V-Opcodes.       (line    6)
-* D30V optimization:                     Overview.           (line  644)
+* D30V optimization:                     Overview.           (line  658)
 * D30V options:                          D30V-Opts.          (line    6)
 * D30V registers:                        D30V-Regs.          (line    6)
 * D30V size modifiers:                   D30V-Size.          (line    6)
@@ -27481,7 +27662,7 @@ AS Index
 * Disable single-precision floating-point operations: MIPS Floating-Point.
                                                              (line   12)
 * displacement sizing character, VAX:    VAX-operands.       (line   12)
-* dollar local symbols:                  Symbol Names.       (line  113)
+* dollar local symbols:                  Symbol Names.       (line  123)
 * dot (symbol):                          Dot.                (line    6)
 * double directive:                      Double.             (line    6)
 * double directive, i386:                i386-Float.         (line   14)
@@ -27517,17 +27698,17 @@ AS Index
 * elseif directive:                      Elseif.             (line    6)
 * empty expressions:                     Empty Exprs.        (line    6)
 * emsg directive, TIC54X:                TIC54X-Directives.  (line   75)
-* emulation:                             Overview.           (line 1110)
+* emulation:                             Overview.           (line 1124)
 * encoding options, i386:                i386-Mnemonics.     (line   38)
 * encoding options, x86-64:              i386-Mnemonics.     (line   38)
 * end directive:                         End.                (line    6)
 * endef directive:                       Endef.              (line    6)
 * endfunc directive:                     Endfunc.            (line    6)
-* endianness, MIPS:                      Overview.           (line  856)
-* endianness, PJ:                        Overview.           (line  760)
+* endianness, MIPS:                      Overview.           (line  870)
+* endianness, PJ:                        Overview.           (line  774)
 * endif directive:                       Endif.              (line    6)
 * endloop directive, TIC54X:             TIC54X-Directives.  (line  141)
-* endm directive:                        Macro.              (line  137)
+* endm directive:                        Macro.              (line  162)
 * endm directive, TIC54X:                TIC54X-Directives.  (line  151)
 * endproc directive, OpenRISC:           OpenRISC-Directives.
                                                              (line   24)
@@ -27558,7 +27739,7 @@ AS Index
 * even directive, TIC54X:                TIC54X-Directives.  (line    6)
 * Exception Cause Register, ARC:         ARC-Regs.           (line   63)
 * Exception Return Address, ARC:         ARC-Regs.           (line   76)
-* exitm directive:                       Macro.              (line  140)
+* exitm directive:                       Macro.              (line  165)
 * expr (internal section):               As Sections.        (line   17)
 * expression arguments:                  Arguments.          (line    6)
 * expressions:                           Expressions.        (line    6)
@@ -27694,7 +27875,9 @@ AS Index
 * hexadecimal integers:                  Integers.           (line   15)
 * hexadecimal prefix, S12Z:              S12Z Options.       (line   17)
 * hexadecimal prefix, Z80:               Z80-Chars.          (line   15)
+* hfloat directive, i386:                i386-Float.         (line   14)
 * hfloat directive, VAX:                 VAX-directives.     (line   21)
+* hfloat directive, x86-64:              i386-Float.         (line   14)
 * hi directive, Nios II:                 Nios II Relocations.
                                                              (line   20)
 * hi pseudo-op, V850:                    V850 Opcodes.       (line   33)
@@ -27726,7 +27909,7 @@ AS Index
 * i386 line comment character:           i386-Chars.         (line    6)
 * i386 line separator:                   i386-Chars.         (line   18)
 * i386 memory references:                i386-Memory.        (line    6)
-* i386 mnemonic compatibility:           i386-Mnemonics.     (line  120)
+* i386 mnemonic compatibility:           i386-Mnemonics.     (line  121)
 * i386 mul, imul instructions:           i386-Notes.         (line    6)
 * i386 options:                          i386-Options.       (line    6)
 * i386 register operands:                i386-Variations.    (line   15)
@@ -27782,7 +27965,7 @@ AS Index
 * inhibiting interrupts, i386:           i386-Prefixes.      (line   36)
 * input:                                 Input Files.        (line    6)
 * input file linenumbers:                Input Files.        (line   35)
-* INSN directives:                       RISC-V-Directives.  (line   92)
+* INSN directives:                       RISC-V-Directives.  (line  106)
 * instruction aliases, s390:             s390 Aliases.       (line    6)
 * instruction bundle:                    Bundle directives.  (line    9)
 * instruction expansion, CRIS:           CRIS-Expand.        (line    6)
@@ -27813,9 +27996,9 @@ AS Index
 * instructions and directives:           Statements.         (line   20)
 * int directive:                         Int.                (line    6)
 * int directive, H8/300:                 H8/300 Directives.  (line    6)
-* int directive, i386:                   i386-Float.         (line   21)
+* int directive, i386:                   i386-Float.         (line   22)
 * int directive, TIC54X:                 TIC54X-Directives.  (line  109)
-* int directive, x86-64:                 i386-Float.         (line   21)
+* int directive, x86-64:                 i386-Float.         (line   22)
 * integer expressions:                   Integer Exprs.      (line    6)
 * integer, 16-byte:                      Octa.               (line    6)
 * integer, 2-byte:                       2byte.              (line    6)
@@ -27848,10 +28031,10 @@ AS Index
 * irpc directive:                        Irpc.               (line    6)
 * joining text and data sections:        R.                  (line    6)
 * jsri2bsr command-line option, C-SKY:   C-SKY Options.      (line   52)
-* jump instructions, i386:               i386-Mnemonics.     (line  114)
+* jump instructions, i386:               i386-Mnemonics.     (line  115)
 * jump instructions, relaxation:         Xtensa Jump Relaxation.
                                                              (line    6)
-* jump instructions, x86-64:             i386-Mnemonics.     (line  114)
+* jump instructions, x86-64:             i386-Mnemonics.     (line  115)
 * jump optimization, i386:               i386-Jumps.         (line    6)
 * jump optimization, x86-64:             i386-Jumps.         (line    6)
 * jump/call operands, i386:              i386-Variations.    (line   15)
@@ -27882,7 +28065,7 @@ AS Index
 * LDR reg,=<label> pseudo op, ARM:       ARM Opcodes.        (line   15)
 * LEB128 directives:                     RISC-V-Directives.  (line   27)
 * length directive, TIC54X:              TIC54X-Directives.  (line  125)
-* length of symbols:                     Symbol Intro.       (line   19)
+* length of symbols:                     Symbol Intro.       (line   20)
 * level 1 interrupt link register, ARC:  ARC-Regs.           (line   23)
 * level 2 interrupt link register, ARC:  ARC-Regs.           (line   31)
 * lflags directive (ignored):            Lflags.             (line    6)
@@ -28002,8 +28185,8 @@ AS Index
                                                              (line    6)
 * literal_prefix directive:              Literal Prefix Directive.
                                                              (line    6)
-* little endian output, MIPS:            Overview.           (line  859)
-* little endian output, PJ:              Overview.           (line  763)
+* little endian output, MIPS:            Overview.           (line  873)
+* little endian output, PJ:              Overview.           (line  777)
 * little-endian output, MIPS:            MIPS Options.       (line   13)
 * little-endian output, TIC6X:           TIC6X Options.      (line   46)
 * LM32 line comment character:           LM32-Chars.         (line    6)
@@ -28020,8 +28203,8 @@ AS Index
 * loc directive:                         Loc.                (line    6)
 * local common symbols:                  Lcomm.              (line    6)
 * local directive:                       Local.              (line    6)
-* local labels:                          Symbol Names.       (line   43)
-* local symbol names:                    Symbol Names.       (line   30)
+* local labels:                          Symbol Names.       (line   53)
+* local symbol names:                    Symbol Names.       (line   40)
 * local symbols, retaining in output:    L.                  (line    6)
 * location counter:                      Dot.                (line    6)
 * location counter, advancing:           Org.                (line    6)
@@ -28031,9 +28214,9 @@ AS Index
 * logical line number:                   Line.               (line    6)
 * logical line numbers:                  Comments.           (line   33)
 * long directive:                        Long.               (line    6)
-* long directive, i386:                  i386-Float.         (line   21)
+* long directive, i386:                  i386-Float.         (line   22)
 * long directive, TIC54X:                TIC54X-Directives.  (line  133)
-* long directive, x86-64:                i386-Float.         (line   21)
+* long directive, x86-64:                i386-Float.         (line   22)
 * longcall pseudo-op, V850:              V850 Opcodes.       (line  122)
 * longcalls directive:                   Longcalls Directive.
                                                              (line    6)
@@ -28137,7 +28320,7 @@ AS Index
 * macro directive:                       Macro.              (line   28)
 * macro directive, TIC54X:               TIC54X-Directives.  (line  151)
 * macros:                                Macro.              (line    6)
-* macros, count executed:                Macro.              (line  142)
+* macros, count executed:                Macro.              (line  167)
 * Macros, MSP 430:                       MSP430-Macros.      (line    6)
 * macros, TIC54X:                        TIC54X-Macros.      (line    6)
 * make rules:                            MD.                 (line    6)
@@ -28196,14 +28379,14 @@ AS Index
                                                              (line   26)
 * MIPS DSP Release 3 instruction generation override: MIPS ASE Instruction Generation Overrides.
                                                              (line   31)
-* MIPS endianness:                       Overview.           (line  856)
+* MIPS endianness:                       Overview.           (line  870)
 * MIPS eXtended Physical Address (XPA) instruction generation override: MIPS ASE Instruction Generation Overrides.
                                                              (line   57)
 * MIPS Global INValidate (GINV) instruction generation override: MIPS ASE Instruction Generation Overrides.
                                                              (line   72)
 * MIPS IEEE 754 NaN data encoding selection: MIPS NaN Encodings.
                                                              (line    6)
-* MIPS ISA:                              Overview.           (line  862)
+* MIPS ISA:                              Overview.           (line  876)
 * MIPS ISA override:                     MIPS ISA.           (line    6)
 * MIPS line comment character:           MIPS-Chars.         (line    6)
 * MIPS line separator:                   MIPS-Chars.         (line   14)
@@ -28270,7 +28453,7 @@ AS Index
 * mmsg directive, TIC54X:                TIC54X-Directives.  (line   75)
 * MMX, i386:                             i386-SIMD.          (line    6)
 * MMX, x86-64:                           i386-SIMD.          (line    6)
-* mnemonic compatibility, i386:          i386-Mnemonics.     (line  120)
+* mnemonic compatibility, i386:          i386-Mnemonics.     (line  121)
 * mnemonic suffixes, i386:               i386-Variations.    (line   28)
 * mnemonic suffixes, x86-64:             i386-Variations.    (line   28)
 * mnemonics for opcodes, VAX:            VAX-opcodes.        (line    6)
@@ -28377,7 +28560,7 @@ AS Index
 * NS32K line separator:                  NS32K-Chars.        (line   18)
 * null-terminated strings:               Asciz.              (line    6)
 * number constants:                      Numbers.            (line    6)
-* number of macros executed:             Macro.              (line  142)
+* number of macros executed:             Macro.              (line  167)
 * numbered subsections:                  Sub-Sections.       (line    6)
 * numbers, 16-bit:                       hword.              (line    6)
 * numeric values:                        Expressions.        (line    6)
@@ -28435,8 +28618,8 @@ AS Index
 * operator precedence:                   Infix Ops.          (line   11)
 * operators, in expressions:             Operators.          (line    6)
 * operators, permitted arguments:        Infix Ops.          (line    6)
-* optimization, D10V:                    Overview.           (line  639)
-* optimization, D30V:                    Overview.           (line  644)
+* optimization, D10V:                    Overview.           (line  653)
+* optimization, D30V:                    Overview.           (line  658)
 * optimizations:                         Xtensa Optimizations.
                                                              (line    6)
 * Option directive:                      RISC-V-Directives.  (line   34)
@@ -28514,11 +28697,11 @@ AS Index
 * PDP-11 line separator:                 PDP-11-Syntax.      (line   19)
 * PDP-11 support:                        PDP-11-Dependent.   (line    6)
 * PDP-11 syntax:                         PDP-11-Syntax.      (line    6)
-* PIC code generation for ARM:           ARM Options.        (line  376)
+* PIC code generation for ARM:           ARM Options.        (line  378)
 * PIC code generation for M32R:          M32R-Opts.          (line   42)
 * pic command-line option, C-SKY:        C-SKY Options.      (line   22)
 * PIC selection, MIPS:                   MIPS Options.       (line   21)
-* PJ endianness:                         Overview.           (line  760)
+* PJ endianness:                         Overview.           (line  774)
 * PJ line comment character:             PJ-Chars.           (line    6)
 * PJ line separator:                     PJ-Chars.           (line   14)
 * PJ options:                            PJ Options.         (line    6)
@@ -28589,8 +28772,8 @@ AS Index
 * purpose of GNU assembler:              GNU Assembler.      (line   12)
 * pushsection directive:                 PushSection.        (line    6)
 * quad directive:                        Quad.               (line    6)
-* quad directive, i386:                  i386-Float.         (line   21)
-* quad directive, x86-64:                i386-Float.         (line   21)
+* quad directive, i386:                  i386-Float.         (line   22)
+* quad directive, x86-64:                i386-Float.         (line   22)
 * real-mode code, i386:                  i386-16bit.         (line    6)
 * ref directive, TIC54X:                 TIC54X-Directives.  (line  101)
 * refsym directive, MSP 430:             MSP430 Directives.  (line   30)
@@ -28929,8 +29112,8 @@ AS Index
 * symbol names, $ in <1>:                D30V-Chars.         (line   70)
 * symbol names, $ in <2>:                Meta-Chars.         (line   10)
 * symbol names, $ in <3>:                SH-Chars.           (line   15)
-* symbol names, local:                   Symbol Names.       (line   30)
-* symbol names, temporary:               Symbol Names.       (line   43)
+* symbol names, local:                   Symbol Names.       (line   40)
+* symbol names, temporary:               Symbol Names.       (line   53)
 * symbol prefix character, ARC:          ARC-Chars.          (line   20)
 * symbol storage class (COFF):           Scl.                (line    6)
 * symbol type:                           Symbol Type.        (line    6)
@@ -28979,7 +29162,7 @@ AS Index
 * TBM, i386:                             i386-TBM.           (line    6)
 * TBM, x86-64:                           i386-TBM.           (line    6)
 * tdaoff pseudo-op, V850:                V850 Opcodes.       (line   81)
-* temporary symbol names:                Symbol Names.       (line   43)
+* temporary symbol names:                Symbol Names.       (line   53)
 * text and data sections, joining:       R.                  (line    6)
 * text directive:                        Text.               (line    6)
 * text section:                          Ld Sections.        (line    9)
@@ -29136,14 +29319,14 @@ AS Index
 * word directive:                        Word.               (line    6)
 * word directive, BPF:                   BPF Directives.     (line   12)
 * word directive, H8/300:                H8/300 Directives.  (line    6)
-* word directive, i386:                  i386-Float.         (line   21)
+* word directive, i386:                  i386-Float.         (line   22)
 * word directive, Nios II:               Nios II Directives. (line   13)
 * word directive, OpenRISC:              OpenRISC-Directives.
                                                              (line   12)
 * word directive, PRU:                   PRU Directives.     (line   10)
 * word directive, SPARC:                 Sparc-Directives.   (line   51)
 * word directive, TIC54X:                TIC54X-Directives.  (line  109)
-* word directive, x86-64:                i386-Float.         (line   21)
+* word directive, x86-64:                i386-Float.         (line   22)
 * writing patterns in memory:            Fill.               (line    6)
 * wval:                                  Z8000 Directives.   (line   24)
 * x86 machine directives:                i386-Directives.    (line    6)
@@ -29224,683 +29407,684 @@ AS Index
 
 Tag Table:
 Node: Top733
-Node: Overview1720
-Node: Manual43503
-Node: GNU Assembler44447
-Node: Object Formats45618
-Node: Command Line46070
-Node: Input Files47156
-Node: Object49137
-Node: Errors50033
-Node: Invoking51595
-Node: a53601
-Node: alternate55512
-Node: D55684
-Node: f55917
-Node: I56426
-Node: K56970
-Node: L57274
-Node: listing58013
-Node: M59672
-Node: MD63509
-Node: no-pad-sections63949
-Node: o64324
-Node: R64751
-Node: statistics65781
-Node: traditional-format66188
-Node: v66661
-Node: W66936
-Node: Z67843
-Node: Syntax68365
-Node: Preprocessing68957
-Node: Whitespace70614
-Node: Comments71010
-Node: Symbol Intro73021
-Node: Statements74005
-Node: Constants75993
-Node: Characters76624
-Node: Strings77126
-Node: Chars79299
-Node: Numbers80151
-Node: Integers80691
-Node: Bignums81347
-Node: Flonums81703
-Node: Sections83320
-Node: Secs Background83698
-Node: Ld Sections88731
-Node: As Sections91115
-Node: Sub-Sections92025
-Node: bss95173
-Node: Symbols96123
-Node: Labels96771
-Node: Setting Symbols97502
-Node: Symbol Names98056
-Node: Dot103523
-Node: Symbol Attributes103970
-Node: Symbol Value104703
-Node: Symbol Type105748
-Node: a.out Symbols106136
-Node: Symbol Desc106398
-Node: Symbol Other106694
-Node: COFF Symbols106863
-Node: SOM Symbols107536
-Node: Expressions107978
-Node: Empty Exprs108727
-Node: Integer Exprs109074
-Node: Arguments109469
-Node: Operators110575
-Node: Prefix Ops110910
-Node: Infix Ops111237
-Node: Pseudo Ops113631
-Node: Abort119871
-Node: ABORT (COFF)120284
-Node: Align120492
-Node: Altmacro122888
-Node: Ascii124219
-Node: Asciz124528
-Node: Attach_to_group124918
-Node: Balign125332
-Node: Bundle directives127341
-Node: Byte130322
-Node: CFI directives130583
-Node: Comm139895
-Ref: Comm-Footnote-1141495
-Node: Data141857
-Node: Dc142173
-Node: Dcb143150
-Node: Ds143943
-Node: Def144773
-Node: Desc145003
-Node: Dim145503
-Node: Double145760
-Node: Eject146098
-Node: Else146273
-Node: Elseif146573
-Node: End146867
-Node: Endef147082
-Node: Endfunc147259
-Node: Endif147434
-Node: Equ147695
-Node: Equiv148210
-Node: Eqv148766
-Node: Err149130
-Node: Error149441
-Node: Exitm149886
-Node: Extern150055
-Node: Fail150316
-Node: File150761
-Node: Fill152867
-Node: Float153831
-Node: Func154173
-Node: Global154763
-Node: Gnu_attribute155520
-Node: Hidden155745
-Node: hword156331
-Node: Ident156659
-Node: If157233
-Node: Incbin160294
-Node: Include160988
-Node: Int161539
-Node: Internal161920
-Node: Irp162567
-Node: Irpc163446
-Node: Lcomm164362
-Node: Lflags165109
-Node: Line165303
-Node: Linkonce166219
-Node: List167448
-Node: Ln168055
-Node: Loc168205
-Node: Loc_mark_labels170510
-Node: Local170994
-Node: Long171606
-Node: Macro171784
-Node: MRI177715
-Node: Noaltmacro178053
-Node: Nolist178222
-Node: Nop178650
-Node: Nops179334
-Node: Octa180189
-Node: Offset180524
-Node: Org180851
-Node: P2align182136
-Node: PopSection184190
-Node: Previous184698
-Node: Print186110
-Node: Protected186339
-Node: Psize186986
-Node: Purgem187670
-Node: PushSection187891
-Node: Quad188635
-Node: Reloc189089
-Node: Rept189850
-Node: Sbttl190412
-Node: Scl190777
-Node: Section191118
-Ref: Section Name Substitutions193176
-Node: Set201004
-Node: Short202096
-Node: Single202417
-Node: Size202762
-Node: Skip203428
-Node: Sleb128203752
-Node: Space204074
-Node: Stab204715
-Node: String206718
-Node: Struct207710
-Node: SubSection208433
-Node: Symver208994
-Node: Tag211875
-Node: Text212255
-Node: Title212575
-Node: Tls_common212960
-Node: Type213279
-Node: Uleb128215747
-Node: Val216071
-Node: Version216321
-Node: VTableEntry216595
-Node: VTableInherit216885
-Node: Warning217335
-Node: Weak217569
-Node: Weakref218238
-Node: Word219203
-Node: Zero221043
-Node: 2byte221450
-Node: 4byte222454
-Node: 8byte222718
-Node: Deprecated222995
-Node: Object Attributes223230
-Node: GNU Object Attributes224950
-Node: Defining New Object Attributes229296
-Node: Machine Dependencies230088
-Node: AArch64-Dependent234123
-Node: AArch64 Options234605
-Node: AArch64 Extensions237594
-Node: AArch64 Syntax243396
-Node: AArch64-Chars243696
-Node: AArch64-Regs244182
-Node: AArch64-Relocations244476
-Node: AArch64 Floating Point245550
-Node: AArch64 Directives245775
-Node: AArch64 Opcodes249702
-Node: AArch64 Mapping Symbols250379
-Node: Alpha-Dependent250760
-Node: Alpha Notes251200
-Node: Alpha Options251481
-Node: Alpha Syntax253956
-Node: Alpha-Chars254425
-Node: Alpha-Regs254837
-Node: Alpha-Relocs255224
-Node: Alpha Floating Point261470
-Node: Alpha Directives261692
-Node: Alpha Opcodes267219
-Node: ARC-Dependent267514
-Node: ARC Options267959
-Node: ARC Syntax271085
-Node: ARC-Chars271313
-Node: ARC-Regs272435
-Node: ARC Directives275203
-Node: ARC Modifiers283858
-Node: ARC Symbols284868
-Node: ARC Opcodes285422
-Node: ARM-Dependent285668
-Node: ARM Options286133
-Node: ARM Syntax306314
-Node: ARM-Instruction-Set306682
-Node: ARM-Chars307897
-Node: ARM-Regs308608
-Node: ARM-Relocations308817
-Node: ARM-Neon-Alignment310503
-Node: ARM Floating Point310968
-Node: ARM Directives311167
-Ref: arm_fnend316326
-Ref: arm_fnstart316645
-Ref: arm_pad319053
-Ref: arm_save319655
-Ref: arm_setfp320356
-Node: ARM Opcodes323642
-Node: ARM Mapping Symbols326244
-Node: ARM Unwinding Tutorial327053
-Node: AVR-Dependent333253
-Node: AVR Options333592
-Node: AVR Syntax339910
-Node: AVR-Chars340197
-Node: AVR-Regs340756
-Node: AVR-Modifiers341337
-Node: AVR Opcodes343705
-Node: AVR Pseudo Instructions348983
-Node: Blackfin-Dependent350642
-Node: Blackfin Options350953
-Node: Blackfin Syntax351927
-Node: Blackfin Directives358133
-Node: BPF-Dependent358874
-Node: BPF Options359191
-Node: BPF Syntax359574
-Node: BPF-Chars359842
-Node: BPF-Regs360235
-Node: BPF-Pseudo-Maps360747
-Node: BPF Directives361167
-Node: BPF Opcodes361581
-Node: CR16-Dependent368139
-Node: CR16 Operand Qualifiers368434
-Node: CR16 Syntax371143
-Node: CR16-Chars371329
-Node: CRIS-Dependent371866
-Node: CRIS-Opts372213
-Ref: march-option373898
-Node: CRIS-Expand375717
-Node: CRIS-Symbols376900
-Node: CRIS-Syntax378071
-Node: CRIS-Chars378407
-Node: CRIS-Pic378958
-Ref: crispic379153
-Node: CRIS-Regs382702
-Node: CRIS-Pseudos383119
-Ref: crisnous383896
-Node: C-SKY-Dependent385184
-Node: C-SKY Options385446
-Node: C-SKY Syntax388431
-Node: D10V-Dependent388676
-Node: D10V-Opts389030
-Node: D10V-Syntax390001
-Node: D10V-Size390532
-Node: D10V-Subs391505
-Node: D10V-Chars392542
-Node: D10V-Regs394355
-Node: D10V-Addressing395384
-Node: D10V-Word396064
-Node: D10V-Float396581
-Node: D10V-Opcodes396894
-Node: D30V-Dependent397289
-Node: D30V-Opts397646
-Node: D30V-Syntax398324
-Node: D30V-Size398858
-Node: D30V-Subs399831
-Node: D30V-Chars400868
-Node: D30V-Guarded403478
-Node: D30V-Regs404155
-Node: D30V-Addressing405274
-Node: D30V-Float405936
-Node: D30V-Opcodes406249
-Node: Epiphany-Dependent406644
-Node: Epiphany Options406932
-Node: Epiphany Syntax407331
-Node: Epiphany-Chars407532
-Node: H8/300-Dependent408086
-Node: H8/300 Options408502
-Node: H8/300 Syntax408942
-Node: H8/300-Chars409243
-Node: H8/300-Regs409542
-Node: H8/300-Addressing410461
-Node: H8/300 Floating Point411485
-Node: H8/300 Directives411812
-Node: H8/300 Opcodes412940
-Node: HPPA-Dependent421259
-Node: HPPA Notes421691
-Node: HPPA Options422450
-Node: HPPA Syntax422645
-Node: HPPA Floating Point423915
-Node: HPPA Directives424121
-Node: HPPA Opcodes432803
-Node: i386-Dependent433062
-Node: i386-Options434445
-Node: i386-Directives449456
-Node: i386-Syntax450798
-Node: i386-Variations451103
-Node: i386-Chars454027
-Node: i386-Mnemonics454756
-Node: i386-Regs459762
-Node: i386-Prefixes462420
-Node: i386-Memory465180
-Node: i386-Jumps468119
-Node: i386-Float469242
-Node: i386-SIMD471071
-Node: i386-LWP472180
-Node: i386-BMI473014
-Node: i386-TBM473392
-Node: i386-16bit473922
-Node: i386-Arch475993
-Node: i386-ISA479684
-Node: i386-Bugs480555
-Node: i386-Notes481305
-Node: IA-64-Dependent482164
-Node: IA-64 Options482465
-Node: IA-64 Syntax485616
-Node: IA-64-Chars486022
-Node: IA-64-Regs486252
-Node: IA-64-Bits487178
-Node: IA-64-Relocs487708
-Node: IA-64 Opcodes488179
-Node: IP2K-Dependent488451
-Node: IP2K-Opts488723
-Node: IP2K-Syntax489222
-Node: IP2K-Chars489396
-Node: LM32-Dependent489939
-Node: LM32 Options490234
-Node: LM32 Syntax490867
-Node: LM32-Regs491163
-Node: LM32-Modifiers492104
-Node: LM32-Chars493484
-Node: LM32 Opcodes493992
-Node: M32C-Dependent494296
-Node: M32C-Opts494802
-Node: M32C-Syntax495221
-Node: M32C-Modifiers495456
-Node: M32C-Chars497248
-Node: M32R-Dependent497814
-Node: M32R-Opts498135
-Node: M32R-Directives502297
-Node: M32R-Warnings506271
-Node: M68K-Dependent509276
-Node: M68K-Opts509743
-Node: M68K-Syntax517165
-Node: M68K-Moto-Syntax519005
-Node: M68K-Float521589
-Node: M68K-Directives522109
-Node: M68K-opcodes523436
-Node: M68K-Branch523662
-Node: M68K-Chars527857
-Node: M68HC11-Dependent528720
-Node: M68HC11-Opts529251
-Node: M68HC11-Syntax533563
-Node: M68HC11-Modifiers536357
-Node: M68HC11-Directives538184
-Node: M68HC11-Float539558
-Node: M68HC11-opcodes540086
-Node: M68HC11-Branch540268
-Node: S12Z-Dependent542718
-Node: S12Z Options543061
-Node: S12Z Syntax544045
-Node: S12Z Syntax Overview544364
-Node: S12Z Addressing Modes546026
-Node: S12Z Register Notation549830
-Node: Meta-Dependent551006
-Node: Meta Options551288
-Node: Meta Syntax551950
-Node: Meta-Chars552162
-Node: Meta-Regs552462
-Node: MicroBlaze-Dependent552738
-Node: MicroBlaze Directives553425
-Node: MicroBlaze Syntax554816
-Node: MicroBlaze-Chars555048
-Node: MIPS-Dependent555600
-Node: MIPS Options557034
-Node: MIPS Macros576126
-Ref: MIPS Macros-Footnote-1578840
-Node: MIPS Symbol Sizes578983
-Node: MIPS Small Data580655
-Node: MIPS ISA582819
-Node: MIPS assembly options584603
-Node: MIPS autoextend585736
-Node: MIPS insn586470
-Node: MIPS FP ABIs587751
-Node: MIPS FP ABI History588203
-Node: MIPS FP ABI Variants588963
-Node: MIPS FP ABI Selection591516
-Node: MIPS FP ABI Compatibility592579
-Node: MIPS NaN Encodings593389
-Node: MIPS Option Stack595352
-Node: MIPS ASE Instruction Generation Overrides596137
-Node: MIPS Floating-Point600898
-Node: MIPS Syntax601804
-Node: MIPS-Chars602066
-Node: MMIX-Dependent602608
-Node: MMIX-Opts602988
-Node: MMIX-Expand606594
-Node: MMIX-Syntax607906
-Ref: mmixsite608262
-Node: MMIX-Chars609104
-Node: MMIX-Symbols609977
-Node: MMIX-Regs612048
-Node: MMIX-Pseudos613073
-Ref: MMIX-loc613215
-Ref: MMIX-local614296
-Ref: MMIX-is614829
-Ref: MMIX-greg615101
-Ref: GREG-base616019
-Ref: MMIX-byte617338
-Ref: MMIX-constants617810
-Ref: MMIX-prefix618452
-Ref: MMIX-spec618827
-Node: MMIX-mmixal619161
-Node: MSP430-Dependent622656
-Node: MSP430 Options623125
-Node: MSP430 Syntax626693
-Node: MSP430-Macros627009
-Node: MSP430-Chars627739
-Node: MSP430-Regs628454
-Node: MSP430-Ext629015
-Node: MSP430 Floating Point630834
-Node: MSP430 Directives631058
-Node: MSP430 Opcodes632899
-Node: MSP430 Profiling Capability633294
-Node: NDS32-Dependent635622
-Node: NDS32 Options636231
-Node: NDS32 Syntax638114
-Node: NDS32-Chars638382
-Node: NDS32-Regs638849
-Node: NDS32-Ops639703
-Node: NiosII-Dependent643300
-Node: Nios II Options643719
-Node: Nios II Syntax644951
-Node: Nios II Chars645157
-Node: Nios II Relocations645348
-Node: Nios II Directives646919
-Node: Nios II Opcodes648481
-Node: NS32K-Dependent648756
-Node: NS32K Syntax648985
-Node: NS32K-Chars649134
-Node: OpenRISC-Dependent649874
-Node: OpenRISC-Syntax650217
-Node: OpenRISC-Chars650538
-Node: OpenRISC-Regs650861
-Node: OpenRISC-Relocs651874
-Node: OpenRISC-Float656654
-Node: OpenRISC-Directives656860
-Node: OpenRISC-Opcodes657658
-Node: PDP-11-Dependent657950
-Node: PDP-11-Options658343
-Node: PDP-11-Pseudos663402
-Node: PDP-11-Syntax663747
-Node: PDP-11-Mnemonics664579
-Node: PDP-11-Synthetic664881
-Node: PJ-Dependent665099
-Node: PJ Options665362
-Node: PJ Syntax665657
-Node: PJ-Chars665822
-Node: PPC-Dependent666371
-Node: PowerPC-Opts666703
-Node: PowerPC-Pseudo670494
-Node: PowerPC-Syntax671115
-Node: PowerPC-Chars671305
-Node: PRU-Dependent672056
-Node: PRU Options672439
-Node: PRU Syntax673178
-Node: PRU Chars673365
-Node: PRU Relocations673520
-Node: PRU Directives674071
-Node: PRU Opcodes674974
-Node: RISC-V-Dependent675391
-Node: RISC-V-Options675819
-Node: RISC-V-Directives678533
-Node: RISC-V-Modifiers682331
-Node: RISC-V-Formats686399
-Node: RISC-V-ATTRIBUTE694082
-Node: RL78-Dependent696044
-Node: RL78-Opts696445
-Node: RL78-Modifiers697279
-Node: RL78-Directives698058
-Node: RL78-Syntax698662
-Node: RL78-Chars698858
-Node: RX-Dependent699414
-Node: RX-Opts699845
-Node: RX-Modifiers704109
-Node: RX-Directives705212
-Node: RX-Float705951
-Node: RX-Syntax706586
-Node: RX-Chars706765
-Node: S/390-Dependent707317
-Node: s390 Options708162
-Node: s390 Characters710322
-Node: s390 Syntax710843
-Node: s390 Register711745
-Node: s390 Mnemonics712561
-Node: s390 Operands715581
-Node: s390 Formats718212
-Node: s390 Aliases726059
-Node: s390 Operand Modifier730024
-Node: s390 Instruction Marker733827
-Node: s390 Literal Pool Entries734841
-Node: s390 Directives736774
-Node: s390 Floating Point742231
-Node: SCORE-Dependent742679
-Node: SCORE-Opts742981
-Node: SCORE-Pseudo744268
-Node: SCORE-Syntax746350
-Node: SCORE-Chars746532
-Node: SH-Dependent747090
-Node: SH Options747502
-Node: SH Syntax748553
-Node: SH-Chars748826
-Node: SH-Regs749369
-Node: SH-Addressing749983
-Node: SH Floating Point750891
-Node: SH Directives751988
-Node: SH Opcodes752389
-Node: Sparc-Dependent756710
-Node: Sparc-Opts757119
-Node: Sparc-Aligned-Data762832
-Node: Sparc-Syntax763664
-Node: Sparc-Chars764238
-Node: Sparc-Regs764801
-Node: Sparc-Constants770649
-Node: Sparc-Relocs775409
-Node: Sparc-Size-Translations780527
-Node: Sparc-Float782177
-Node: Sparc-Directives782372
-Node: TIC54X-Dependent784334
-Node: TIC54X-Opts785097
-Node: TIC54X-Block786138
-Node: TIC54X-Env786498
-Node: TIC54X-Constants786846
-Node: TIC54X-Subsyms787243
-Node: TIC54X-Locals789147
-Node: TIC54X-Builtins789887
-Node: TIC54X-Ext792301
-Node: TIC54X-Directives792872
-Node: TIC54X-Macros803780
-Node: TIC54X-MMRegs805867
-Node: TIC54X-Syntax806104
-Node: TIC54X-Chars806294
-Node: TIC6X-Dependent806985
-Node: TIC6X Options807288
-Node: TIC6X Syntax809287
-Node: TIC6X Directives810390
-Node: TILE-Gx-Dependent812674
-Node: TILE-Gx Options812984
-Node: TILE-Gx Syntax813333
-Node: TILE-Gx Opcodes815569
-Node: TILE-Gx Registers815857
-Node: TILE-Gx Modifiers816628
-Node: TILE-Gx Directives821627
-Node: TILEPro-Dependent822530
-Node: TILEPro Options822839
-Node: TILEPro Syntax823023
-Node: TILEPro Opcodes825259
-Node: TILEPro Registers825550
-Node: TILEPro Modifiers826320
-Node: TILEPro Directives831109
-Node: V850-Dependent832012
-Node: V850 Options832408
-Node: V850 Syntax836686
-Node: V850-Chars836926
-Node: V850-Regs837470
-Node: V850 Floating Point838980
-Node: V850 Directives839186
-Node: V850 Opcodes841252
-Node: Vax-Dependent847131
-Node: VAX-Opts847715
-Node: VAX-float851436
-Node: VAX-directives852069
-Node: VAX-opcodes852929
-Node: VAX-branch853318
-Node: VAX-operands855822
-Node: VAX-no856585
-Node: VAX-Syntax856841
-Node: VAX-Chars857007
-Node: Visium-Dependent857561
-Node: Visium Options857874
-Node: Visium Syntax858340
-Node: Visium Characters858585
-Node: Visium Registers859166
-Node: Visium Opcodes859438
-Node: WebAssembly-Dependent859864
-Node: WebAssembly-Notes860305
-Node: WebAssembly-Syntax860591
-Node: WebAssembly-Chars861157
-Node: WebAssembly-Relocs861536
-Node: WebAssembly-Signatures862262
-Node: WebAssembly-Floating-Point862763
-Node: WebAssembly-Opcodes863004
-Node: WebAssembly-module-layout863637
-Node: XGATE-Dependent864116
-Node: XGATE-Opts864543
-Node: XGATE-Syntax865532
-Node: XGATE-Directives867611
-Node: XGATE-Float867850
-Node: XGATE-opcodes868347
-Node: XSTORMY16-Dependent868459
-Node: XStormy16 Syntax868805
-Node: XStormy16-Chars868995
-Node: XStormy16 Directives869608
-Node: XStormy16 Opcodes870262
-Node: Xtensa-Dependent871317
-Node: Xtensa Options872048
-Node: Xtensa Syntax876621
-Node: Xtensa Opcodes878765
-Node: Xtensa Registers880558
-Node: Xtensa Optimizations881191
-Node: Density Instructions881643
-Node: Xtensa Automatic Alignment882745
-Node: Xtensa Relaxation885192
-Node: Xtensa Branch Relaxation886157
-Node: Xtensa Call Relaxation887529
-Node: Xtensa Jump Relaxation889310
-Node: Xtensa Immediate Relaxation891410
-Node: Xtensa Directives893985
-Node: Schedule Directive895693
-Node: Longcalls Directive896033
-Node: Transform Directive896577
-Node: Literal Directive897319
-Ref: Literal Directive-Footnote-1900858
-Node: Literal Position Directive901000
-Node: Literal Prefix Directive902699
-Node: Absolute Literals Directive903597
-Node: Z80-Dependent904904
-Node: Z80 Options905292
-Node: Z80 Syntax907791
-Node: Z80-Chars908499
-Node: Z80-Regs909350
-Node: Z80-Case909702
-Node: Z80-Labels910166
-Node: Z80 Floating Point910662
-Node: Z80 Directives911131
-Node: Z80 Opcodes913563
-Node: Z8000-Dependent915189
-Node: Z8000 Options916125
-Node: Z8000 Syntax916342
-Node: Z8000-Chars916632
-Node: Z8000-Regs917114
-Node: Z8000-Addressing917904
-Node: Z8000 Directives919014
-Node: Z8000 Opcodes920623
-Node: Reporting Bugs930565
-Node: Bug Criteria931291
-Node: Bug Reporting932058
-Node: Acknowledgements938702
-Ref: Acknowledgements-Footnote-1943668
-Node: GNU Free Documentation License943694
-Node: AS Index968844
+Node: Overview1718
+Node: Manual44243
+Node: GNU Assembler45187
+Node: Object Formats46358
+Node: Command Line46810
+Node: Input Files47896
+Node: Object49877
+Node: Errors50773
+Node: Invoking52335
+Node: a54341
+Node: alternate56252
+Node: D56424
+Node: f56657
+Node: I57166
+Node: K57710
+Node: L58014
+Node: listing58753
+Node: M60412
+Node: MD64249
+Node: no-pad-sections64689
+Node: o65064
+Node: R65491
+Node: statistics66521
+Node: traditional-format66928
+Node: v67401
+Node: W67676
+Node: Z68583
+Node: Syntax69105
+Node: Preprocessing69697
+Node: Whitespace71354
+Node: Comments71750
+Node: Symbol Intro73761
+Node: Statements74832
+Node: Constants76820
+Node: Characters77451
+Node: Strings77953
+Node: Chars80126
+Node: Numbers80978
+Node: Integers81518
+Node: Bignums82174
+Node: Flonums82530
+Node: Sections84147
+Node: Secs Background84525
+Node: Ld Sections89558
+Node: As Sections91942
+Node: Sub-Sections92852
+Node: bss96000
+Node: Symbols96950
+Node: Labels97598
+Node: Setting Symbols98329
+Node: Symbol Names98883
+Node: Dot104938
+Node: Symbol Attributes105385
+Node: Symbol Value106118
+Node: Symbol Type107163
+Node: a.out Symbols107551
+Node: Symbol Desc107813
+Node: Symbol Other108109
+Node: COFF Symbols108278
+Node: SOM Symbols108951
+Node: Expressions109393
+Node: Empty Exprs110142
+Node: Integer Exprs110489
+Node: Arguments110884
+Node: Operators111990
+Node: Prefix Ops112325
+Node: Infix Ops112652
+Node: Pseudo Ops115045
+Node: Abort121335
+Node: ABORT (COFF)121748
+Node: Align121956
+Node: Altmacro124352
+Node: Ascii125683
+Node: Asciz125992
+Node: Attach_to_group126382
+Node: Balign126796
+Node: Bss128791
+Node: Bundle directives129215
+Node: Byte132199
+Node: CFI directives132460
+Node: Comm141772
+Ref: Comm-Footnote-1143372
+Node: Data143734
+Node: Dc144050
+Node: Dcb145027
+Node: Ds145820
+Node: Def146754
+Node: Desc146984
+Node: Dim147484
+Node: Double147741
+Node: Eject148079
+Node: Else148254
+Node: Elseif148554
+Node: End148848
+Node: Endef149063
+Node: Endfunc149240
+Node: Endif149415
+Node: Equ149676
+Node: Equiv150191
+Node: Eqv150747
+Node: Err151111
+Node: Error151422
+Node: Exitm151867
+Node: Extern152036
+Node: Fail152297
+Node: File152742
+Node: Fill155029
+Node: Float155993
+Node: Func156335
+Node: Global156925
+Node: Gnu_attribute157682
+Node: Hidden157907
+Node: hword158493
+Node: Ident158821
+Node: If159395
+Node: Incbin162456
+Node: Include163150
+Node: Int163701
+Node: Internal164082
+Node: Irp164729
+Node: Irpc165608
+Node: Lcomm166524
+Node: Lflags167271
+Node: Line167465
+Node: Linkonce168381
+Node: List169610
+Node: Ln170217
+Node: Loc170367
+Node: Loc_mark_labels172672
+Node: Local173156
+Node: Long173768
+Node: Macro173946
+Node: MRI181411
+Node: Noaltmacro181749
+Node: Nolist181918
+Node: Nop182346
+Node: Nops183030
+Node: Octa183885
+Node: Offset184220
+Node: Org184547
+Node: P2align185832
+Node: PopSection187886
+Node: Previous188394
+Node: Print189806
+Node: Protected190035
+Node: Psize190682
+Node: Purgem191366
+Node: PushSection191587
+Node: Quad192331
+Node: Reloc192785
+Node: Rept193546
+Node: Sbttl194108
+Node: Scl194473
+Node: Section194814
+Ref: Section Name Substitutions196872
+Node: Set204700
+Node: Short205792
+Node: Single206113
+Node: Size206458
+Node: Skip207124
+Node: Sleb128207448
+Node: Space207770
+Node: Stab208411
+Node: String210414
+Node: Struct211406
+Node: SubSection212129
+Node: Symver212690
+Node: Tag215571
+Node: Text215951
+Node: Title216271
+Node: Tls_common216658
+Node: Type216977
+Node: Uleb128219445
+Node: Val219769
+Node: Version220019
+Node: VTableEntry220293
+Node: VTableInherit220583
+Node: Warning221033
+Node: Weak221267
+Node: Weakref221936
+Node: Word222901
+Node: Zero224741
+Node: 2byte225148
+Node: 4byte226098
+Node: 8byte226362
+Node: Deprecated226639
+Node: Object Attributes226874
+Node: GNU Object Attributes228594
+Node: Defining New Object Attributes232940
+Node: Machine Dependencies233732
+Node: AArch64-Dependent237767
+Node: AArch64 Options238249
+Node: AArch64 Extensions241354
+Node: AArch64 Syntax247981
+Node: AArch64-Chars248281
+Node: AArch64-Regs248767
+Node: AArch64-Relocations249061
+Node: AArch64 Floating Point250135
+Node: AArch64 Directives250360
+Node: AArch64 Opcodes254287
+Node: AArch64 Mapping Symbols254964
+Node: Alpha-Dependent255345
+Node: Alpha Notes255785
+Node: Alpha Options256066
+Node: Alpha Syntax258541
+Node: Alpha-Chars259010
+Node: Alpha-Regs259422
+Node: Alpha-Relocs259809
+Node: Alpha Floating Point266055
+Node: Alpha Directives266277
+Node: Alpha Opcodes271804
+Node: ARC-Dependent272099
+Node: ARC Options272544
+Node: ARC Syntax275670
+Node: ARC-Chars275898
+Node: ARC-Regs277020
+Node: ARC Directives279788
+Node: ARC Modifiers288443
+Node: ARC Symbols289453
+Node: ARC Opcodes290007
+Node: ARM-Dependent290253
+Node: ARM Options290718
+Node: ARM Syntax310979
+Node: ARM-Instruction-Set311347
+Node: ARM-Chars312562
+Node: ARM-Regs313273
+Node: ARM-Relocations313482
+Node: ARM-Neon-Alignment315168
+Node: ARM Floating Point315633
+Node: ARM Directives315832
+Ref: arm_fnend320991
+Ref: arm_fnstart321310
+Ref: arm_pad323718
+Ref: arm_save324320
+Ref: arm_setfp325021
+Node: ARM Opcodes328307
+Node: ARM Mapping Symbols330909
+Node: ARM Unwinding Tutorial331718
+Node: AVR-Dependent337918
+Node: AVR Options338257
+Node: AVR Syntax344750
+Node: AVR-Chars345037
+Node: AVR-Regs345668
+Node: AVR-Modifiers346249
+Node: AVR Opcodes348617
+Node: AVR Pseudo Instructions353895
+Node: Blackfin-Dependent355554
+Node: Blackfin Options355865
+Node: Blackfin Syntax356839
+Node: Blackfin Directives363045
+Node: BPF-Dependent363786
+Node: BPF Options364103
+Node: BPF Syntax364486
+Node: BPF-Chars364754
+Node: BPF-Regs365147
+Node: BPF-Pseudo-Maps365659
+Node: BPF Directives366079
+Node: BPF Opcodes366493
+Node: CR16-Dependent373051
+Node: CR16 Operand Qualifiers373346
+Node: CR16 Syntax376055
+Node: CR16-Chars376241
+Node: CRIS-Dependent376778
+Node: CRIS-Opts377125
+Ref: march-option378810
+Node: CRIS-Expand380629
+Node: CRIS-Symbols381812
+Node: CRIS-Syntax382983
+Node: CRIS-Chars383319
+Node: CRIS-Pic383870
+Ref: crispic384065
+Node: CRIS-Regs387614
+Node: CRIS-Pseudos388031
+Ref: crisnous388808
+Node: C-SKY-Dependent390096
+Node: C-SKY Options390358
+Node: C-SKY Syntax393343
+Node: D10V-Dependent393588
+Node: D10V-Opts393942
+Node: D10V-Syntax394913
+Node: D10V-Size395444
+Node: D10V-Subs396417
+Node: D10V-Chars397454
+Node: D10V-Regs399267
+Node: D10V-Addressing400296
+Node: D10V-Word400976
+Node: D10V-Float401493
+Node: D10V-Opcodes401806
+Node: D30V-Dependent402201
+Node: D30V-Opts402558
+Node: D30V-Syntax403236
+Node: D30V-Size403770
+Node: D30V-Subs404743
+Node: D30V-Chars405780
+Node: D30V-Guarded408390
+Node: D30V-Regs409067
+Node: D30V-Addressing410186
+Node: D30V-Float410848
+Node: D30V-Opcodes411161
+Node: Epiphany-Dependent411556
+Node: Epiphany Options411844
+Node: Epiphany Syntax412243
+Node: Epiphany-Chars412444
+Node: H8/300-Dependent412998
+Node: H8/300 Options413414
+Node: H8/300 Syntax413854
+Node: H8/300-Chars414155
+Node: H8/300-Regs414454
+Node: H8/300-Addressing415373
+Node: H8/300 Floating Point416397
+Node: H8/300 Directives416724
+Node: H8/300 Opcodes417852
+Node: HPPA-Dependent426171
+Node: HPPA Notes426603
+Node: HPPA Options427362
+Node: HPPA Syntax427557
+Node: HPPA Floating Point428827
+Node: HPPA Directives429033
+Node: HPPA Opcodes437715
+Node: i386-Dependent437974
+Node: i386-Options439357
+Node: i386-Directives454526
+Node: i386-Syntax455868
+Node: i386-Variations456173
+Node: i386-Chars459097
+Node: i386-Mnemonics459826
+Node: i386-Regs464833
+Node: i386-Prefixes467491
+Node: i386-Memory470251
+Node: i386-Jumps473190
+Node: i386-Float474313
+Node: i386-SIMD476214
+Node: i386-LWP477323
+Node: i386-BMI478157
+Node: i386-TBM478535
+Node: i386-16bit479065
+Node: i386-Arch481136
+Node: i386-ISA484855
+Node: i386-Bugs485726
+Node: i386-Notes486476
+Node: IA-64-Dependent487335
+Node: IA-64 Options487636
+Node: IA-64 Syntax490787
+Node: IA-64-Chars491193
+Node: IA-64-Regs491423
+Node: IA-64-Bits492349
+Node: IA-64-Relocs492879
+Node: IA-64 Opcodes493350
+Node: IP2K-Dependent493622
+Node: IP2K-Opts493894
+Node: IP2K-Syntax494393
+Node: IP2K-Chars494567
+Node: LM32-Dependent495110
+Node: LM32 Options495405
+Node: LM32 Syntax496038
+Node: LM32-Regs496334
+Node: LM32-Modifiers497275
+Node: LM32-Chars498655
+Node: LM32 Opcodes499163
+Node: M32C-Dependent499467
+Node: M32C-Opts499973
+Node: M32C-Syntax500392
+Node: M32C-Modifiers500627
+Node: M32C-Chars502419
+Node: M32R-Dependent502985
+Node: M32R-Opts503306
+Node: M32R-Directives507468
+Node: M32R-Warnings511442
+Node: M68K-Dependent514447
+Node: M68K-Opts514914
+Node: M68K-Syntax522336
+Node: M68K-Moto-Syntax524176
+Node: M68K-Float526760
+Node: M68K-Directives527280
+Node: M68K-opcodes528607
+Node: M68K-Branch528833
+Node: M68K-Chars533028
+Node: M68HC11-Dependent533891
+Node: M68HC11-Opts534422
+Node: M68HC11-Syntax538734
+Node: M68HC11-Modifiers541528
+Node: M68HC11-Directives543355
+Node: M68HC11-Float544729
+Node: M68HC11-opcodes545257
+Node: M68HC11-Branch545439
+Node: S12Z-Dependent547889
+Node: S12Z Options548232
+Node: S12Z Syntax549216
+Node: S12Z Syntax Overview549535
+Node: S12Z Addressing Modes551197
+Node: S12Z Register Notation555001
+Node: Meta-Dependent556177
+Node: Meta Options556459
+Node: Meta Syntax557121
+Node: Meta-Chars557333
+Node: Meta-Regs557633
+Node: MicroBlaze-Dependent557909
+Node: MicroBlaze Directives558596
+Node: MicroBlaze Syntax559987
+Node: MicroBlaze-Chars560219
+Node: MIPS-Dependent560771
+Node: MIPS Options562205
+Node: MIPS Macros581297
+Ref: MIPS Macros-Footnote-1584011
+Node: MIPS Symbol Sizes584154
+Node: MIPS Small Data585826
+Node: MIPS ISA587990
+Node: MIPS assembly options589774
+Node: MIPS autoextend590907
+Node: MIPS insn591641
+Node: MIPS FP ABIs592922
+Node: MIPS FP ABI History593374
+Node: MIPS FP ABI Variants594134
+Node: MIPS FP ABI Selection596687
+Node: MIPS FP ABI Compatibility597750
+Node: MIPS NaN Encodings598560
+Node: MIPS Option Stack600523
+Node: MIPS ASE Instruction Generation Overrides601308
+Node: MIPS Floating-Point606069
+Node: MIPS Syntax606975
+Node: MIPS-Chars607237
+Node: MMIX-Dependent607779
+Node: MMIX-Opts608159
+Node: MMIX-Expand611765
+Node: MMIX-Syntax613077
+Ref: mmixsite613433
+Node: MMIX-Chars614275
+Node: MMIX-Symbols615148
+Node: MMIX-Regs617219
+Node: MMIX-Pseudos618244
+Ref: MMIX-loc618386
+Ref: MMIX-local619467
+Ref: MMIX-is620000
+Ref: MMIX-greg620272
+Ref: GREG-base621190
+Ref: MMIX-byte622509
+Ref: MMIX-constants622981
+Ref: MMIX-prefix623623
+Ref: MMIX-spec623998
+Node: MMIX-mmixal624332
+Node: MSP430-Dependent627827
+Node: MSP430 Options628296
+Node: MSP430 Syntax631864
+Node: MSP430-Macros632180
+Node: MSP430-Chars632910
+Node: MSP430-Regs633625
+Node: MSP430-Ext634186
+Node: MSP430 Floating Point636005
+Node: MSP430 Directives636229
+Node: MSP430 Opcodes638070
+Node: MSP430 Profiling Capability638465
+Node: NDS32-Dependent640793
+Node: NDS32 Options641402
+Node: NDS32 Syntax643285
+Node: NDS32-Chars643553
+Node: NDS32-Regs644020
+Node: NDS32-Ops644874
+Node: NiosII-Dependent648471
+Node: Nios II Options648890
+Node: Nios II Syntax650122
+Node: Nios II Chars650328
+Node: Nios II Relocations650519
+Node: Nios II Directives652090
+Node: Nios II Opcodes653652
+Node: NS32K-Dependent653927
+Node: NS32K Syntax654156
+Node: NS32K-Chars654305
+Node: OpenRISC-Dependent655045
+Node: OpenRISC-Syntax655388
+Node: OpenRISC-Chars655709
+Node: OpenRISC-Regs656032
+Node: OpenRISC-Relocs657045
+Node: OpenRISC-Float661825
+Node: OpenRISC-Directives662031
+Node: OpenRISC-Opcodes662829
+Node: PDP-11-Dependent663121
+Node: PDP-11-Options663514
+Node: PDP-11-Pseudos668573
+Node: PDP-11-Syntax668918
+Node: PDP-11-Mnemonics669750
+Node: PDP-11-Synthetic670052
+Node: PJ-Dependent670270
+Node: PJ Options670533
+Node: PJ Syntax670828
+Node: PJ-Chars670993
+Node: PPC-Dependent671542
+Node: PowerPC-Opts671874
+Node: PowerPC-Pseudo675665
+Node: PowerPC-Syntax676286
+Node: PowerPC-Chars676476
+Node: PRU-Dependent677227
+Node: PRU Options677610
+Node: PRU Syntax678349
+Node: PRU Chars678536
+Node: PRU Relocations678691
+Node: PRU Directives679242
+Node: PRU Opcodes680145
+Node: RISC-V-Dependent680562
+Node: RISC-V-Options680990
+Node: RISC-V-Directives683704
+Node: RISC-V-Modifiers689054
+Node: RISC-V-Formats693122
+Node: RISC-V-ATTRIBUTE701724
+Node: RL78-Dependent703686
+Node: RL78-Opts704087
+Node: RL78-Modifiers704921
+Node: RL78-Directives705700
+Node: RL78-Syntax706304
+Node: RL78-Chars706500
+Node: RX-Dependent707056
+Node: RX-Opts707487
+Node: RX-Modifiers711749
+Node: RX-Directives712852
+Node: RX-Float713591
+Node: RX-Syntax714226
+Node: RX-Chars714405
+Node: S/390-Dependent714957
+Node: s390 Options715818
+Node: s390 Characters718004
+Node: s390 Syntax718525
+Node: s390 Register719427
+Node: s390 Mnemonics720243
+Node: s390 Operands723263
+Node: s390 Formats725894
+Node: s390 Aliases735485
+Node: s390 Operand Modifier739450
+Node: s390 Instruction Marker743253
+Node: s390 Literal Pool Entries744267
+Node: s390 Directives746200
+Node: s390 Floating Point751657
+Node: SCORE-Dependent752105
+Node: SCORE-Opts752407
+Node: SCORE-Pseudo753694
+Node: SCORE-Syntax755776
+Node: SCORE-Chars755958
+Node: SH-Dependent756516
+Node: SH Options756928
+Node: SH Syntax757979
+Node: SH-Chars758252
+Node: SH-Regs758795
+Node: SH-Addressing759409
+Node: SH Floating Point760317
+Node: SH Directives761414
+Node: SH Opcodes761815
+Node: Sparc-Dependent766136
+Node: Sparc-Opts766545
+Node: Sparc-Aligned-Data772258
+Node: Sparc-Syntax773090
+Node: Sparc-Chars773664
+Node: Sparc-Regs774227
+Node: Sparc-Constants780075
+Node: Sparc-Relocs784835
+Node: Sparc-Size-Translations789953
+Node: Sparc-Float791603
+Node: Sparc-Directives791798
+Node: TIC54X-Dependent793760
+Node: TIC54X-Opts794523
+Node: TIC54X-Block795564
+Node: TIC54X-Env795924
+Node: TIC54X-Constants796272
+Node: TIC54X-Subsyms796669
+Node: TIC54X-Locals798573
+Node: TIC54X-Builtins799313
+Node: TIC54X-Ext801727
+Node: TIC54X-Directives802298
+Node: TIC54X-Macros813206
+Node: TIC54X-MMRegs815293
+Node: TIC54X-Syntax815530
+Node: TIC54X-Chars815720
+Node: TIC6X-Dependent816411
+Node: TIC6X Options816714
+Node: TIC6X Syntax818713
+Node: TIC6X Directives819816
+Node: TILE-Gx-Dependent822100
+Node: TILE-Gx Options822410
+Node: TILE-Gx Syntax822759
+Node: TILE-Gx Opcodes824995
+Node: TILE-Gx Registers825283
+Node: TILE-Gx Modifiers826054
+Node: TILE-Gx Directives831053
+Node: TILEPro-Dependent831956
+Node: TILEPro Options832265
+Node: TILEPro Syntax832449
+Node: TILEPro Opcodes834685
+Node: TILEPro Registers834976
+Node: TILEPro Modifiers835746
+Node: TILEPro Directives840535
+Node: V850-Dependent841438
+Node: V850 Options841834
+Node: V850 Syntax846112
+Node: V850-Chars846352
+Node: V850-Regs846896
+Node: V850 Floating Point848406
+Node: V850 Directives848612
+Node: V850 Opcodes850678
+Node: Vax-Dependent856557
+Node: VAX-Opts857141
+Node: VAX-float860862
+Node: VAX-directives861495
+Node: VAX-opcodes862355
+Node: VAX-branch862744
+Node: VAX-operands865248
+Node: VAX-no866011
+Node: VAX-Syntax866267
+Node: VAX-Chars866433
+Node: Visium-Dependent866987
+Node: Visium Options867300
+Node: Visium Syntax867766
+Node: Visium Characters868011
+Node: Visium Registers868592
+Node: Visium Opcodes868864
+Node: WebAssembly-Dependent869290
+Node: WebAssembly-Notes869731
+Node: WebAssembly-Syntax870017
+Node: WebAssembly-Chars870583
+Node: WebAssembly-Relocs870962
+Node: WebAssembly-Signatures871688
+Node: WebAssembly-Floating-Point872189
+Node: WebAssembly-Opcodes872430
+Node: WebAssembly-module-layout873063
+Node: XGATE-Dependent873542
+Node: XGATE-Opts873969
+Node: XGATE-Syntax874958
+Node: XGATE-Directives877037
+Node: XGATE-Float877276
+Node: XGATE-opcodes877773
+Node: XSTORMY16-Dependent877885
+Node: XStormy16 Syntax878231
+Node: XStormy16-Chars878421
+Node: XStormy16 Directives879034
+Node: XStormy16 Opcodes879688
+Node: Xtensa-Dependent880743
+Node: Xtensa Options881474
+Node: Xtensa Syntax886047
+Node: Xtensa Opcodes888191
+Node: Xtensa Registers889984
+Node: Xtensa Optimizations890617
+Node: Density Instructions891069
+Node: Xtensa Automatic Alignment892171
+Node: Xtensa Relaxation894618
+Node: Xtensa Branch Relaxation895583
+Node: Xtensa Call Relaxation896955
+Node: Xtensa Jump Relaxation898736
+Node: Xtensa Immediate Relaxation900836
+Node: Xtensa Directives903411
+Node: Schedule Directive905119
+Node: Longcalls Directive905459
+Node: Transform Directive906003
+Node: Literal Directive906745
+Ref: Literal Directive-Footnote-1910284
+Node: Literal Position Directive910426
+Node: Literal Prefix Directive912125
+Node: Absolute Literals Directive913023
+Node: Z80-Dependent914330
+Node: Z80 Options914718
+Node: Z80 Syntax917217
+Node: Z80-Chars917925
+Node: Z80-Regs918776
+Node: Z80-Case919128
+Node: Z80-Labels919592
+Node: Z80 Floating Point920088
+Node: Z80 Directives920557
+Node: Z80 Opcodes922989
+Node: Z8000-Dependent924615
+Node: Z8000 Options925551
+Node: Z8000 Syntax925768
+Node: Z8000-Chars926058
+Node: Z8000-Regs926540
+Node: Z8000-Addressing927330
+Node: Z8000 Directives928440
+Node: Z8000 Opcodes930049
+Node: Reporting Bugs939991
+Node: Bug Criteria940717
+Node: Bug Reporting941484
+Node: Acknowledgements948125
+Ref: Acknowledgements-Footnote-1953091
+Node: GNU Free Documentation License953117
+Node: AS Index978267
 
 End Tag Table
 
