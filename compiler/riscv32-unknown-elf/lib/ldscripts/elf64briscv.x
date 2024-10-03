@@ -1,5 +1,5 @@
 /* Default linker script, for normal executables */
-/* Copyright (C) 2014-2021 Free Software Foundation, Inc.
+/* Copyright (C) 2014-2022 Free Software Foundation, Inc.
    Copying and distribution of this script, with or without modification,
    are permitted in any medium without royalty provided the copyright
    notice and this notice are preserved.  */
@@ -7,7 +7,7 @@ OUTPUT_FORMAT("elf64-bigriscv", "elf64-bigriscv",
 	      "elf64-bigriscv")
 OUTPUT_ARCH(riscv)
 ENTRY(_start)
-SEARCH_DIR("/home/nathan/tt/pr13/sfpi/compiler/riscv32-unknown-elf/lib");
+SEARCH_DIR("/home/nathan/tt-gcc/gcc-12/sfpi/compiler/riscv32-unknown-elf/lib");
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */
