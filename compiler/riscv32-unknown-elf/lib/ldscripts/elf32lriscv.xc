@@ -7,7 +7,7 @@ OUTPUT_FORMAT("elf32-littleriscv", "elf32-littleriscv",
 	      "elf32-littleriscv")
 OUTPUT_ARCH(riscv)
 ENTRY(_start)
-SEARCH_DIR("/home/nathan/tt-gcc/gcc-12/sfpi/compiler/riscv32-unknown-elf/lib");
+SEARCH_DIR("/home/nathan/tt-gcc/pic-dev/sfpi/compiler/riscv32-unknown-elf/lib");
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */

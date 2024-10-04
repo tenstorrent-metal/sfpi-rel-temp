@@ -19,8 +19,8 @@ import gdb
 import os
 import os.path
 
-pythondir = '/home/nathan/tt-gcc/gcc-12/sfpi/compiler/share/gcc-12.2.0/python'
-libdir = '/home/nathan/tt-gcc/gcc-12/sfpi/compiler/riscv32-unknown-elf/lib'
+pythondir = '/home/nathan/tt-gcc/pic-dev/sfpi/compiler/share/gcc-12.2.0/python'
+libdir = '/home/nathan/tt-gcc/pic-dev/sfpi/compiler/riscv32-unknown-elf/lib'
 
 # This file might be loaded when there is no current objfile.  This
 # can happen if the user loads it manually.  In this case we don't
